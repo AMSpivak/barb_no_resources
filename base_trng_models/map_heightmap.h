@@ -4,11 +4,8 @@
 #include <memory>
 
 #include "glm/glm.hpp"
+#include "gl_material.h"
 
-// #include "glm/trigonometric.hpp"
-// #include "glm/gtc/matrix_transform.hpp"
-// #include "glm/gtc/type_ptr.hpp"
-// #include "glm/gtx/rotate_vector.hpp"
 namespace GameMap
 {
     class HeightMap
@@ -34,6 +31,7 @@ namespace GameMap
         glm::vec3  m_map_size;       
         int m_height;
         int m_width;
+        std::shared_ptr<GameResource::GlMaterialStruct> m_material;
 
         unsigned char * m_heightmap;
     };
