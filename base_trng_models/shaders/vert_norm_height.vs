@@ -115,8 +115,8 @@ void main()
 	//float gz = map_position.w *(height_y2 - height_y1);
 	//float gx = map_position.w *(height_x2 - height_x1);
 
-	vec3 nz = vec3(0.0,map_position.w *(height_y1 - height_y2),1.0);
-	vec3 nx = vec3(1.0,map_position.w *(height_x1 - height_x2),0.0);
+	vec3 nz = vec3(0.0,(height_y1 - height_y2)* map_position.w,2.0);
+	vec3 nx = vec3(2.0,(height_x1 - height_x2)* map_position.w,0.0);
 	ourColor = normalize(cross(nz,nx));
 
 	//position.y += 0.1f;//height * map_position.w;

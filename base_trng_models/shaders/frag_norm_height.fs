@@ -30,11 +30,11 @@ void main()
     //normal = normalize(TBN * normal); 
     //normal = normal * 0.5 + 0.5; 
     
-    gNormal = vec4(ourColor.xyz, utility.y);
-    //gNormal = vec4(vec3(0.0,1.0,0.0), utility.y);
+    //gNormal = vec4(ourColor.xyz, utility.y);
+    gNormal = vec4(vec3(0.0,1.0,0.0), utility.y);
 
-	gAlbedoSpec = vec4(texColor.xyz, 0.06 + utility.z*0.94);//texColor;
-	//gAlbedoSpec = vec4(ourColor.xyz, 0.06 + utility.z*0.94);//texColor;
+	//gAlbedoSpec = vec4(texColor.xyz, 0.06 + utility.z*0.94);//texColor;
+	gAlbedoSpec = vec4(ourColor.xyz, 0.06 + utility.z*0.94);//texColor;
 
 	
 	//gAlbedoSpec = gNormal;
