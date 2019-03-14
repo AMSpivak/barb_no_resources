@@ -2,7 +2,7 @@
 #include "gl_resources_manager.h"
 namespace GameResource
 {
-    GlMaterial::GlMaterial(   const std::string & albedo,
+    GlMaterial::GlMaterial( const std::string & albedo,
                             const std::string & normal_height,
                             const std::string & roughness_metalness
                         )
