@@ -818,7 +818,7 @@ void GlGameStateDungeon::Draw()
 
         DrawDungeon(current_shader,hero);
         m_heightmap.Draw(m_shader_map["deff_1st_pass_heght"],hero_position,Camera.CameraMatrix());
-        m_heightmap.Draw(m_shader_map["deff_heght"],hero_position,Camera.CameraMatrix());
+        //m_heightmap.Draw(m_shader_map["deff_heght"],hero_position,Camera.CameraMatrix());
         
         glPolygonMode( GL_FRONT_AND_BACK,GL_FILL );
         

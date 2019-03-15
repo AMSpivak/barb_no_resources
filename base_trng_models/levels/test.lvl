@@ -6,8 +6,8 @@ camera_lens 50.0 1.0 45.0
 <!sky>
 <heightmap>
 map desert_map.png
-height_scale 60.0
-map_scale 0.002
+height_scale 30.0
+map_scale 0.001
 map_size 200.0 100.0 200.0
 <!heightmap>
 <models>

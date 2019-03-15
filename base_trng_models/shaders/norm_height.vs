@@ -26,7 +26,7 @@ void main()
 	vec2 textureSize = textureSize(HeightMap, 0);
 	vec2 texelSize = 1.0 / textureSize;
 	vec4 texColor = texture(HeightMap , texCoord);//BiCubic(HeightMap, texCoord,textureSize,texelSize);
-	float multiplier = texelSize.x;//map_position.z * offset_position.w;
+	float multiplier = map_position.z;//texelSize.x;//map_position.z * offset_position.w;
 	float height_x1 = texture(HeightMap , texCoord + vec2(1.0,0.0)* multiplier).x;
 	float height_x2 = texture(HeightMap , texCoord + vec2(-1.0,0.0)* multiplier).x;
 	float height_y1 = texture(HeightMap , texCoord + vec2(0.0,1.0)* multiplier).x;
@@ -41,7 +41,8 @@ void main()
 
 
 	vs_out.normal=normalize(cross(nz,nx));
-	vs_out.screen_normal=camera * vec4(vs_out.normal,1.0);
+	//vs_out.normal=normalize(vec3(0.0,1.0,0.0));
+	vs_out.screen_normal=camera * vec4(vs_out.normal,0.0);
 	position.y += height * map_position.w;
     vs_out.position = position.xyz;
 		

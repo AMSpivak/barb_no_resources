@@ -18,6 +18,8 @@ namespace GameMap
         m_heightmap = LoadHeightMap(GetResourceManager()->m_texture_atlas.GetResourceFolder() + FileName,&m_width, &m_height);
         
         m_heightmap_texture = GetResourceManager()->m_texture_atlas.Assign(FileName);
+
+        m_material = std::make_shared<GameResource::GlMaterial>("tile_diff.png","tile_norm.png","base_l.png");
     }
 
     void HeightMap::SetParameters(float map_scaler,float height_scaler)
@@ -118,7 +120,13 @@ namespace GameMap
         glActiveTexture(GL_TEXTURE0);
         glBindTexture(GL_TEXTURE_2D, m_heightmap_texture->m_texture);
 
+        glUniform1i(glGetUniformLocation(current_shader, "AlbedoTexture"), 1);
+        glActiveTexture(GL_TEXTURE1);
+        glBindTexture(GL_TEXTURE_2D, m_material->m_albedo_texture->m_texture);
 
+        glUniform1i(glGetUniformLocation(current_shader, "NormalTexture"), 2);
+        glActiveTexture(GL_TEXTURE2);
+        glBindTexture(GL_TEXTURE_2D, m_material->m_normal_height_texture->m_texture);
         RenderHeightMap();
     }
     

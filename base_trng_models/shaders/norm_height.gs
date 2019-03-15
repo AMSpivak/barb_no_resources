@@ -2,13 +2,13 @@
 layout (triangles) in;
 layout (line_strip, max_vertices = 6) out;
 
-out VS_OUT {
+in VS_OUT {
     vec4 screen_normal;
     vec3 normal;
     vec3 position;
 } gs_in[];
 
-const float MAGNITUDE = 0.4;
+const float MAGNITUDE = 0.9;
 
 void GenerateLine(int index)
 {
