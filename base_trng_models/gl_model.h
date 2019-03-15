@@ -10,6 +10,7 @@
 #include "i_gl_jal_struct.h"
 #include "i_gl_jub_struct.h"
 #include "i_gl_texture_struct.h"
+#include "gl_material.h"
 
 #include "gl_resources_manager.h"
 
@@ -28,9 +29,10 @@ public:
 
 	glm::mat4 model;
 	glm::mat4 draw_matrix;
-	std::shared_ptr<IGlTextureStruct> diffuse_texture;
-    std::shared_ptr<IGlTextureStruct> utility_texture;
-    std::shared_ptr<IGlTextureStruct> normal_texture;
+	// std::shared_ptr<IGlTextureStruct> diffuse_texture;
+    // std::shared_ptr<IGlTextureStruct> utility_texture;
+    // std::shared_ptr<IGlTextureStruct> normal_texture;
+	std::shared_ptr<GameResource::GlMaterial> m_material;
 	std::shared_ptr<IGlJubStruct> jub_bones;
 	std::shared_ptr<Animation> animation;
 

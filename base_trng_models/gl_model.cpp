@@ -41,15 +41,15 @@ void glModel::Draw(GLuint shaderProgram, Animation &animation, int now_frame,con
 	glUniformMatrix4fv(drawLoc, 1, GL_FALSE, glm::value_ptr(matrix));
 
 	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D, diffuse_texture.get()->m_texture);
+	glBindTexture(GL_TEXTURE_2D, m_material->m_albedo_texture->m_texture);
 
 	glUniform1i(glGetUniformLocation(shaderProgram, "UtilityTexture"), 1);
 	glActiveTexture(GL_TEXTURE1);
-	glBindTexture(GL_TEXTURE_2D, utility_texture.get()->m_texture);
+	glBindTexture(GL_TEXTURE_2D, m_material->m_roughness_metalness_texture->m_texture);
     
 	glUniform1i(glGetUniformLocation(shaderProgram, "NormalTexture"), 2);
 	glActiveTexture(GL_TEXTURE2);
-	glBindTexture(GL_TEXTURE_2D, normal_texture.get()->m_texture);
+	glBindTexture(GL_TEXTURE_2D, m_material->m_normal_height_texture->m_texture);
 	const std::vector <Bone> &bones = jub_bones.get()->bones;
 	glUniformMatrix4fv(boneLoc, bones.size(), GL_FALSE, animation.GetDrawValues(now_frame,bones));
 	//glUniformMatrix4fv(boneLoc, jub_bones.get()->bones.size(), GL_FALSE, glm::value_ptr(animation.frames[now_frame].bones[0]));
@@ -115,9 +115,12 @@ void glModel::LoadAll(std::string FileName)
 	GLResourcesManager * resources = GetResourceManager();
 	//LoadModel(jal_name);
 	jal_mesh = resources->m_mesh_atlas.Assign(jal_name);
-	diffuse_texture = resources->m_texture_atlas.Assign(png_name);
-	utility_texture = resources->m_texture_atlas.Assign(png_utility_name);
-	normal_texture = resources->m_texture_atlas.Assign(png_normal_name);
+	//diffuse_texture = resources->m_texture_atlas.Assign(png_name);
+	//utility_texture = resources->m_texture_atlas.Assign(png_utility_name);
+	//normal_texture = resources->m_texture_atlas.Assign(png_normal_name);
+
+	m_material = std::make_shared<GameResource::GlMaterial>(png_name,png_normal_name,png_utility_name);
+
 	jub_bones = resources->m_bones_atlas.Assign(jub_name);
 	if(frames_name.compare("")) animation = resources->m_animation_atlas.Assign(frames_name);
 

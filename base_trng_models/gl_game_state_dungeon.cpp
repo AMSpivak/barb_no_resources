@@ -1331,8 +1331,7 @@ void GlGameStateDungeon::ProcessInputsCamera(std::map <int, bool> &inputs,float 
         
         
 
-        // GLFWgamepadstate state;
-
+        //GLFWgamepadstate state;
         // if (glfwJoystickIsGamepad(GLFW_JOYSTICK_1)&&glfwGetGamepadState(GLFW_JOYSTICK_1, &state))
         // {
         //     joy_diff = state.axes[GLFW_GAMEPAD_AXIS_RIGHT_X];
