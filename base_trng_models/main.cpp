@@ -78,6 +78,7 @@ void FillShaders(std::map<const std::string,GLuint> &shader_map, const std::stri
     shader_map.insert ( std::pair<const std::string,GLuint>("deffered_simple_cheap",LoadshaderProgram("shaders/dbg.vs","shaders/deff_simple_cheap.fs")) );
     shader_map.insert ( std::pair<const std::string,GLuint>("deff_1st_pass",LoadshaderProgram("shaders/vert_norm.vs","shaders/frag_norm.fs")) );
     shader_map.insert ( std::pair<const std::string,GLuint>("deff_1st_pass_heght",LoadshaderProgram("shaders/vert_norm_height.vs","shaders/frag_norm_height.fs")) );
+    shader_map.insert ( std::pair<const std::string,GLuint>("deff_heght",LoadshaderProgram("shaders/norm_height.vs","shaders/normals.fs","shaders/norm_height.gs")) );
 	shader_map.insert ( std::pair<const std::string,GLuint>("luminocity",LoadshaderProgram("shaders/dbg.vs","shaders/luminocity.fs")) );
 	shader_map.insert ( std::pair<const std::string,GLuint>("simple_heightmap",LoadshaderProgram("shaders/vert_height_simple.vs","shaders/frag_height_simple.fs")) );
 }

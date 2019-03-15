@@ -466,7 +466,7 @@ GLuint LoadShader(std::string FileName,GLenum shaderType)
     {
         glGetShaderInfoLog(Shader, 512, NULL, infoLog);
         std::cout << "ERROR::SHADER::"
-		<<(shaderType == GL_VERTEX_SHADER ? "VERTEX":"FRAGMENT")<<"::COMPILATION_FAILED\n"
+		<<"COMPILATION_FAILED\n"
 		<< infoLog << std::endl;
 		return -1;
     }
@@ -483,6 +483,20 @@ GLuint LoadshaderProgram(std::string FileNameVS,std::string FileNameFS)
     // Link shaders
     GLuint shaderProgram = LinkShaderProgram(Shaders,2);
     EmptyShaders(Shaders,2);
+	return shaderProgram;
+}
+
+GLuint LoadshaderProgram(std::string FileNameVS,std::string FileNameFS,std::string FileNameGS)
+{
+	GLuint Shaders[3];
+    /*GLuint vertexShader*/
+	Shaders[0] = LoadShader(FileNameVS,GL_VERTEX_SHADER);
+    /*GLuint fragmentShader*/
+	Shaders[1] =  LoadShader(FileNameGS,GL_GEOMETRY_SHADER );//glCreateShader(GL_FRAGMENT_SHADER);
+	Shaders[2] =  LoadShader(FileNameFS,GL_FRAGMENT_SHADER);//glCreateShader(GL_FRAGMENT_SHADER);
+    // Link shaders
+    GLuint shaderProgram = LinkShaderProgram(Shaders,3);
+    EmptyShaders(Shaders,3);
 	return shaderProgram;
 }
 

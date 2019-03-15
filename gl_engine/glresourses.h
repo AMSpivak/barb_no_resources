@@ -76,6 +76,7 @@ std::string readShaderFile(std::string FileName);
 GLuint LoadShader(std::string FileName,GLenum shaderType);
 GLuint LinkShaderProgram(GLuint * shaders, int shaders_count);
 GLuint LoadshaderProgram(std::string FileNameVS,std::string FileNameFS);
+GLuint LoadshaderProgram(std::string FileNameVS,std::string FileNameFS,std::string FileNameGS);
 
 void EmptyShaders(GLuint * shaders, int shaders_count);
 
