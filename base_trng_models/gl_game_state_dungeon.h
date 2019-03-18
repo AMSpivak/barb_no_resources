@@ -86,7 +86,9 @@ private:
     double time;
     float key_angle;
     float camera_rotation_angle;
+    float camera_height;
     float old_joy_x;
+    float old_joy_y;
     
     glm::vec3 hero_position;
     glm::vec3 light_position;

@@ -105,6 +105,7 @@ GlGameStateDungeon::GlGameStateDungeon(std::map<const std::string,GLuint> &shade
                                                         ,light_angle (90.0f)
                                                         ,light_radius (20.0f)
                                                         ,camera_distance(12.f)
+                                                        ,camera_height(1.0f)
                                                         ,now_frame(91)
                                                         ,key_angle(0.0f)
                                                         ,camera_rotation_angle(0.0f)
@@ -1329,9 +1330,15 @@ void GlGameStateDungeon::ProcessInputsCamera(std::map <int, bool> &inputs,float 
         {
             joy_diff = 0.0f;
         }
-        
-        
+        old_joy_x = joy_x;
 
+        float joy_diff_y = joy_y - old_joy_y;
+        if(std::abs(joy_diff_y) <  0.01f)
+        {
+            joy_diff_y = 0.0f;
+        }
+        old_joy_y = joy_y;
+        
         //GLFWgamepadstate state;
         // if (glfwJoystickIsGamepad(GLFW_JOYSTICK_1)&&glfwGetGamepadState(GLFW_JOYSTICK_1, &state))
         // {
@@ -1340,7 +1347,6 @@ void GlGameStateDungeon::ProcessInputsCamera(std::map <int, bool> &inputs,float 
         //     // Use as gamepad
         // }
 
-        old_joy_x = joy_x;
         camera_rotation_angle -= joy_diff * 12.0f;
 
 
@@ -1353,7 +1359,12 @@ void GlGameStateDungeon::ProcessInputsCamera(std::map <int, bool> &inputs,float 
             camera_rotation_angle +=  360.0f;
         }
 
-        glm::vec3 camera_position = glm::vec3(-camera_distance * glm::cos(glm::radians(camera_rotation_angle)), camera_distance,  camera_distance * glm::sin(glm::radians(camera_rotation_angle)));
+        camera_height -=0.07f * joy_diff_y;
+
+        camera_height = glm::clamp(camera_height,-1.0f,1.0f);
+        
+
+        glm::vec3 camera_position = glm::vec3(-camera_distance * glm::cos(glm::radians(camera_rotation_angle)), camera_distance * camera_height,  camera_distance * glm::sin(glm::radians(camera_rotation_angle)));
         Camera.SetCameraLocation(camera_position,glm::vec3(0.0f, 2.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
         
         glm::vec3 light_orientation = glm::normalize(glm::vec3(-camera_position.x,0.0f,-camera_position.z));
