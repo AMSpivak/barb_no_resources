@@ -20,6 +20,8 @@ namespace GameResource
                             const std::string & normal_height,
                             const std::string & roughness_metalness
                         );
+        
+        Assign(GLuint shader, unsigned int start_texture, const char * albedo,const char * normal_height,const char *roughness_metalness);
 
     };
 }

@@ -64,6 +64,7 @@ void SetRenderTargets(
 
 void FillShaders(std::map<const std::string,GLuint> &shader_map, const std::string filename)
 {
+	std::cout<<"\nTextures max:"<<(GL_MAX_TEXTURE_UNITS - GL_TEXTURE0)<<"\n";
     //shader_map.insert ( std::pair<const std::string,GLuint>("sobel", LoadshaderProgram("shaders/dbg.vs","shaders/sobel_cross.fs")) );
     shader_map.insert ( std::pair<const std::string,GLuint>("sobel_aa", LoadshaderProgram("shaders/dbg.vs","shaders/sobel_aa.fs")) );
 	shader_map.insert ( std::pair<const std::string,GLuint>("shadowmap", LoadshaderProgram("shaders/vertex1.vs","shaders/frag1.fs")) );

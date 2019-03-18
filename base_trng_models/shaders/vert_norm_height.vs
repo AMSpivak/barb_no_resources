@@ -3,6 +3,7 @@ layout (location = 0) in vec3 a_Position;
 
 
 out vec3 v_Position;
+out vec3 v_materials;
 out vec3 ourColor;
 //out vec3 ourColorView;
 out vec2 TexCoord;
@@ -105,6 +106,7 @@ void main()
 	vec2 textureSize = textureSize(HeightMap, 0);
 	vec2 texelSize = 1.0 / textureSize;
 	vec4 texColor = texture(HeightMap , texCoord);//BiCubic(HeightMap, texCoord,textureSize,texelSize);
+	v_materials = vec3(texColor.y,texColor.z,texColor.w);
 	float multiplier = map_position.z;//texelSize.x;//map_position.z * offset_position.w;
 	float height_x1 = texture(HeightMap , texCoord + vec2(1.0,0.0)* multiplier).x;
 	float height_x2 = texture(HeightMap , texCoord + vec2(-1.0,0.0)* multiplier).x;

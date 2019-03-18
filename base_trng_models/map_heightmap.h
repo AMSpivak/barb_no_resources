@@ -31,7 +31,7 @@ namespace GameMap
         glm::vec3  m_map_size;       
         int m_height;
         int m_width;
-        std::shared_ptr<GameResource::GlMaterial> m_material;
+        std::shared_ptr<GameResource::GlMaterial> m_material[3];
 
         unsigned char * m_heightmap;
     };

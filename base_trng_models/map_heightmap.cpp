@@ -19,7 +19,8 @@ namespace GameMap
         
         m_heightmap_texture = GetResourceManager()->m_texture_atlas.Assign(FileName);
 
-        m_material = std::make_shared<GameResource::GlMaterial>("tile_diff.png","tile_norm.png","base_l.png");
+        m_material[0] = std::make_shared<GameResource::GlMaterial>("DesetdSand_albedo.png","DesetdSand_normal.png","DesetdSand_roughness.png");
+        m_material[1] = std::make_shared<GameResource::GlMaterial>("Desert_Rock_albedo.png","Desert_Rock_normal.png","Desert_Rock_roughness.png");
     }
 
     void HeightMap::SetParameters(float map_scaler,float height_scaler)
@@ -120,14 +121,15 @@ namespace GameMap
         glActiveTexture(GL_TEXTURE0);
         glBindTexture(GL_TEXTURE_2D, m_heightmap_texture->m_texture);
 
-        glUniform1i(glGetUniformLocation(current_shader, "AlbedoTexture"), 1);
-        glActiveTexture(GL_TEXTURE1);
-        glBindTexture(GL_TEXTURE_2D, m_material->m_albedo_texture->m_texture);
+        m_material[1]->Assign(current_shader,1,"Albedo_0","Normal_0","Utility_0");
+        m_material[0]->Assign(current_shader,4,"Albedo_1","Normal_1","Utility_1");
 
-        glUniform1i(glGetUniformLocation(current_shader, "NormalTexture"), 2);
-        glActiveTexture(GL_TEXTURE2);
-        glBindTexture(GL_TEXTURE_2D, m_material->m_normal_height_texture->m_texture);
+        
+
+        
         RenderHeightMap();
+
+
     }
     
 }

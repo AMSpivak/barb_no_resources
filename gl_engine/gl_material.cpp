@@ -1,5 +1,6 @@
 #include "gl_material.h"
 #include "gl_resources_manager.h"
+
 namespace GameResource
 {
     GlMaterial::GlMaterial( const std::string & albedo,
@@ -21,4 +22,26 @@ namespace GameResource
             m_roughness_metalness_texture = pmanager->m_texture_atlas.Assign(roughness_metalness);
         }
     }
+
+    GlMaterial::Assign(GLuint shader,unsigned int start_texture, const char * albedo,const char * normal_height,const char *roughness_metalness)
+    {
+        GLenum texture =  GL_TEXTURE0 + start_texture;
+
+        glUniform1i(glGetUniformLocation(shader, albedo), start_texture);
+        glActiveTexture(texture);
+        glBindTexture(GL_TEXTURE_2D, m_albedo_texture->m_texture);
+        ++start_texture;
+
+        texture =  GL_TEXTURE0 + start_texture;
+        glUniform1i(glGetUniformLocation(shader, normal_height), start_texture);
+        glActiveTexture(texture);
+        glBindTexture(GL_TEXTURE_2D, m_normal_height_texture->m_texture);
+        ++start_texture;
+
+        texture =  GL_TEXTURE0 + start_texture;
+        glUniform1i(glGetUniformLocation(shader, roughness_metalness), start_texture);
+        glActiveTexture(texture);
+        glBindTexture(GL_TEXTURE_2D, m_roughness_metalness_texture->m_texture);
+    }
+
 }
