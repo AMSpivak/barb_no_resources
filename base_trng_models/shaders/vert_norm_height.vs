@@ -106,7 +106,8 @@ void main()
 	vec2 textureSize = textureSize(HeightMap, 0);
 	vec2 texelSize = 1.0 / textureSize;
 	vec4 texColor = texture(HeightMap , texCoord);//BiCubic(HeightMap, texCoord,textureSize,texelSize);
-	v_materials = vec3(texColor.y,texColor.z,texColor.w);
+	v_materials = normalize(vec3(texColor.y,texColor.z,texColor.w));
+	//v_materials = normalize(vec3(1.0,0.0,0.0));
 	float multiplier = map_position.z;//texelSize.x;//map_position.z * offset_position.w;
 	float height_x1 = texture(HeightMap , texCoord + vec2(1.0,0.0)* multiplier).x;
 	float height_x2 = texture(HeightMap , texCoord + vec2(-1.0,0.0)* multiplier).x;

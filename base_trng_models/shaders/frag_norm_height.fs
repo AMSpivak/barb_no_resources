@@ -32,6 +32,9 @@ void main()
     vec2 Coord = TexCoord*tex_mul;
 	//vec4 texColor = vec4(0.9,0.5,0.2,1.0);//texture(AlbedoTexture, TexCoord);
 	vec4 texColor = texture(Albedo_0, Coord);
+	vec4 texColor1 = texture(Albedo_1, Coord);
+    texColor = texColor*v_materials.x + texColor1*v_materials.y;
+
     //if(texColor.a < 0.1)
     //    discard;
 
@@ -49,6 +52,9 @@ void main()
 
     //vec3 normal = vec3(0.0,1.0,0.0);
     vec3 normal = texture(Normal_0, Coord).xyz;
+    vec3 normal1 = texture(Normal_1, Coord).xyz;
+    
+    normal = normal*v_materials.x + normal1*v_materials.y;
 
     normal = normalize(normal * 2.0 - 1.0); 
     normal = normalize(TBN * normal); 
