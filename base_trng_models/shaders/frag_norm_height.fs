@@ -1,8 +1,8 @@
 #version 330 core
 in vec3 ourColor;
 //in vec3 ourColorView;
-in vec3 v_Position;
 in vec3 v_materials;
+in vec3 v_Position;
 in vec2 TexCoord;
 //in vec3 Normal;
 in mat3 TBN;
@@ -24,6 +24,28 @@ uniform sampler2D Albedo_2;
 uniform sampler2D Normal_2;
 uniform sampler2D Utility_2;
 
+// float blend(float4 texture1, float a1, float4 texture2, float a2)
+// {
+//     float depth = 0.2;
+//     float ma = max(texture1.a + a1, texture2.a + a2) - depth;
+
+//     float b1 = max(texture1.a + a1 - ma, 0);
+//     float b2 = max(texture2.a + a2 - ma, 0);
+
+//     return (texture1.rgb * b1 + texture2.rgb * b2) / (b1 + b2);
+// }
+
+float blend( float a1,  float a2)
+{
+    float depth = 0.02;
+    float ma = max(a1, a2) - depth;
+
+    float b1 = max(a1 - ma, 0);
+    float b2 = max(a2 - ma, 0);
+
+    return (b1) / (b1 + b2);
+}
+
 void main()
 {
     float tex_mul = 80.0;
@@ -33,7 +55,12 @@ void main()
 	//vec4 texColor = vec4(0.9,0.5,0.2,1.0);//texture(AlbedoTexture, TexCoord);
 	vec4 texColor = texture(Albedo_0, Coord);
 	vec4 texColor1 = texture(Albedo_1, Coord);
-    texColor = texColor*v_materials.x + texColor1*v_materials.y;
+
+    float mix_value = blend(v_materials.x,v_materials.y);
+    //texColor = v_materials.x*texColor + v_materials.y*texColor1;
+    vec3 materials = vec3(mix_value,1.0 - mix_value,0.0);
+    
+    texColor = materials.x*texColor + materials.y*texColor1;
 
     //if(texColor.a < 0.1)
     //    discard;
@@ -44,7 +71,9 @@ void main()
     //vec3 utility = vec3(0.0,0.9,0.1);
     float r_intensivity = 0.6;
     vec3 utility = vec3(0.0,1.0 - r_intensivity + texture(Utility_0, Coord).y * r_intensivity,0.1);
+    vec3 utility1 = vec3(0.0,1.0 - r_intensivity + texture(Utility_1, Coord).y * r_intensivity,0.1);
     //vec3 utility = vec3(0.0,1.0 - texture(UtilityTexture, TexCoord*tex_mul).y *0.5,0.1);
+    utility = utility*materials.x + utility1*materials.y;
 
 
     vec4 pos = vec4(v_Position,utility.x);
@@ -54,7 +83,7 @@ void main()
     vec3 normal = texture(Normal_0, Coord).xyz;
     vec3 normal1 = texture(Normal_1, Coord).xyz;
     
-    normal = normal*v_materials.x + normal1*v_materials.y;
+    normal = normal*materials.x + normal1*materials.y;
 
     normal = normalize(normal * 2.0 - 1.0); 
     normal = normalize(TBN * normal); 

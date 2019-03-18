@@ -121,8 +121,8 @@ namespace GameMap
         glActiveTexture(GL_TEXTURE0);
         glBindTexture(GL_TEXTURE_2D, m_heightmap_texture->m_texture);
 
-        m_material[1]->Assign(current_shader,1,"Albedo_0","Normal_0","Utility_0");
-        m_material[0]->Assign(current_shader,4,"Albedo_1","Normal_1","Utility_1");
+        m_material[0]->Assign(current_shader,1,"Albedo_0","Normal_0","Utility_0");
+        m_material[1]->Assign(current_shader,4,"Albedo_1","Normal_1","Utility_1");
 
         
 
