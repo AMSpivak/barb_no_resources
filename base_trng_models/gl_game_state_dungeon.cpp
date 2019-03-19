@@ -1359,7 +1359,7 @@ void GlGameStateDungeon::ProcessInputsCamera(std::map <int, bool> &inputs,float 
             camera_rotation_angle +=  360.0f;
         }
 
-        camera_height -=0.07f * joy_diff_y;
+        camera_height +=0.07f * joy_diff_y;
 
         camera_height = glm::clamp(camera_height,-1.0f,1.0f);
         

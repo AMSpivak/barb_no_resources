@@ -56,7 +56,15 @@ void main()
 	vec4 texColor = texture(Albedo_0, Coord);
 	vec4 texColor1 = texture(Albedo_1, Coord);
 
-    float mix_value = blend(v_materials.x,v_materials.y);
+    vec4 tmp = texture(Normal_0, Coord);
+    vec3 normal = tmp.xyz;
+    float h1 =0.5 *  tmp.w;
+
+    tmp = texture(Normal_1, Coord);
+    vec3 normal1 = tmp.xyz;
+    float h2 =0.5 * tmp.w;
+
+    float mix_value = blend(v_materials.x + h1 ,v_materials.y + h2);
     //texColor = v_materials.x*texColor + v_materials.y*texColor1;
     vec3 materials = vec3(mix_value,1.0 - mix_value,0.0);
     
@@ -80,8 +88,7 @@ void main()
     gPosition = pos;
 
     //vec3 normal = vec3(0.0,1.0,0.0);
-    vec3 normal = texture(Normal_0, Coord).xyz;
-    vec3 normal1 = texture(Normal_1, Coord).xyz;
+
     
     normal = normal*materials.x + normal1*materials.y;
 
