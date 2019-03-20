@@ -22,6 +22,23 @@ std::istream& operator>> ( std::istream& is, std::pair<T1,T2> & value)
 	is>>value.first>>value.second;
 }
 
+template <class T>
+//T FitRing(T value, T min, T max)
+T FitRing(const T &value,const T &min, const T &max)
+{
+	T ret_value = value;
+	if(ret_value > max)
+	{
+		ret_value -=  max;
+	}
+	if(ret_value < min)
+	{
+		ret_value +=  max;
+	}
+	return ret_value;
+}
+
+
 struct Bone {
 	std::string name;
 	std::string parent;

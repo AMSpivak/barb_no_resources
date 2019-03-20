@@ -1323,8 +1323,6 @@ void GlGameStateDungeon::ProcessInputsCamera(std::map <int, bool> &inputs,float 
     
         camera_distance = glm::clamp(camera_distance,6.0f,14.0f);
 
-
-
         float joy_diff = joy_x - old_joy_x;
         if(std::abs(joy_diff) <  0.01f)
         {
@@ -1347,23 +1345,11 @@ void GlGameStateDungeon::ProcessInputsCamera(std::map <int, bool> &inputs,float 
         //     // Use as gamepad
         // }
 
-        camera_rotation_angle -= joy_diff * 12.0f;
-
-
-        if(camera_rotation_angle > 360.0f)
-        {
-            camera_rotation_angle -=  360.0f;
-        }
-        if(camera_rotation_angle < 0.0f)
-        {
-            camera_rotation_angle +=  360.0f;
-        }
-
-        camera_height +=0.07f * joy_diff_y;
-
-        camera_height = glm::clamp(camera_height,-1.0f,1.0f);
         
-        
+        const float joy_x_sensetivity = 12.0f;
+        camera_rotation_angle = FitRing(camera_rotation_angle - joy_diff * joy_x_sensetivity,0.0f,360.0f);
+        const float joy_y_sensetivity = 0.07f;
+        camera_height = glm::clamp(camera_height + joy_y_sensetivity * joy_diff_y,-1.0f,1.0f);
 
         glm::vec3 camera_position = glm::vec3(-camera_distance * glm::cos(glm::radians(camera_rotation_angle)), camera_distance * camera_height,  camera_distance * glm::sin(glm::radians(camera_rotation_angle)));
         float height = 1.0f + m_heightmap.GetHeight(hero_position[0] + camera_position[0],hero_position[2]+camera_position[2]) - hero_position[1];
