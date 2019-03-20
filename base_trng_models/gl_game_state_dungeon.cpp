@@ -1363,8 +1363,16 @@ void GlGameStateDungeon::ProcessInputsCamera(std::map <int, bool> &inputs,float 
 
         camera_height = glm::clamp(camera_height,-1.0f,1.0f);
         
+        
 
         glm::vec3 camera_position = glm::vec3(-camera_distance * glm::cos(glm::radians(camera_rotation_angle)), camera_distance * camera_height,  camera_distance * glm::sin(glm::radians(camera_rotation_angle)));
+        float height = 1.0f + m_heightmap.GetHeight(hero_position[0] + camera_position[0],hero_position[2]+camera_position[2]) - hero_position[1];
+        if(camera_position[1]<height)
+        {
+            camera_position[1] = height;
+        }
+
+
         Camera.SetCameraLocation(camera_position,glm::vec3(0.0f, 2.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
         
         glm::vec3 light_orientation = glm::normalize(glm::vec3(-camera_position.x,0.0f,-camera_position.z));
