@@ -123,7 +123,7 @@ void renderSpriteDepth(GLuint current_shader, GLuint depthmap, float sprite_dept
 void renderBillBoardDepth(GLuint current_shader, GLuint depthmap,const GLuint * texture,
 						 float width, float height,const glm::vec4 & corrector,
 						 const glm::vec3 & position, const glm::vec3 & offset, 
-						 glCamera & camera);
+						 GlScene::glCamera & camera);
 
 
 void RenderHeightMap();

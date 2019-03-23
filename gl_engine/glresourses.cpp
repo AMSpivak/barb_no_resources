@@ -237,7 +237,7 @@ void renderSpriteDepth(GLuint current_shader, GLuint depthmap, float sprite_dept
 void renderBillBoardDepth(GLuint current_shader, GLuint depthmap,const GLuint * texture,
 						 float width, float height,const glm::vec4 & corrector,
 						 const glm::vec3 & position, const glm::vec3 & offset, 
-						 glCamera & camera)
+						 GlScene::glCamera & camera)
 {
 	glEnable(GL_BLEND);
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);

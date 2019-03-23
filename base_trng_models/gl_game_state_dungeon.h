@@ -81,7 +81,7 @@ private:
     float light_angle;
     float light_radius;
     float camera_distance;
-    glCamera Camera;
+    GlScene::glCamera Camera;
     int now_frame;
     double time;
     float key_angle;

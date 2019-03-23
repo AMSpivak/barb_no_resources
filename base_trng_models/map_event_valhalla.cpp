@@ -6,7 +6,7 @@ void MapEventValhalla::AddEdge(const std::pair<glm::vec3, glm::vec3> edge)
     m_edges.push_back(edge);
 }
 
-void MapEventValhalla::Show(const glm::vec3 & offset, glCamera & camera)
+void MapEventValhalla::Show(const glm::vec3 & offset, GlScene::glCamera & camera)
 {
     /*renderBillBoardDepth(m_current_shader,m_depthmap,m_texture,   
         m_width,m_height,position,offset,camera);*/

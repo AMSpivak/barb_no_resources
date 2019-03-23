@@ -2,7 +2,7 @@
 #define GL_ENGINE_LIGHT
 #include "glscene.h"
 
-class glLight : public glCamera
+class glLight : public GlScene::glCamera
 {
 	GLuint depthMapFBO;
 	//const unsigned int SHADOW_WIDTH = 1024, SHADOW_HEIGHT = 1024;

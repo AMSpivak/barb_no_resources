@@ -39,7 +39,7 @@ public:
     virtual InteractionResult Interact(GlCharacter &model,std::string &return_value) = 0;
     virtual EventProcessResult Process() = 0;
     virtual bool IsLight(glm::vec4 &light_position,glm::vec3 &color) {return false;}
-    virtual void Show(const glm::vec3 & offset, glCamera & camera){};
+    virtual void Show(const glm::vec3 & offset, GlScene::glCamera & camera){};
     virtual int AddAxes(std::vector<glm::vec3> &axes) = 0;
     virtual std::pair<float, float> ProjectOnAxe(const glm::vec3 & axe) = 0;
 };
