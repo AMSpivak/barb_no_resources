@@ -11,7 +11,12 @@ namespace GameMap
     class HeightMap
     {
         public:
-        HeightMap():m_heightmap(nullptr),m_map_size(10.0f,10.0f,10.0f){}
+        HeightMap():m_heightmap(nullptr),
+                    m_map_size(10.0f,10.0f,10.0f),
+                    quadVAO(0),
+                    quadVBO(0),
+                    quadIBO(0),
+	                vert_count(0){}
 
         ~HeightMap();
         void LoadMap(std::string FileName);
@@ -32,8 +37,13 @@ namespace GameMap
         int m_height;
         int m_width;
         std::shared_ptr<GameResource::GlMaterial> m_material[3];
-
         unsigned char * m_heightmap;
+
+        unsigned int quadVAO;
+        unsigned int quadVBO;
+        unsigned int quadIBO;
+	    GLsizei vert_count;
+        void CreateMap();
     };
     
 }
