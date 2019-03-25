@@ -36,8 +36,6 @@ namespace GlScene
             Frustrum[static_cast<int>(FrustrumPoints::FarLU)] = inverse * glm::vec4(-1.0f,-1.0f,-1.0f,1.0f);
             Frustrum[static_cast<int>(FrustrumPoints::FarRU)] = inverse * glm::vec4(-1.0f,-1.0f,-1.0f,1.0f);
             Frustrum[static_cast<int>(FrustrumPoints::FarRD)] = inverse * glm::vec4(-1.0f,-1.0f,-1.0f,1.0f);
-
-
         }
         
 

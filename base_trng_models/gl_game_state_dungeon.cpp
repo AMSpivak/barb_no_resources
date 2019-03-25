@@ -715,7 +715,7 @@ void GlGameStateDungeon::PrerenderLight(glLight &Light,std::shared_ptr<GlCharact
 
     DrawDungeon(current_shader,hero);
 
-    m_heightmap.Draw(m_shader_map["simple_heightmap"],hero_position,Light.CameraMatrix());
+    m_heightmap.Draw(m_shader_map["simple_heightmap"],hero_position,Light);
 
     glDisable(GL_POLYGON_OFFSET_FILL);
 }
@@ -729,7 +729,7 @@ void GlGameStateDungeon::DrawGlobalLight(const GLuint light_loc, const glLight &
 		renderQuad();
 }
 
-void GlGameStateDungeon::DrawHeightMap(GLuint current_shader, std::shared_ptr<GlCharacter>hero,const glm::mat4 camera)
+void GlGameStateDungeon::DrawHeightMap(GLuint current_shader, std::shared_ptr<GlCharacter>hero,const GlScene::glCamera &camera)
 {
     m_heightmap.Draw(current_shader,hero_position,camera);
 }
@@ -818,7 +818,7 @@ void GlGameStateDungeon::Draw()
         glPolygonMode( GL_FRONT_AND_BACK, EngineSettings::GetEngineSettings()->IsPbrON()?GL_FILL: GL_LINE );
 
         DrawDungeon(current_shader,hero);
-        m_heightmap.Draw(m_shader_map["deff_1st_pass_heght"],hero_position,Camera.CameraMatrix());
+        m_heightmap.Draw(m_shader_map["deff_1st_pass_heght"],hero_position,Camera);
         //m_heightmap.Draw(m_shader_map["deff_heght"],hero_position,Camera.CameraMatrix());
         
         glPolygonMode( GL_FRONT_AND_BACK,GL_FILL );

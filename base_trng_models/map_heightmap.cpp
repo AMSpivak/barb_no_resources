@@ -19,21 +19,13 @@ namespace GameMap
 
     void HeightMap::CreateMap()
     {
-        //if (quadVAO == 0)
-    
-        // float quadVertices[] = {
-        //     // positions        // texture Coords
-        //      1.0f,  0.0f, -1.0f, 
-        //     -1.0f,  0.0f, 1.0f, 
-        //      1.0f,  0.0f, 1.0f, 
-        //      0.5f, -0.5f, 0.0f, 
-        // };
-		std::vector<float> quadVertices;
+        std::vector<float> quadVertices;
 
-		size_t map_vertex_size = 100;
+		size_t map_vertex_size = 41;
 		size_t map_size = map_vertex_size - 1;
 		const float tile_size = 1.0f;
-		float offset = 0.5f * tile_size * map_size;
+        m_mesh_size = tile_size * map_size;        
+		float offset = 0.5f * m_mesh_size;
 
 		for(size_t i_z = 0; i_z < map_vertex_size; i_z++)
 		{
@@ -159,8 +151,16 @@ namespace GameMap
         m_map_size = size;
     }
 
-    void HeightMap::Draw(GLuint current_shader,const glm::vec3 &position,const glm::mat4 camera)
+    void HeightMap::Draw(GLuint current_shader,const glm::vec3 &position,const GlScene::glCamera &camera)
     {
+        glm::vec3 c = camera.m_position;
+        c[1] = 0.0f;
+        glm::vec3 e1 = camera.GetFrustrumPoint(GlScene::FrustrumPoints::FarRD);
+        e1[1] = 0.0f;        
+        glm::vec3 e2 = camera.GetFrustrumPoint(GlScene::FrustrumPoints::FarLD);
+        e2[1] = 0.0f;
+        
+
         glUseProgram(current_shader);
         const float tile_size = 1.0f;
         float inv = 1/tile_size;
@@ -175,7 +175,7 @@ namespace GameMap
         glm::vec4 map_position_vector = glm::vec4(position[0],position[2],GetMapScaler(),GetHeightScaler());
         
         GLuint cameraLoc  = glGetUniformLocation(current_shader, "camera");
-        glUniformMatrix4fv(cameraLoc, 1, GL_FALSE, glm::value_ptr(camera));
+        glUniformMatrix4fv(cameraLoc, 1, GL_FALSE, glm::value_ptr(camera.CameraMatrix()));
 
         GLuint offset_position  = glGetUniformLocation(current_shader, "offset_position");
         glUniform4fv(offset_position, 1, glm::value_ptr(offset_position_vector));
@@ -197,12 +197,20 @@ namespace GameMap
         
         
         glBindVertexArray(quadVAO);
-        glDrawElements(
-        GL_TRIANGLES,      // mode
-        vert_count,    // count
-        GL_UNSIGNED_INT,   // type
-        0           // element array buffer offset
-        );
+        // glDrawElements(GL_TRIANGLES,      // mode
+        // vert_count,    // count
+        // GL_UNSIGNED_INT,   // type
+        // 0           // element array buffer offset
+        // );
+
+        int index_x =0;int index_z =0;
+
+        offset_position_vector = glm::vec4(-offset_x + m_mesh_size*index_z,-position[1],-offset_z + m_mesh_size*index_z,tile_size);
+        glUniform4fv(offset_position, 1, glm::value_ptr(offset_position_vector));
+        glDrawElements(GL_TRIANGLES,vert_count,GL_UNSIGNED_INT,0);
+
+
+
         glBindVertexArray(0);
 
 
