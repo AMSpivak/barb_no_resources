@@ -38,6 +38,15 @@ T FitRing(const T &value,const T &min, const T &max)
 	return ret_value;
 }
 
+inline glm::vec2 VectorToPlane(glm::vec3 value)
+{
+	return glm::vec2(value[0],-value[2]);
+}
+
+inline glm::vec3 VectorFromPlane(glm::vec2 vec_value, float value)
+{
+	return glm::vec3(vec_value[0],value,-vec_value[1]);
+}
 
 struct Bone {
 	std::string name;

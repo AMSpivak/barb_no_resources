@@ -14,6 +14,9 @@ namespace GlScene
 		glm::mat4 projection;
 		glm::mat4 full_matrix;
 		glm::vec3 Frustrum[8];
+		glm::vec2 m_map_direction;
+		glm::vec2 Frustrum_2d[5];
+
 	public:
 		glm::vec3 m_position;
 

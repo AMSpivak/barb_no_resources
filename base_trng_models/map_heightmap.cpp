@@ -203,7 +203,9 @@ namespace GameMap
         // 0           // element array buffer offset
         // );
 
-        int index_x =0;int index_z =0;
+        int index_x =0; int index_z = 0;
+
+        
 
         offset_position_vector = glm::vec4(-offset_x + m_mesh_size*index_z,-position[1],-offset_z + m_mesh_size*index_z,tile_size);
         glUniform4fv(offset_position, 1, glm::value_ptr(offset_position_vector));

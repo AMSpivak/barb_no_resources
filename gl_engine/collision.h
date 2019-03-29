@@ -7,6 +7,27 @@
 #include "glm/gtc/type_ptr.hpp"
 namespace Collision
 {
+    struct C_2d_BB
+    {   
+        glm::vec2 center;
+        glm::vec2 size;  
+    };
+
+    struct C_2d_Line
+    {   
+        glm::vec2 point1;
+        glm::vec2 point2;  
+    };
+
+    struct C_2d_Plane
+    {   
+        glm::vec2 point;
+        glm::vec2 normal;  
+    };
+
+    
+
+
     inline float CollisionOnAxe(float start1,float end1,float start2,float end2)
     {
         if(start1 >end1)

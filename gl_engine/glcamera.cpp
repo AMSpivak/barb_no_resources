@@ -1,4 +1,5 @@
 #include "glcamera.h"
+#include "glresourses.h"
 
 namespace GlScene
 {
@@ -36,11 +37,32 @@ namespace GlScene
             Frustrum[static_cast<int>(FrustrumPoints::FarLU)] = inverse * glm::vec4(-1.0f,-1.0f,-1.0f,1.0f);
             Frustrum[static_cast<int>(FrustrumPoints::FarRU)] = inverse * glm::vec4(-1.0f,-1.0f,-1.0f,1.0f);
             Frustrum[static_cast<int>(FrustrumPoints::FarRD)] = inverse * glm::vec4(-1.0f,-1.0f,-1.0f,1.0f);
+
+			Frustrum_2d[0] =  VectorToPlane(m_position);
+			Frustrum_2d[1] =  VectorToPlane(Frustrum[static_cast<int>(FrustrumPoints::FarRU)]);
+			Frustrum_2d[2] =  VectorToPlane(Frustrum[static_cast<int>(FrustrumPoints::FarRD)]);
+			Frustrum_2d[3] =  VectorToPlane(Frustrum[static_cast<int>(FrustrumPoints::FarLD)]);
+			Frustrum_2d[5] =  VectorToPlane(Frustrum[static_cast<int>(FrustrumPoints::FarLU)]);
+
+			float lu = glm::dot(Frustrum_2d[1],m_map_direction);
+			float ld = glm::dot(Frustrum_2d[2],m_map_direction);
+
+			if(lu > ld)
+			{
+				std::swap(Frustrum_2d[1],Frustrum_2d[2]);
+				std::swap(Frustrum_2d[3],Frustrum_2d[4]);
+			}
+
         }
         
 
 		void glCamera::SetCameraLocation(const glm::vec3& position, const glm::vec3& target, const glm::vec3& up)
 		{
+			glm::vec3 direction = target - position;
+			direction[1]= 0;
+			direction = glm::normalize(direction);
+			m_map_direction = VectorToPlane(direction);
+
 			m_position = position;
 			view = glm::lookAt(position,target,up);
 			full_matrix =  projection * view;
