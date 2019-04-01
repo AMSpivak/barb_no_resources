@@ -1,8 +1,12 @@
+#include <iostream>
 #include "glcamera.h"
 #include "glresourses.h"
 
+constexpr float similar_edge = 0.01f;
+
 namespace GlScene
 {
+
     const glm::mat4 &glCamera::CameraMatrix() const
 		{
 			//full_matrix =  projection * view;
@@ -29,30 +33,49 @@ namespace GlScene
 		void glCamera::RecalculateFrustrum()
         {
             glm::mat4 inverse = glm::inverse(full_matrix);
-            Frustrum[static_cast<int>(FrustrumPoints::NearLD)] = inverse * glm::vec4(-1.0f,-1.0f,1.0f,1.0f);
-            Frustrum[static_cast<int>(FrustrumPoints::NearLU)] = inverse * glm::vec4(-1.0f,-1.0f,1.0f,1.0f);
-            Frustrum[static_cast<int>(FrustrumPoints::NearRU)] = inverse * glm::vec4(-1.0f,-1.0f,1.0f,1.0f);
-            Frustrum[static_cast<int>(FrustrumPoints::NearRD)] = inverse * glm::vec4(-1.0f,-1.0f,1.0f,1.0f);
-            Frustrum[static_cast<int>(FrustrumPoints::FarLD)] = inverse * glm::vec4(-1.0f,-1.0f,-1.0f,1.0f);
-            Frustrum[static_cast<int>(FrustrumPoints::FarLU)] = inverse * glm::vec4(-1.0f,-1.0f,-1.0f,1.0f);
-            Frustrum[static_cast<int>(FrustrumPoints::FarRU)] = inverse * glm::vec4(-1.0f,-1.0f,-1.0f,1.0f);
-            Frustrum[static_cast<int>(FrustrumPoints::FarRD)] = inverse * glm::vec4(-1.0f,-1.0f,-1.0f,1.0f);
 
-			Frustrum_2d[0] =  VectorToPlane(m_position);
-			Frustrum_2d[1] =  VectorToPlane(Frustrum[static_cast<int>(FrustrumPoints::FarRU)]);
-			Frustrum_2d[2] =  VectorToPlane(Frustrum[static_cast<int>(FrustrumPoints::FarRD)]);
-			Frustrum_2d[3] =  VectorToPlane(Frustrum[static_cast<int>(FrustrumPoints::FarLD)]);
-			Frustrum_2d[5] =  VectorToPlane(Frustrum[static_cast<int>(FrustrumPoints::FarLU)]);
+            Frustrum[static_cast<int>(FrustrumPoints::NearLD)] = inverse * glm::vec4(-1.0f,-1.0f,1.0f,1.0f);
+            Frustrum[static_cast<int>(FrustrumPoints::NearLU)] = inverse * glm::vec4(-1.0f,1.0f,1.0f,1.0f);
+            Frustrum[static_cast<int>(FrustrumPoints::NearRU)] = inverse * glm::vec4(1.0f,1.0f,1.0f,1.0f);
+            Frustrum[static_cast<int>(FrustrumPoints::NearRD)] = inverse * glm::vec4(1.0f,-1.0f,1.0f,1.0f);
+            Frustrum[static_cast<int>(FrustrumPoints::FarLD)] = inverse * glm::vec4(-1.0f,-1.0f,-1.0f,1.0f);
+            Frustrum[static_cast<int>(FrustrumPoints::FarLU)] = inverse * glm::vec4(-1.0f,1.0f,-1.0f,1.0f);
+            Frustrum[static_cast<int>(FrustrumPoints::FarRU)] = inverse * glm::vec4(1.0f,1.0f,-1.0f,1.0f);
+            Frustrum[static_cast<int>(FrustrumPoints::FarRD)] = inverse * glm::vec4(1.0f,-1.0f,-1.0f,1.0f);
+
+			Frustrum_2d.clear();
+			Frustrum_2d.push_back(VectorToPlane(m_position));
+			Frustrum_2d.push_back(VectorToPlane(Frustrum[static_cast<int>(FrustrumPoints::FarRU)]));
+			Frustrum_2d.push_back(VectorToPlane(Frustrum[static_cast<int>(FrustrumPoints::FarRD)]));
 
 			float lu = glm::dot(Frustrum_2d[1],m_map_direction);
 			float ld = glm::dot(Frustrum_2d[2],m_map_direction);
 
-			if(lu > ld)
+			if(abs(lu-ld) < similar_edge)
 			{
-				std::swap(Frustrum_2d[1],Frustrum_2d[2]);
-				std::swap(Frustrum_2d[3],Frustrum_2d[4]);
+			 	Frustrum_2d[2] = VectorToPlane(Frustrum[static_cast<int>(FrustrumPoints::FarLU)]);
+			}
+			else
+			{
+				Frustrum_2d.push_back(VectorToPlane(Frustrum[static_cast<int>(FrustrumPoints::FarLD)]));
+				Frustrum_2d.push_back(VectorToPlane(Frustrum[static_cast<int>(FrustrumPoints::FarLU)]));
+
+				if(lu > ld)
+				{
+					std::swap(Frustrum_2d[1],Frustrum_2d[2]);
+					std::swap(Frustrum_2d[3],Frustrum_2d[4]);
+				}
 			}
 
+
+			std::cout<<"\n<frustrum_dir>\n{\n";
+			std::cout<<m_map_direction<<"\n<frustrum>\n";
+
+			for(int i = 0; i < Frustrum_2d.size(); i++)
+			{
+				std::cout<<Frustrum_2d[i]<<"\n";
+			}
+			std::cout<<"\n}\n<frustrum>\n";
         }
         
 
@@ -66,6 +89,7 @@ namespace GlScene
 			m_position = position;
 			view = glm::lookAt(position,target,up);
 			full_matrix =  projection * view;
+			RecalculateFrustrum();
 		}
 
 		void glCamera::SetCameraLens(float FOV, float aspect, float near, float far)

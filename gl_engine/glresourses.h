@@ -13,9 +13,9 @@ template <typename T1,typename T2>
 std::ostream& operator << ( std::ostream& os, const std::pair<T1,T2> & value)
 {
     os<<value.first<<" "<<value.second;
-
 	return os;
 }
+
 template <typename T1,typename T2>
 std::istream& operator>> ( std::istream& is, std::pair<T1,T2> & value)
 {
@@ -87,15 +87,21 @@ private:
 };
 
 
-std::istream& operator>> ( std::istream& is, glm::mat4& mat);
 
 std::istream& operator>> ( std::istream& is, Bone& bone) ;
-std::istream& operator>> ( std::istream& is, glm::vec3 & fill_vector) ;
 
-std::istream& operator>> ( std::istream& is, glm::vec3 & glm_vector);
+
+
+std::istream& operator >> ( std::istream& is, glm::vec3 & glm_vector);
 std::ostream& operator << ( std::ostream& os, const glm::vec3 & glm_vector);
+
+std::istream& operator >> ( std::istream& is, glm::vec2 & glm_vector);
+std::ostream& operator << ( std::ostream& os, const glm::vec2 & glm_vector);
+
+std::istream& operator>> ( std::istream& is, glm::mat4& mat);
 std::ostream& operator << ( std::ostream& os, const glm::mat4 & mat);
 
+std::ostream& operator << ( std::ostream& os, const glm::vec2 & glm_vector);
 
 std::string readShaderFile(std::string FileName);
 

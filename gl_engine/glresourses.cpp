@@ -74,11 +74,7 @@ void Fit_Tile_Matrix(glm::mat4 &matrix,float x,float y,float width,float height)
 
 }
 
-/*std::istream& operator>> ( std::istream& is, glm::vec3 & fill_vector)
-{
-	is>>fill_vector[0] >>fill_vector[1]>>fill_vector[2];
-	return is;
-}*/
+
 
 
 void renderSprite(GLuint current_shader,
@@ -944,8 +940,12 @@ const glm::mat4 SlerpMatrix(const glm::mat4 & m1,const glm::mat4 & m2,float appr
 	return return_matrix;
 }
 
+
+
+
 std::istream& operator>> ( std::istream& is, glm::vec3 & glm_vector)
 {
+	
 	//float tmp[3];
 	for(size_t i =0; i<3; i++)
 	{
@@ -966,4 +966,13 @@ std::ostream& operator << ( std::ostream& os, const glm::vec3 & glm_vector)
 	return os;
 }
 
-
+std::ostream& operator << ( std::ostream& os, const glm::vec2 & glm_vector)
+{
+	const size_t max = 2;
+	for(size_t i =0; i<max; i++)
+	{
+		os<<glm_vector[i];
+		if(i!=max-1) os<<" ";
+	}
+	return os;
+}

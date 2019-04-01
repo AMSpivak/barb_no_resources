@@ -9,6 +9,8 @@ class glLight : public GlScene::glCamera
 	const unsigned int SHADOW_WIDTH = 2048, SHADOW_HEIGHT = 2048;
 	public:
 	GLuint depthMap;
+	void RecalculateFrustrum(){};
+
 	glLight()
 	{
 		glGenFramebuffers(1, &depthMapFBO);
