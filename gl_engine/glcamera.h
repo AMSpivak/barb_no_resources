@@ -14,7 +14,7 @@ namespace GlScene
 		glm::mat4 view;
 		glm::mat4 projection;
 		glm::mat4 full_matrix;
-		glm::vec3 Frustrum[8];
+		glm::vec4 Frustrum[8];
 		glm::vec2 m_map_direction;
 		std::vector<glm::vec2> Frustrum_2d;
 
@@ -24,7 +24,8 @@ namespace GlScene
 		const glm::mat4 &CameraMatrix() const;
 		const glm::mat4 &CameraViewMatrix() const;
 		const glm::mat4 &CameraProjectionMatrix() const;
-		const glm::vec3 &GetFrustrumPoint(FrustrumPoints point) const;
+		const glm::vec4 &GetFrustrumPoint(FrustrumPoints point) const;
+		const std::vector<glm::vec2> &GetFrustrum2d() const;
 		virtual void RecalculateFrustrum();
 		void SetCameraLocation(const glm::vec3& position, const glm::vec3& target, const glm::vec3& up);
 		void SetCameraLens(float FOV, float aspect, float near, float far);

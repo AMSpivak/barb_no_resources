@@ -1,5 +1,6 @@
 #include "map_heightmap.h"
 #include "glresourses.h"
+#include "collision.h"
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 namespace GameMap
@@ -205,11 +206,33 @@ namespace GameMap
 
         int index_x =0; int index_z = 0;
 
-        
 
-        offset_position_vector = glm::vec4(-offset_x + m_mesh_size*index_z,-position[1],-offset_z + m_mesh_size*index_z,tile_size);
-        glUniform4fv(offset_position, 1, glm::value_ptr(offset_position_vector));
-        glDrawElements(GL_TRIANGLES,vert_count,GL_UNSIGNED_INT,0);
+        bool intersects = true;
+        const std::vector<glm::vec2> &frustrum = camera.GetFrustrum2d();
+        Collision::C_2d_BB bbox;
+        bbox.size = glm::vec2(m_mesh_size,m_mesh_size);
+
+        for(int i_y =-15; i_y<15; i_y++)
+        {
+            index_z = i_y;
+            for(int i_x =-15; i_x<15; i_x++)
+            {
+                index_x = i_x;
+                offset_position_vector = glm::vec4(-offset_x + m_mesh_size*index_x,-position[1],-offset_z - m_mesh_size*index_z,tile_size);
+
+                if(frustrum.size()>1)
+                {
+                    bbox.center = glm::vec2(offset_position_vector[0],-offset_position_vector[2]);
+                    intersects = Collision::_2d::Intersect(frustrum,bbox);
+                    //std::cout<<"\nCollision: "<<bbox.center <<" result"<<intersects<<"\n";
+                }
+                if(intersects)
+                {
+                    glUniform4fv(offset_position, 1, glm::value_ptr(offset_position_vector));
+                    glDrawElements(GL_TRIANGLES,vert_count,GL_UNSIGNED_INT,0);
+                }
+            }
+        }
 
 
 

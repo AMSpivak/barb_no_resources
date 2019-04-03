@@ -1,4 +1,6 @@
 #include <iostream>
+#include "glm/gtx/string_cast.hpp"
+
 #include "glcamera.h"
 #include "glresourses.h"
 
@@ -25,7 +27,7 @@ namespace GlScene
 			return projection;
 		}
 
-		const glm::vec3 &glCamera::GetFrustrumPoint(FrustrumPoints point) const
+		const glm::vec4 &glCamera::GetFrustrumPoint(FrustrumPoints point) const
         {
             return Frustrum[static_cast<int>(point)];
         }
@@ -34,15 +36,21 @@ namespace GlScene
         {
             glm::mat4 inverse = glm::inverse(full_matrix);
 
-            Frustrum[static_cast<int>(FrustrumPoints::NearLD)] = inverse * glm::vec4(-1.0f,-1.0f,1.0f,1.0f);
-            Frustrum[static_cast<int>(FrustrumPoints::NearLU)] = inverse * glm::vec4(-1.0f,1.0f,1.0f,1.0f);
-            Frustrum[static_cast<int>(FrustrumPoints::NearRU)] = inverse * glm::vec4(1.0f,1.0f,1.0f,1.0f);
-            Frustrum[static_cast<int>(FrustrumPoints::NearRD)] = inverse * glm::vec4(1.0f,-1.0f,1.0f,1.0f);
-            Frustrum[static_cast<int>(FrustrumPoints::FarLD)] = inverse * glm::vec4(-1.0f,-1.0f,-1.0f,1.0f);
-            Frustrum[static_cast<int>(FrustrumPoints::FarLU)] = inverse * glm::vec4(-1.0f,1.0f,-1.0f,1.0f);
-            Frustrum[static_cast<int>(FrustrumPoints::FarRU)] = inverse * glm::vec4(1.0f,1.0f,-1.0f,1.0f);
-            Frustrum[static_cast<int>(FrustrumPoints::FarRD)] = inverse * glm::vec4(1.0f,-1.0f,-1.0f,1.0f);
+            Frustrum[static_cast<int>(FrustrumPoints::NearLD)] = inverse * glm::vec4(-1.0f,-1.0f,-1.0f,1.0f);
+	        Frustrum[static_cast<int>(FrustrumPoints::NearLU)] = inverse * glm::vec4(-1.0f,1.0f,-1.0f,1.0f);
+            Frustrum[static_cast<int>(FrustrumPoints::NearRU)] = inverse * glm::vec4(1.0f,1.0f,-1.0f,1.0f);
+            Frustrum[static_cast<int>(FrustrumPoints::NearRD)] = inverse * glm::vec4(1.0f,-1.0f,-1.0f,1.0f);
+            Frustrum[static_cast<int>(FrustrumPoints::FarLD)] = inverse * glm::vec4(-1.0f,-1.0f,1.0f,1.0f);
+            Frustrum[static_cast<int>(FrustrumPoints::FarLU)] = inverse * glm::vec4(-1.0f,1.0f,1.0f,1.0f);
+            Frustrum[static_cast<int>(FrustrumPoints::FarRU)] = inverse * glm::vec4(1.0f,1.0f,1.0f,1.0f);
+            Frustrum[static_cast<int>(FrustrumPoints::FarRD)] = inverse * glm::vec4(1.0f,-1.0f,1.0f,1.0f);
 
+
+			for(int i = 0; i < 8; i++)
+			{
+				Frustrum[i]/=(Frustrum[i])[3];
+			}
+			
 			Frustrum_2d.clear();
 			Frustrum_2d.push_back(VectorToPlane(m_position));
 			Frustrum_2d.push_back(VectorToPlane(Frustrum[static_cast<int>(FrustrumPoints::FarRU)]));
@@ -51,19 +59,36 @@ namespace GlScene
 			float lu = glm::dot(Frustrum_2d[1],m_map_direction);
 			float ld = glm::dot(Frustrum_2d[2],m_map_direction);
 
-			if(abs(lu-ld) < similar_edge)
+			if(lu*ld< 0)
 			{
-			 	Frustrum_2d[2] = VectorToPlane(Frustrum[static_cast<int>(FrustrumPoints::FarLU)]);
-			}
-			else
-			{
-				Frustrum_2d.push_back(VectorToPlane(Frustrum[static_cast<int>(FrustrumPoints::FarLD)]));
+				Frustrum_2d[0] = Frustrum_2d[1];
+				Frustrum_2d[1] = Frustrum_2d[2];
+				Frustrum_2d[2] = (VectorToPlane(Frustrum[static_cast<int>(FrustrumPoints::FarLD)]));
 				Frustrum_2d.push_back(VectorToPlane(Frustrum[static_cast<int>(FrustrumPoints::FarLU)]));
 
 				if(lu > ld)
 				{
-					std::swap(Frustrum_2d[1],Frustrum_2d[2]);
-					std::swap(Frustrum_2d[3],Frustrum_2d[4]);
+					std::swap(Frustrum_2d[0],Frustrum_2d[1]);
+					std::swap(Frustrum_2d[2],Frustrum_2d[3]);
+				}
+
+			}
+			else
+			{
+				if(abs(lu-ld) < similar_edge)
+				{
+					Frustrum_2d[2] = VectorToPlane(Frustrum[static_cast<int>(FrustrumPoints::FarLU)]);
+				}
+				else
+				{
+					Frustrum_2d.push_back(VectorToPlane(Frustrum[static_cast<int>(FrustrumPoints::FarLD)]));
+					Frustrum_2d.push_back(VectorToPlane(Frustrum[static_cast<int>(FrustrumPoints::FarLU)]));
+
+					if(lu > ld)
+					{
+						std::swap(Frustrum_2d[1],Frustrum_2d[2]);
+						std::swap(Frustrum_2d[3],Frustrum_2d[4]);
+					}
 				}
 			}
 
@@ -75,8 +100,20 @@ namespace GlScene
 			{
 				std::cout<<Frustrum_2d[i]<<"\n";
 			}
+			// 	std::cout<<m_position<<"\n\n";
+
+			// for(int i = 0; i < 8; i++)
+			// {
+			// 	std::cout<<glm::to_string(Frustrum[i])<<"\n";
+			// }
 			std::cout<<"\n}\n<frustrum>\n";
         }
+
+		const std::vector<glm::vec2> &glCamera::GetFrustrum2d() const
+		{
+			return Frustrum_2d;
+		}
+
         
 
 		void glCamera::SetCameraLocation(const glm::vec3& position, const glm::vec3& target, const glm::vec3& up)

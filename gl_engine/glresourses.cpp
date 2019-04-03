@@ -954,6 +954,9 @@ std::istream& operator>> ( std::istream& is, glm::vec3 & glm_vector)
 	return is;
 }
 
+
+//void(std::ostream& os,)
+
 std::ostream& operator << ( std::ostream& os, const glm::vec3 & glm_vector)
 {
 	//float tmp[3];
@@ -967,6 +970,18 @@ std::ostream& operator << ( std::ostream& os, const glm::vec3 & glm_vector)
 }
 
 std::ostream& operator << ( std::ostream& os, const glm::vec2 & glm_vector)
+{
+	const size_t max = 2;
+	for(size_t i =0; i<max; i++)
+	{
+		os<<glm_vector[i];
+		if(i!=max-1) os<<" ";
+	}
+	return os;
+}
+
+
+std::ostream& operator << ( std::ostream& os, const glm::vec4 & glm_vector)
 {
 	const size_t max = 2;
 	for(size_t i =0; i<max; i++)

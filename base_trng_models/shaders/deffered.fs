@@ -29,7 +29,8 @@ float ShadowCalculation(vec4 PosLight, vec3 tNormal)
     vec3 projCoords = fragPosLightSpace.xyz / fragPosLightSpace.w;
 
     if(fragPosLightSpace.x<-1.0||fragPosLightSpace.x>1.0||fragPosLightSpace.y<-1.0||fragPosLightSpace.y>1.0)
-        discard;
+        return 1.0;
+        //discard;
 
     float light_fall = dot(tNormal,LightDir);
 

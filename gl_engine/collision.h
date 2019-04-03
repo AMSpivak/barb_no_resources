@@ -19,6 +19,8 @@ namespace Collision
         glm::vec2 point2;  
     };
 
+
+
     struct C_2d_Plane
     {   
         glm::vec2 point;
@@ -59,6 +61,13 @@ namespace Collision
     int AddAxes(std::vector<glm::vec3> &axes,
                 const std::vector<std::pair<glm::vec3, glm::vec3>> &m_edges,
                 const glm::mat4 &model_matrix);
+
+    namespace _2d
+    {
+
+        bool IsLeft(glm::vec2 const& a, glm::vec2 const& b);
+        bool Intersect(const std::vector<glm::vec2> &frustrum,const C_2d_BB & bbox);
+    }
 }
 
 #endif
