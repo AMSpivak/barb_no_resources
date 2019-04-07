@@ -17,33 +17,11 @@ material/tiles/tile_sand.mdl
 30 30 1
 <!dungeon_params>
 <object>
-name portal
-mass_inv 0.0
-radius 0.01
-position 25.0 0.0 25.0
-orientation 0.0 0.0 0.0
-model material/dungeon/circle/circle.mdl
-armor 0.0
-sequence damage 2 3 0 0  "" "" ""
-sequence base 0 1 0 0  "" "" ""
-<!object>
-<object>
 name stone_1
 mass_inv 0.0
 radius 1.01
-position 25.0 3.0 30.0
+position 25.0 8.0 30.0
 orientation 0.0 180.0 0.0
-model material/dungeon/stone/stone.mdl
-armor 0.0
-sequence damage 2 3 0 0  "" "" ""
-sequence base 0 1 0 0  "" "" ""
-<!object>
-<object>
-name stone_2
-mass_inv 0.0
-radius 1.01
-position 30.0 3.0 27.0
-orientation 0.0 -120.0 0.0
 model material/dungeon/stone/stone.mdl
 armor 0.0
 sequence damage 2 3 0 0  "" "" ""
@@ -53,7 +31,7 @@ sequence base 0 1 0 0  "" "" ""
 name stone_3
 mass_inv 0.0
 radius 1.01
-position 20.0 0.0 27.0
+position 20.0 7.6 27.0
 orientation 0.0 120.0 0.0
 model material/dungeon/stone/stone.mdl
 armor 0.0

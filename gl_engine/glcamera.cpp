@@ -93,20 +93,14 @@ namespace GlScene
 			}
 
 
-			std::cout<<"\n<frustrum_dir>\n{\n";
-			std::cout<<m_map_direction<<"\n<frustrum>\n";
+			// std::cout<<"\n<frustrum_dir>\n{\n";
+			// std::cout<<m_map_direction<<"\n<frustrum>\n";
 
-			for(int i = 0; i < Frustrum_2d.size(); i++)
-			{
-				std::cout<<Frustrum_2d[i]<<"\n";
-			}
-			// 	std::cout<<m_position<<"\n\n";
-
-			// for(int i = 0; i < 8; i++)
+			// for(int i = 0; i < Frustrum_2d.size(); i++)
 			// {
-			// 	std::cout<<glm::to_string(Frustrum[i])<<"\n";
+			// 	std::cout<<Frustrum_2d[i]<<"\n";
 			// }
-			std::cout<<"\n}\n<frustrum>\n";
+			// std::cout<<"\n}\n<frustrum>\n";
         }
 
 		const std::vector<glm::vec2> &glCamera::GetFrustrum2d() const
