@@ -918,6 +918,14 @@ void GlGameStateDungeon::Draw()
             cameraLoc  = glGetUniformLocation(current_shader, "camera");
 		    //glUniformMatrix4fv(cameraLoc, 1, GL_FALSE, glm::value_ptr(Camera.CameraMatrix()));
 		    glUniformMatrix4fv(cameraLoc, 1, GL_FALSE, glm::value_ptr(model_m));
+
+            light_dir  = glGetUniformLocation(current_shader, "LightDir");
+		    glUniform3fv(light_dir, 1, glm::value_ptr(light_dir_vector));
+
+       
+            //GLuint light_color  = glGetUniformLocation(current_shader, "LightColor");
+            //glUniform3fv(light_color, 1, glm::value_ptr(light_color_vector));
+
             glActiveTexture(GL_TEXTURE0);
             glBindTexture(GL_TEXTURE_CUBE_MAP, skybox.get()->m_texture);
             renderQuad();
