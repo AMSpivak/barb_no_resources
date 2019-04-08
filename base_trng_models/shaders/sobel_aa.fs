@@ -114,8 +114,8 @@ void main()
 	blur =  intens/(intens+0.01);
 	float l=smoothstep(0.999,1.0, d);
 	l*=0.25;
-	//l*=0.0;
-	vec3 atmosphere = vec3(0.99,0.99,1.0);
+	// l*=0.0;
+	vec3 atmosphere = vec3(0.9,0.9,1.0);
 
 	FragColor = vec4((blur)*(texColor.xyz*(1.0 - l)+l*atmosphere), 1.0);
 	//FragColor = vec4(l,l,l, 1.0);
