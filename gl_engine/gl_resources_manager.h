@@ -16,6 +16,9 @@ GLAtlas<IGlTextureStruct> m_texture_atlas;
 GLAtlas<IGlJalStruct> m_mesh_atlas;
 GLAtlas<Animation> m_animation_atlas;
 GLAtlas<IGlJubStruct> m_bones_atlas;
+
+std::map<const std::string,GLuint> m_shader_map;
+
 GLResourcesManager(const std::string & textures_folder,
                     const std::string & meshes_folder,
                     const std::string & animation_folder,
@@ -27,6 +30,8 @@ GLResourcesManager(const std::string & textures_folder,
                     ,m_bones_atlas(bones_folder)
 {}
 ~GLResourcesManager(){}
+
+GLuint GetShader(const std::string &shader_name);
 void Clean();
 };
 

@@ -18,7 +18,11 @@ namespace GameResource
 
         GlMaterial(   const std::string & albedo,
                             const std::string & normal_height,
-                            const std::string & roughness_metalness
+                            const std::string & roughness_metalness//,
+                            //const std::string & shader_prepass
+                            //const std::map<const std::string,GLuint> &shader_map,
+                            //const std::string & shader_deffered
+
                         );
         
         Assign(GLuint shader, unsigned int start_texture, const char * albedo,const char * normal_height,const char *roughness_metalness);

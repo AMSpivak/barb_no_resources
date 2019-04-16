@@ -179,15 +179,11 @@ int main(int argc, char const *argv[])
 	GameSettings::HeroStatus hero_status;
 	GameSettings::SetHeroStatus(&hero_status);
 
-
-    std::map<const std::string,GLuint> m_shader_map;
-
-    
-
-
+   
 	SetRenderTargets(m_render_target_map,width,height);
-	 
-	FillShaders(m_shader_map,"shaders/list.shd");
+    auto pmanager = GetResourceManager();
+	
+	FillShaders(pmanager->m_shader_map,"shaders/list.shd");
 
     std::map<std::string,std::shared_ptr<GlCharacter>> m_glmodels_map;
 
@@ -198,7 +194,7 @@ int main(int argc, char const *argv[])
 	hero->SetName("Hero");
 	//hero->model_matrix = glm::rotate(hero->model_matrix, glm::radians(-90.0f), glm::vec3(1.0f, 0.0f, 0.0f));
 	
-    GlGameStateDungeon game_state_dungeon(m_shader_map,m_render_target_map,m_glmodels_map,resources_atlas,width,height);
+    GlGameStateDungeon game_state_dungeon(pmanager->m_shader_map,m_render_target_map,m_glmodels_map,resources_atlas,width,height);
     IGlGameState * game_state = nullptr;
     game_state = &game_state_dungeon;
 

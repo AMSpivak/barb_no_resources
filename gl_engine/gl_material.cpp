@@ -5,7 +5,9 @@ namespace GameResource
 {
     GlMaterial::GlMaterial( const std::string & albedo,
                             const std::string & normal_height,
-                            const std::string & roughness_metalness
+                            const std::string & roughness_metalness//,
+                            //const std::map<const std::string,GLuint> &shader_map,
+                            //const std::string & shader_deffered
                         )
     {
         auto pmanager = GetResourceManager();
