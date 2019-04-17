@@ -24,7 +24,7 @@ class glModel
 	//GLResourcesManager &m_resources_manager;
 
 public:
-	GLuint shader;
+	GLuint m_shader;
 	
 	int parent_idx;
 	int parent_bone;

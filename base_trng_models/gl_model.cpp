@@ -32,6 +32,12 @@ void glModel::Draw(GLuint shaderProgram, Animation &animation, int now_frame)
 void glModel::Draw(GLuint shaderProgram, Animation &animation, int now_frame,const glm::mat4 &matrix)
 {
 	//glUseProgram(shader);
+	if(m_shader && (shaderProgram != m_shader) )
+	{
+		shaderProgram = m_shader;
+		glUseProgram(shaderProgram);
+	}
+
 	unsigned int modelLoc = glGetUniformLocation(shaderProgram, "model");
 	unsigned int drawLoc = glGetUniformLocation(shaderProgram, "draw");
 	unsigned int boneLoc  = glGetUniformLocation(shaderProgram, "u_BoneMatrices");
@@ -109,21 +115,21 @@ void glModel::LoadAll(std::string FileName)
 	modelfile >> parent_idx >> parent_bone >> frames_name;
     //std::cout<<jal_name<<"\n"<<jub_name<<"\n"<<png_name<<"\n"<<png_utility_name<<"\n"<<"!"<<parent_idx<<"!"<<parent_bone<<"\n"<<frames_name<<"\n";
 	getline(modelfile, tmp_str);
-	
-	if(tmp_str!="")
-	{
 
+	getline(modelfile, tmp_str);
+	if(tmp_str=="")
+	{
+		tmp_str=="deff_1st_pass";
 	}
+	m_shader = GetResourceManager()->GetShader(tmp_str);
 
 	modelfile.close();
-	//name = jal_name;
+
 
 	GLResourcesManager * resources = GetResourceManager();
-	//LoadModel(jal_name);
+
 	jal_mesh = resources->m_mesh_atlas.Assign(jal_name);
-	//diffuse_texture = resources->m_texture_atlas.Assign(png_name);
-	//utility_texture = resources->m_texture_atlas.Assign(png_utility_name);
-	//normal_texture = resources->m_texture_atlas.Assign(png_normal_name);
+
 
 	m_material = std::make_shared<GameResource::GlMaterial>(png_name,png_normal_name,png_utility_name);
 

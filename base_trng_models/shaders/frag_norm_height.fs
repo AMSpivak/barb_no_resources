@@ -49,7 +49,7 @@ float blend( float a1,  float a2)
 void main()
 {
     float tex_mul = 80.0;
-    vec4 notUsed = texture2D(HeightMap, vec2(0.0, 0.0));
+    //vec4 notUsed = texture2D(HeightMap, vec2(0.0, 0.0));
 
     vec2 Coord = TexCoord*tex_mul;
 	//vec4 texColor = vec4(0.9,0.5,0.2,1.0);//texture(AlbedoTexture, TexCoord);
