@@ -12,6 +12,13 @@
 #include "glcamera.h"
 #include <iostream>
 
-
+namespace GlScene
+{
+    struct Scene
+    {
+        GLuint render_shader;
+        glCamera * render_camera;
+    };
+}
 
 #endif
