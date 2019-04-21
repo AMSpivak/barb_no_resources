@@ -13,6 +13,7 @@
 #include "gl_material.h"
 
 #include "gl_resources_manager.h"
+#include "glcamera.h"
 
 class glModel
 {
@@ -70,10 +71,10 @@ public:
 	void LoadModelBones(std::string FileName);
 	void LoadAll(std::string FileName);
 	void Draw();
-	void Draw(GLuint shaderProgram, Animation &animation, int now_frame,const glm::mat4 &matrix);
-	void Draw(GLuint shaderProgram, Animation &animation, int now_frame);
-	void Draw(GLuint shaderProgram, int now_frame);
-	void Draw(GLuint shaderProgram, int now_frame,const glm::mat4 &matrix);
+	void Draw(GLuint &shaderProgram,const GlScene::glCamera &camera, Animation &animation, int now_frame,const glm::mat4 &matrix);
+	void Draw(GLuint &shaderProgram,const GlScene::glCamera &camera, Animation &animation, int now_frame);
+	void Draw(GLuint &shaderProgram,const GlScene::glCamera &camera, int now_frame);
+	void Draw(GLuint &shaderProgram,const GlScene::glCamera &camera, int now_frame,const glm::mat4 &matrix);
 	void AttachAnimation(std::vector <std::shared_ptr<Animation> > &animations, std::string Filename);
 	void SetDrawMatrix(const glm::mat4 &value);
 };

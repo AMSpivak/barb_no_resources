@@ -25,19 +25,25 @@ void glModel::SetDrawMatrix(const glm::mat4 &value)
 {
 	draw_matrix = value;
 }
-void glModel::Draw(GLuint shaderProgram, Animation &animation, int now_frame)
+void glModel::Draw(GLuint &shaderProgram,const GlScene::glCamera &camera, Animation &animation, int now_frame)
 {
-	Draw(shaderProgram, animation,now_frame,draw_matrix);
+	Draw(shaderProgram, camera, animation,now_frame,draw_matrix);
 }
-void glModel::Draw(GLuint shaderProgram, Animation &animation, int now_frame,const glm::mat4 &matrix)
+void glModel::Draw(GLuint &shaderProgram, const GlScene::glCamera &camera, Animation &animation, int now_frame,const glm::mat4 &matrix)
 {
 	//glUseProgram(shader);
-	if(m_shader && (shaderProgram != m_shader) )
+	// if(m_shader && (shaderProgram != m_shader) )
+	// {
+	// 	shaderProgram = m_shader;
+	// 	glUseProgram(shaderProgram);
+	// }
+	//if(m_shader && (shaderProgram != m_shader) )
 	{
 		shaderProgram = m_shader;
 		glUseProgram(shaderProgram);
+		unsigned int cameraLoc  = glGetUniformLocation(shaderProgram, "camera");
+		glUniformMatrix4fv(cameraLoc, 1, GL_FALSE, glm::value_ptr(camera.CameraMatrix()));
 	}
-
 	unsigned int modelLoc = glGetUniformLocation(shaderProgram, "model");
 	unsigned int drawLoc = glGetUniformLocation(shaderProgram, "draw");
 	unsigned int boneLoc  = glGetUniformLocation(shaderProgram, "u_BoneMatrices");
@@ -62,13 +68,13 @@ void glModel::Draw(GLuint shaderProgram, Animation &animation, int now_frame,con
     Draw();
 }
 
-void glModel::Draw(GLuint shaderProgram, int now_frame)
+void glModel::Draw(GLuint &shaderProgram,const GlScene::glCamera &camera, int now_frame)
 {
-	Draw(shaderProgram, *animation ,now_frame);
+	Draw(shaderProgram,camera, *animation ,now_frame);
 }
-void glModel::Draw(GLuint shaderProgram, int now_frame,const glm::mat4 &matrix)
+void glModel::Draw(GLuint &shaderProgram,const GlScene::glCamera &camera, int now_frame,const glm::mat4 &matrix)
 {
-	Draw(shaderProgram, *animation ,now_frame,matrix);
+	Draw(shaderProgram, camera, *animation ,now_frame,matrix);
 }
 void glModel::AttachAnimation(std::vector <std::shared_ptr<Animation> > &animations, std::string Filename)
 {

@@ -16,8 +16,8 @@ class GlCharacter: public IGlModel
 public:
     GlCharacter(CharacterTypes type);
     ~GlCharacter();
-    void Draw(GLuint shader) const;
-    void Draw(GLuint shader,const glm::mat4 &draw_matrix);
+    void Draw(GLuint &shader,const GlScene::glCamera &camera) const override;
+    void Draw(GLuint &shader,const GlScene::glCamera &camera,const glm::mat4 &draw_matrix) override;
     int Process(std::list<std::string> &m_messages);
     void AddModel(const std::string & name);
     void AddSequence(const std::string & name, const AnimationSequence & in_sequence);

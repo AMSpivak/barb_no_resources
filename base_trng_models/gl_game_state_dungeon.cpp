@@ -524,8 +524,12 @@ void GlGameStateDungeon::LoadMap(const std::string &filename,const std::string &
 }
 
 
-void GlGameStateDungeon::DrawDungeon(GLuint current_shader,std::shared_ptr<GlCharacter>hero)
+void GlGameStateDungeon::DrawDungeon(GLuint &current_shader,std::shared_ptr<GlCharacter>hero,const GlScene::glCamera &camera)
 {
+    glUseProgram(current_shader);
+    unsigned int cameraLoc  = glGetUniformLocation(current_shader, "camera");
+    glUniformMatrix4fv(cameraLoc, 1, GL_FALSE, glm::value_ptr(camera.CameraMatrix()));
+
     glm::vec3 tmp_hero_position = hero->GetPosition();
     tmp_hero_position[1] = m_heightmap.GetHeight(tmp_hero_position[0],tmp_hero_position[2]);
     //std::cout<<"Z: "<< tmp_hero_position[1] <<"\n";
@@ -568,8 +572,9 @@ void GlGameStateDungeon::DrawDungeon(GLuint current_shader,std::shared_ptr<GlCha
 
                 
     for(auto object : dungeon_objects)
-    {  
-        object->Draw(current_shader,glm::translate(glm::mat4(), object->GetPosition() - hero_position));
+    {
+
+        object->Draw(current_shader,camera,glm::translate(glm::mat4(), object->GetPosition() - hero_position));
     }
 
     
@@ -709,11 +714,8 @@ void GlGameStateDungeon::PrerenderLight(glLight &Light,std::shared_ptr<GlCharact
 
     glClear( GL_DEPTH_BUFFER_BIT);
     GLuint current_shader = m_shader_map["shadowmap"];
-    glUseProgram(current_shader);
-    unsigned int cameraLoc  = glGetUniformLocation(current_shader, "camera");
-    glUniformMatrix4fv(cameraLoc, 1, GL_FALSE, glm::value_ptr(Light.CameraMatrix()));
 
-    DrawDungeon(current_shader,hero);
+    DrawDungeon(current_shader,hero,Light);
 
     m_heightmap.Draw(m_shader_map["simple_heightmap"],hero_position,Light);
 
@@ -817,7 +819,7 @@ void GlGameStateDungeon::Draw()
 		glUniformMatrix4fv(cameraLoc, 1, GL_FALSE, glm::value_ptr(Camera.CameraMatrix()));
         glPolygonMode( GL_FRONT_AND_BACK, EngineSettings::GetEngineSettings()->IsPbrON()?GL_FILL: GL_LINE );
 
-        DrawDungeon(current_shader,hero);
+        DrawDungeon(current_shader,hero,Camera);
         m_heightmap.Draw(m_shader_map["deff_1st_pass_heght"],hero_position,Camera);
         //m_heightmap.Draw(m_shader_map["deff_heght"],hero_position,Camera.CameraMatrix());
         

@@ -163,10 +163,11 @@ void GlCharacter::AddSequence(const std::string & name, const AnimationSequence 
     sequence.insert( std::pair<std::string, AnimationSequence>(name,in_sequence));
 }
 
-void GlCharacter::Draw(GLuint shader) const
+void GlCharacter::Draw(GLuint &shader,const GlScene::glCamera &camera) const
 {
-    for(auto model : Models) model->Draw(shader,now_frame);
+    for(auto model : Models) model->Draw(shader,camera,now_frame);
 }
+
 void GlCharacter::UseCommand(AnimationCommand command)
 {
     try
@@ -181,19 +182,19 @@ void GlCharacter::UseCommand(AnimationCommand command)
 }
 
 
-void GlCharacter::Draw(GLuint shader,const glm::mat4 &draw_matrix)
+void GlCharacter::Draw(GLuint &shader,const GlScene::glCamera &camera,const glm::mat4 &draw_matrix)
 {
     unsigned short frame = EngineSettings::GetEngineSettings()->GetFrame();
     if(engine_frame != frame)
     {
       
         for(auto model : Models) model->SetDrawMatrix(draw_matrix);
-        Draw(shader);
+        Draw(shader,camera);
         engine_frame = frame;
     }
     else
     {
-        Draw(shader);
+        Draw(shader,camera);
     }
     
 }
