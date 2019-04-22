@@ -570,11 +570,13 @@ void GlGameStateDungeon::DrawDungeon(GLuint &current_shader,std::shared_ptr<GlCh
     //     }
     // }
 
-                
+    GlScene::Scene scene;
+    scene.render_shader =  current_shader;
+    scene.render_camera = &camera;       
     for(auto object : dungeon_objects)
     {
 
-        object->Draw(current_shader,camera,glm::translate(glm::mat4(), object->GetPosition() - hero_position));
+        object->Draw(scene,glm::translate(glm::mat4(), object->GetPosition() - hero_position));
     }
 
     

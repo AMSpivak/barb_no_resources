@@ -17,7 +17,7 @@ namespace GlScene
     struct Scene
     {
         GLuint render_shader;
-        glCamera * render_camera;
+        const glCamera * render_camera;
     };
 }
 

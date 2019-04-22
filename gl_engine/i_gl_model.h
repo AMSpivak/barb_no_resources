@@ -107,8 +107,8 @@ public:
     }
 
     virtual ~IGlModel(){}
-    virtual void Draw(GLuint &shader,const GlScene::glCamera &camera) const = 0;
-    virtual void Draw(GLuint &shader,const GlScene::glCamera &camera,const glm::mat4 &draw_matrix) = 0;
+    virtual void Draw(GlScene::Scene &scene) const = 0;
+    virtual void Draw(GlScene::Scene &scene,const glm::mat4 &draw_matrix) = 0;
     virtual int Process(std::list<std::string> &m_messages) = 0;
     virtual void RefreshMatrixes(float approximation) = 0;
     virtual int AddAxes(std::vector<glm::vec3> &axes) = 0;

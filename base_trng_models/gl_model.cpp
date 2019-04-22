@@ -25,11 +25,11 @@ void glModel::SetDrawMatrix(const glm::mat4 &value)
 {
 	draw_matrix = value;
 }
-void glModel::Draw(GLuint &shaderProgram,const GlScene::glCamera &camera, Animation &animation, int now_frame)
+void glModel::Draw(GlScene::Scene &scene, Animation &animation, int now_frame)
 {
-	Draw(shaderProgram, camera, animation,now_frame,draw_matrix);
+	Draw(scene, animation,now_frame,draw_matrix);
 }
-void glModel::Draw(GLuint &shaderProgram, const GlScene::glCamera &camera, Animation &animation, int now_frame,const glm::mat4 &matrix)
+void glModel::Draw(GlScene::Scene &scene, Animation &animation, int now_frame,const glm::mat4 &matrix)
 {
 	//glUseProgram(shader);
 	// if(m_shader && (shaderProgram != m_shader) )
@@ -37,16 +37,16 @@ void glModel::Draw(GLuint &shaderProgram, const GlScene::glCamera &camera, Anima
 	// 	shaderProgram = m_shader;
 	// 	glUseProgram(shaderProgram);
 	// }
-	if(m_shader && (shaderProgram != m_shader) )
+	if(m_shader && (scene.render_shader != m_shader) )
 	{
-		shaderProgram = m_shader;
-		glUseProgram(shaderProgram);
-		unsigned int cameraLoc  = glGetUniformLocation(shaderProgram, "camera");
-		glUniformMatrix4fv(cameraLoc, 1, GL_FALSE, glm::value_ptr(camera.CameraMatrix()));
+		scene.render_shader = m_shader;
+		glUseProgram(scene.render_shader);
+		unsigned int cameraLoc  = glGetUniformLocation(scene.render_shader, "camera");
+		glUniformMatrix4fv(cameraLoc, 1, GL_FALSE, glm::value_ptr(scene.render_camera->CameraMatrix()));
 	}
-	unsigned int modelLoc = glGetUniformLocation(shaderProgram, "model");
-	unsigned int drawLoc = glGetUniformLocation(shaderProgram, "draw");
-	unsigned int boneLoc  = glGetUniformLocation(shaderProgram, "u_BoneMatrices");
+	unsigned int modelLoc = glGetUniformLocation(scene.render_shader, "model");
+	unsigned int drawLoc = glGetUniformLocation(scene.render_shader, "draw");
+	unsigned int boneLoc  = glGetUniformLocation(scene.render_shader, "u_BoneMatrices");
 
 
 	glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
@@ -55,11 +55,11 @@ void glModel::Draw(GLuint &shaderProgram, const GlScene::glCamera &camera, Anima
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, m_material->m_albedo_texture->m_texture);
 
-	glUniform1i(glGetUniformLocation(shaderProgram, "UtilityTexture"), 1);
+	glUniform1i(glGetUniformLocation(scene.render_shader, "UtilityTexture"), 1);
 	glActiveTexture(GL_TEXTURE1);
 	glBindTexture(GL_TEXTURE_2D, m_material->m_roughness_metalness_texture->m_texture);
     
-	glUniform1i(glGetUniformLocation(shaderProgram, "NormalTexture"), 2);
+	glUniform1i(glGetUniformLocation(scene.render_shader, "NormalTexture"), 2);
 	glActiveTexture(GL_TEXTURE2);
 	glBindTexture(GL_TEXTURE_2D, m_material->m_normal_height_texture->m_texture);
 	const std::vector <Bone> &bones = jub_bones.get()->bones;
@@ -68,13 +68,13 @@ void glModel::Draw(GLuint &shaderProgram, const GlScene::glCamera &camera, Anima
     Draw();
 }
 
-void glModel::Draw(GLuint &shaderProgram,const GlScene::glCamera &camera, int now_frame)
+void glModel::Draw(GlScene::Scene &scene, int now_frame)
 {
-	Draw(shaderProgram,camera, *animation ,now_frame);
+	Draw(scene, *animation ,now_frame);
 }
-void glModel::Draw(GLuint &shaderProgram,const GlScene::glCamera &camera, int now_frame,const glm::mat4 &matrix)
+void glModel::Draw(GlScene::Scene &scene, int now_frame,const glm::mat4 &matrix)
 {
-	Draw(shaderProgram, camera, *animation ,now_frame,matrix);
+	Draw(scene, *animation ,now_frame,matrix);
 }
 void glModel::AttachAnimation(std::vector <std::shared_ptr<Animation> > &animations, std::string Filename)
 {
