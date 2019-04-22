@@ -573,6 +573,7 @@ void GlGameStateDungeon::DrawDungeon(GLuint &current_shader,std::shared_ptr<GlCh
     GlScene::Scene scene;
     scene.render_shader =  current_shader;
     scene.render_camera = &camera;       
+    scene.zero_offset = hero_position;       
     for(auto object : dungeon_objects)
     {
 

@@ -38,6 +38,17 @@ armor 0.0
 sequence damage 2 3 0 0  "" "" ""
 sequence base 0 1 0 0  "" "" ""
 <!object>
+<object>
+name stone_4
+mass_inv 0.0
+radius 1.01
+position 26.0 7.6 27.0
+orientation 0.0 55.0 0.0
+model material/dungeon/stone/stone.mdl
+armor 0.0
+sequence damage 2 3 0 0  "" "" ""
+sequence base 0 1 0 0  "" "" ""
+<!object>
 <starts> 
 base 0.0 0.0 0.0      
 start_top 9.0 0.0 16.0      

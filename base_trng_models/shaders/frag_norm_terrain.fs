@@ -8,15 +8,17 @@ in mat3 TBN;
 layout (location = 0) out vec4 gAlbedoSpec;
 layout (location = 1) out vec4 gNormal;
 layout (location = 2) out vec4 gPosition;
+uniform vec3 zero_offset;
 uniform sampler2D ourTexture;
 uniform sampler2D UtilityTexture;
 uniform sampler2D NormalTexture;
 void main()
 {
     float tex_mul = 0.2;
-    vec2 TexCoord_X = tex_mul * vec2(-v_Position.z,v_Position.y);
-    vec2 TexCoord_Y = tex_mul * vec2(v_Position.x,v_Position.z);
-    vec2 TexCoord_Z = tex_mul * vec2(v_Position.x,v_Position.y);
+    vec3 t_coord = zero_offset + v_Position;
+    vec2 TexCoord_X = tex_mul * vec2(-t_coord.z,t_coord.y);
+    vec2 TexCoord_Y = tex_mul * vec2(t_coord.x,t_coord.z);
+    vec2 TexCoord_Z = tex_mul * vec2(t_coord.x,t_coord.y);
 
 
     vec3 norm_or = normalize(TBN * vec3(0.0,0.0,1.0));
