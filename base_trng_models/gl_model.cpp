@@ -37,7 +37,7 @@ void glModel::Draw(GLuint &shaderProgram, const GlScene::glCamera &camera, Anima
 	// 	shaderProgram = m_shader;
 	// 	glUseProgram(shaderProgram);
 	// }
-	//if(m_shader && (shaderProgram != m_shader) )
+	if(m_shader && (shaderProgram != m_shader) )
 	{
 		shaderProgram = m_shader;
 		glUseProgram(shaderProgram);
