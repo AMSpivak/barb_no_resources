@@ -80,7 +80,7 @@ float ShadowCalculation(vec4 PosLight, vec3 tNormal)
         // shift = texelSize*vec2(-1.0, 0.0);
         // swadowing += 0.1*(texture(shadowMap,vec3(projCoords.xy + shift,currentDepth)));
 
-        return 1.0;//swadowing*swadowing;
+        return swadowing*swadowing;
 
 }
 

@@ -89,6 +89,8 @@ private:
     float camera_height;
     float old_joy_x;
     float old_joy_y;
+
+    float m_daytime_in_hours;
     
     glm::vec3 hero_position;
     glm::vec3 light_position;

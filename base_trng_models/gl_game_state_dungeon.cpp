@@ -431,7 +431,8 @@ void GlGameStateDungeon::SaveObjects(const std::string &filename)
 
 void GlGameStateDungeon::LoadMap(const std::string &filename,const std::string &start_place)
 {  
-    m_messages.clear();                                        
+    m_messages.clear();
+    m_daytime_in_hours =12.0f;                                        
     
     std::ifstream level_file;
 	level_file.open(filename); 
@@ -1220,6 +1221,15 @@ IGlGameState *  GlGameStateDungeon::Process(std::map <int, bool> &inputs, float 
     else
     if((time_now - time)>(1.0/30.0))
     {
+        m_daytime_in_hours += 0.1f;
+        // if(m_daytime_in_hours>24.0f)
+        // {
+        //     m_daytime_in_hours -= 24.0f;
+        // }
+        if(m_daytime_in_hours>19.0f)
+        {
+            m_daytime_in_hours = 5.0f;
+        }
         time = time_now;        
         processed = true;
         MapObjectsEventsInteract();
@@ -1375,6 +1385,13 @@ void GlGameStateDungeon::ProcessInputsCamera(std::map <int, bool> &inputs,float 
         Camera.SetCameraLocation(camera_position,glm::vec3(0.0f, 2.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
         
         glm::vec3 light_orientation = glm::normalize(glm::vec3(-camera_position.x,0.0f,-camera_position.z));
+        
+        constexpr float light_distance = 20.0f;
+        constexpr float light_offset = 2.0f;
+        float sun_angle =  (m_daytime_in_hours - 12.0f)*360.0f/24.0f;
+        light_position = glm::vec3(light_distance * glm::sin(glm::radians(sun_angle)), light_distance * glm::cos(glm::radians(sun_angle)),  light_offset);
+        light_dir_vector = glm::normalize(light_position);
+        
         Light.SetCameraLocation(light_position,glm::vec3(0.0f, 0.0f, 0.0f), light_orientation);
         Light2.SetCameraLocation(light_position+light_orientation*10.0f,light_orientation*10.0f, light_orientation);    
 }
