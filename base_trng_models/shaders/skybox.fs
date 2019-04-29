@@ -29,8 +29,8 @@ void main()
 
 	vec3 sun = vec3(5.9,5.0,6.0);
 	//vec3 sun = vec3(5.9,0.0,0.0);
-	vec3 sun_dir = LightDir;
-	float to_sun = dot(normalize(TexCoords.xyz),normalize(sun_dir));
+	vec3 sun_dir = normalize(LightDir);
+	float to_sun = dot(normalize(TexCoords.xyz),sun_dir);
 	float sun_l = smoothstep(0.95,1.0,to_sun) *0.1;
 	//float sun_l = smoothstep(0.5,1.0,dot(normalize(TexCoords.xyz),normalize(sun_dir)));
 	vec3 atmosphere = vec3(0.9,0.9,1.0);
@@ -40,6 +40,10 @@ void main()
 	//FragColor = vec4(TexCoords.xyz,1.0);
 	//FragColor = vec4(Color.xyz,1.0);
 	//FragColor = vec4(atmosphere*(1.0-l)+sky*l,1.0);
-	FragColor = Noise3d(TexCoords.xyz)*vec3(1.0,1.0,1.0);
+	//FragColor = Noise3d(TexCoords.xyz)*vec3(1.0,1.0,1.0);
+	float star_intens = min(0,-sun_dir.y);
+	float star = smoothstep(0.99994 + 0.008 * star_intens,1.0,Noise3d(normalize(TexCoords.xyz)));
+	FragColor.xyz = star * star*vec3(1.0,1.0,1.0);
+	FragColor.w = 1.0;
 
 }
