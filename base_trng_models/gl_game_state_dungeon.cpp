@@ -884,7 +884,11 @@ void GlGameStateDungeon::Draw()
 
         
         GLuint light_color  = glGetUniformLocation(current_shader, "LightColor");
-        glUniform3fv(light_color, 1, glm::value_ptr(light_color_vector));
+
+        float sun_angle =  (m_daytime_in_hours - 12.0f)*360.0f/24.0f;
+        sun_angle = glm::cos(glm::radians(sun_angle));
+        glm ::vec3 tmp_light_color = glm::vec3(sun_angle,sun_angle*sun_angle,sun_angle*sun_angle*sun_angle)*light_color_vector;
+        glUniform3fv(light_color, 1, glm::value_ptr(tmp_light_color));
 
         //glEnable(GL_STENCIL_TEST);
         //glClear(GL_STENCIL_BUFFER_BIT); 
@@ -901,6 +905,7 @@ void GlGameStateDungeon::Draw()
         glDisable(GL_STENCIL_TEST); 
 
 
+    
         
         DrawLight(glm::vec4(hero_position[0],hero_position[1],hero_position[2],0.0f),glm::vec3(0.98f,0.1f,0.1f),render_target);
         
@@ -1221,7 +1226,7 @@ IGlGameState *  GlGameStateDungeon::Process(std::map <int, bool> &inputs, float 
     else
     if((time_now - time)>(1.0/30.0))
     {
-        m_daytime_in_hours += 0.1f;
+        m_daytime_in_hours += 0.01f;
         // if(m_daytime_in_hours>24.0f)
         // {
         //     m_daytime_in_hours -= 24.0f;
@@ -1388,6 +1393,7 @@ void GlGameStateDungeon::ProcessInputsCamera(std::map <int, bool> &inputs,float 
         
         constexpr float light_distance = 20.0f;
         constexpr float light_offset = 2.0f;
+
         float sun_angle =  (m_daytime_in_hours - 12.0f)*360.0f/24.0f;
         light_position = glm::vec3(light_distance * glm::sin(glm::radians(sun_angle)), light_distance * glm::cos(glm::radians(sun_angle)),  light_offset);
         light_dir_vector = glm::normalize(light_position);

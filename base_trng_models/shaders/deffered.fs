@@ -28,59 +28,44 @@ float ShadowCalculation(vec4 PosLight, vec3 tNormal)
     vec4 fragPosLightSpace = lightSpaceMatrix * PosLight;
     vec3 projCoords = fragPosLightSpace.xyz / fragPosLightSpace.w;
 
-    if(fragPosLightSpace.x<-1.0||fragPosLightSpace.x>1.0||fragPosLightSpace.y<-1.0||fragPosLightSpace.y>1.0)
+    float abs_x =abs(fragPosLightSpace.x);
+    float abs_y =abs(fragPosLightSpace.y);
+
+    if(abs_x>1.0||abs_y>1.0)
         return 1.0;
+
+    abs_x = smoothstep(0.85,1.0,abs_x);
+    abs_y = smoothstep(0.85,1.0,abs_y);
+    abs_x *= abs_y;
         //discard;
 
     float light_fall = dot(tNormal,LightDir);
 
-        //    return 0.0;
-        projCoords = projCoords * 0.5 + 0.5;
-        float currentDepth = projCoords.z;
+    projCoords = projCoords * 0.5 + 0.5;
+    float currentDepth = projCoords.z;
 
-        vec2 texelSize = 1.0 / textureSize(shadowMap, 0);
-        //float bias = max(0.01 * smoothstep(0.65,0.85,(1.0 - max(dot(tNormal,LightDir),0.0))), 0.005);
-        //light_fall = light_fall*light_fall;
-        float sqr_ang = (1.0 - max(light_fall,0.0));
-        sqr_ang =sqr_ang ;//* sqr_ang* sqr_ang;
-        float bias = 0.02 * sqr_ang;
-        //float bias = 0.0005*tan(acos(max(dot(tNormal,LightDir),0.0))); // cosTheta is dot( n,l ), clamped between 0 and 1
-        //float bias = max(0.05 * (1.0 - dot(tNormal,LightDir)), 0.005);
-        currentDepth -= 0.1*bias;
-        vec2 shift = texelSize*vec2(0.0,1.0);
-        //float res = (textureProj(shadowMap,vec4(projCoords,1.0)));
-        float res = texture(shadowMap,vec3(projCoords.xy,currentDepth));
-    //    float res = texture(shadowMap,vec3(projCoords.xy,currentDepth - bias));
-        //float depth = texture(shadowMap,projCoords.xy).r;
-        //float res = smoothstep(-0.1,0.1,depth - currentDepth);
+    vec2 texelSize = 1.0 / textureSize(shadowMap, 0);
+    float sqr_ang = (1.0 - max(light_fall,0.0));
+    //sqr_ang =sqr_ang ;//* sqr_ang* sqr_ang;
+    float bias = 0.02 * sqr_ang;
 
-    //  res = smoothstep(0.0,1.0, (texture(shadowMap,projCoords.xy) - currentDepth + bias));
+    currentDepth -= 0.1*bias;
+    vec2 shift = texelSize*vec2(0.0,1.0);
+    
 
-        // res *=1.0;
-        // float swadowing = 0.0;
-        // shift = texelSize*vec2(-2.0,2.0);
-        // swadowing += 0.1*(texture(shadowMap,vec3(projCoords.xy + shift,currentDepth)));
-        // shift =texelSize*vec2(2.0,-2.0);
-        // swadowing += 0.1*(texture(shadowMap,vec3(projCoords.xy + shift,currentDepth)));
-        // shift =texelSize*vec2(2.0, 2.0);
-        // swadowing += 0.1*(texture(shadowMap,vec3(projCoords.xy + shift,currentDepth)));
-        // shift = texelSize*vec2(-2.0,-2.0);
-        // swadowing += 0.1*(texture(shadowMap,vec3(projCoords.xy + shift,currentDepth)));
+    float Factor = 0.0;
 
-        // if(swadowing + res < 1.35)  return 0.0;
-
-        //float swadowing =0.6 * res;
-        float swadowing = res;
-        // shift = texelSize*vec2(0.0,1.0);
-        // swadowing += 0.1*(texture(shadowMap,vec3(projCoords.xy + shift,currentDepth)));
-        // shift =texelSize*vec2(0.0,-1.0);
-        // swadowing += 0.1*(texture(shadowMap,vec3(projCoords.xy + shift,currentDepth)));
-        // shift =texelSize*vec2(1.0, 0.0);
-        // swadowing += 0.1*(texture(shadowMap,vec3(projCoords.xy + shift,currentDepth)));
-        // shift = texelSize*vec2(-1.0, 0.0);
-        // swadowing += 0.1*(texture(shadowMap,vec3(projCoords.xy + shift,currentDepth)));
-
-        return swadowing*swadowing;
+    for (int y = -1 ; y <= 1 ; y++) {
+        for (int x = -1 ; x <= 1 ; x++) {
+            vec2 Offsets = texelSize*vec2(x, y);
+            vec3 UVC = vec3(projCoords.xy + Offsets, currentDepth);
+            Factor += texture(shadowMap, UVC);
+        }
+    }
+    float swadowing =Factor/9;
+    
+    swadowing = smoothstep(0.0,light_fall, swadowing);
+    return swadowing;//mix(swadowing*swadowing,1.0,abs_x);
 
 }
 
