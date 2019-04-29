@@ -8,6 +8,19 @@ uniform samplerCube skybox;
 uniform vec3 LightDir;
 uniform vec3 LightColor;
 
+//Kosua20
+float Hash(float n)
+{
+	return fract((1.0 +sin(n))*415.92653);
+}
+float Noise3d(vec3 v)
+{
+	float xh = Hash(round(400 * v.x)*37.0);
+	float yh = Hash(round(400 * v.y)*57.0);
+	float zh = Hash(round(400 * v.z)*67.0);
+	return fract(xh + yh + zh);
+}
+
 void main()
 {
 	
@@ -26,6 +39,7 @@ void main()
 	sky = sky *(1.0 -sun_l) + sun_l*sun;
 	//FragColor = vec4(TexCoords.xyz,1.0);
 	//FragColor = vec4(Color.xyz,1.0);
-	FragColor = vec4(atmosphere*(1.0-l)+sky*l,1.0);
+	//FragColor = vec4(atmosphere*(1.0-l)+sky*l,1.0);
+	FragColor = Noise3d(TexCoords.xyz)*vec3(1.0,1.0,1.0);
 
 }
