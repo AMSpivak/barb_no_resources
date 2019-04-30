@@ -49,6 +49,17 @@ armor 0.0
 sequence damage 2 3 0 0  "" "" ""
 sequence base 0 1 0 0  "" "" ""
 <!object>
+<object>
+name candle
+mass_inv 0.0
+radius 0.5
+armor 0.0
+position 23.0 7.5 24.0
+model material/candle/candle.mdl
+light 3.5 2.0 1.5 0.0 0.0 1.5 7.0
+sequence damage 2 3 0 0  "" "" ""
+sequence base 0 1 0 0  "" "" ""
+<!object>
 <starts> 
 base 0.0 0.0 0.0      
 start_top 9.0 0.0 16.0      

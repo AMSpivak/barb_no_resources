@@ -6,6 +6,7 @@ sprite2d shaders/sprite2d.vs shaders/sprite2d.fs
 sprite2dsimple shaders/sprite2dsimple.vs shaders/sprite2dsimple.fs
 skybox shaders/skybox.vs shaders/skybox.fs
 deffered shaders/dbg.vs shaders/deffered.fs
+deffered_global shaders/dbg.vs shaders/deffered_global.fs
 deffered_simple shaders/dbg.vs shaders/deff_simple.fs
 deffered_cheap shaders/dbg.vs shaders/deffered_cheap.fs
 deffered_simple_cheap shaders/dbg.vs shaders/deff_simple_cheap.fs

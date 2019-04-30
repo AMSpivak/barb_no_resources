@@ -859,7 +859,8 @@ void GlGameStateDungeon::Draw()
 
 		glClear(GL_DEPTH_BUFFER_BIT);
 
-        current_shader = m_shader_map[EngineSettings::GetEngineSettings()->IsPbrON()?"deffered":"deffered_cheap"];
+        //current_shader = m_shader_map[EngineSettings::GetEngineSettings()->IsPbrON()?"deffered_global":"deffered_cheap"];
+        current_shader = m_shader_map["deffered_global"];
 
 
 		glUseProgram(current_shader);
@@ -887,8 +888,14 @@ void GlGameStateDungeon::Draw()
 
         float sun_angle =  (m_daytime_in_hours - 12.0f)*360.0f/24.0f;
         sun_angle = glm::cos(glm::radians(sun_angle));
-        glm ::vec3 tmp_light_color = glm::vec3(sun_angle,sun_angle*sun_angle,sun_angle*sun_angle*sun_angle)*light_color_vector;
-        glUniform3fv(light_color, 1, glm::value_ptr(tmp_light_color));
+        sun_angle = glm::clamp(sun_angle + 0.05f,0.0f,1.0f);
+        float r = glm::smoothstep(0.0f,0.3f,sun_angle);
+        float g = glm::smoothstep(0.0f,0.5f,sun_angle);
+        float b = glm::smoothstep(0.0f,0.5f,sun_angle);
+        
+        glm::vec4 tmp_light_color = glm::vec4(light_color_vector[0] *r,light_color_vector[1] *g,light_color_vector[2] *b,r);
+
+        glUniform4fv(light_color, 1, glm::value_ptr(tmp_light_color));
 
         //glEnable(GL_STENCIL_TEST);
         //glClear(GL_STENCIL_BUFFER_BIT); 
@@ -1227,14 +1234,14 @@ IGlGameState *  GlGameStateDungeon::Process(std::map <int, bool> &inputs, float 
     if((time_now - time)>(1.0/30.0))
     {
         m_daytime_in_hours += 0.01f;
-        // if(m_daytime_in_hours>24.0f)
-        // {
-        //     m_daytime_in_hours -= 24.0f;
-        // }
-        if(m_daytime_in_hours>19.0f)
+        if(m_daytime_in_hours>24.0f)
         {
-            m_daytime_in_hours = 5.0f;
+            m_daytime_in_hours -= 24.0f;
         }
+        // if(m_daytime_in_hours>19.0f)
+        // {
+        //     m_daytime_in_hours = 5.0f;
+        // }
         time = time_now;        
         processed = true;
         MapObjectsEventsInteract();
