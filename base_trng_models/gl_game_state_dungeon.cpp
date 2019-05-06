@@ -1233,7 +1233,7 @@ IGlGameState *  GlGameStateDungeon::Process(std::map <int, bool> &inputs, float 
     else
     if((time_now - time)>(1.0/30.0))
     {
-        m_daytime_in_hours += 0.01f;
+        m_daytime_in_hours += 0.001f;
         if(m_daytime_in_hours>24.0f)
         {
             m_daytime_in_hours -= 24.0f;

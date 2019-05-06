@@ -50,6 +50,39 @@ sequence damage 2 3 0 0  "" "" ""
 sequence base 0 1 0 0  "" "" ""
 <!object>
 <object>
+name bigstone_1
+mass_inv 0.0
+radius 2.01
+position -16.0 4.0 23.0
+orientation 0.0 55.0 0.0
+model material/dungeon/bigstone1/stone.mdl
+armor 0.0
+sequence damage 2 3 0 0  "" "" ""
+sequence base 0 1 0 0  "" "" ""
+<!object>
+<object>
+name bigstone_2
+mass_inv 0.0
+radius 2.01
+position -18.0 4.0 26.0
+orientation 0.0 55.0 0.0
+model material/dungeon/bigstone2/stone.mdl
+armor 0.0
+sequence damage 2 3 0 0  "" "" ""
+sequence base 0 1 0 0  "" "" ""
+<!object>
+<object>
+name bigstone_2_1
+mass_inv 0.0
+radius 2.01
+position -3.0 9.0 2.0
+orientation 0.0 55.0 0.0
+model material/dungeon/bigstone2/stone.mdl
+armor 0.0
+sequence damage 2 3 0 0  "" "" ""
+sequence base 0 1 0 0  "" "" ""
+<!object>
+<object>
 name candle
 mass_inv 0.0
 radius 0.5
