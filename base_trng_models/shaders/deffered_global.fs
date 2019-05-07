@@ -13,7 +13,8 @@ layout (location = 1) out vec4 gNormal;
 uniform sampler2D DiffuseMap;
 uniform sampler2D NormalMap;
 uniform sampler2D PositionMap;
-uniform sampler2DShadow shadowMap;
+//uniform sampler2DShadow shadowMap;
+uniform sampler2D shadowMap;
 //uniform sampler2D shadowMap;
 
 uniform mat4 lightSpaceMatrix;
@@ -55,14 +56,21 @@ float ShadowCalculation(vec4 PosLight, vec3 tNormal)
 
     float Factor = 0.0;
 
-    for (int y = -1 ; y <= 1 ; y++) {
-        for (int x = -1 ; x <= 1 ; x++) {
+    float weight[5] = {0.25,0.5,1.0,0.5,0.25};
+
+    float w_summ = 0.0;
+
+    for (int y = -2 ; y <= 2 ; y++) {
+        for (int x = -2 ; x <= 2 ; x++) {
             vec2 Offsets = texelSize*vec2(x, y);
-            vec3 UVC = vec3(projCoords.xy + Offsets, currentDepth);
-            Factor += texture(shadowMap, UVC);
+            vec2 UVC = vec2(projCoords.xy + Offsets);
+            float res = smoothstep(-bias,0.0,texture(shadowMap, UVC).x - currentDepth);
+            float k = weight[2 + x]*weight[2 + y];
+            Factor += k* res;
+            w_summ +=k;
         }
     }
-    float swadowing =Factor/9;
+    float swadowing =Factor/w_summ;
     
     swadowing = smoothstep(0.0,light_fall, swadowing);
     return swadowing;//mix(swadowing*swadowing,1.0,abs_x);
