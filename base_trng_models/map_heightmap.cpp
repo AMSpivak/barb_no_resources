@@ -154,12 +154,12 @@ namespace GameMap
 
     void HeightMap::Draw(GLuint current_shader,const glm::vec3 &position,const GlScene::glCamera &camera)
     {
-        glm::vec3 c = camera.m_position;
-        c[1] = 0.0f;
-        glm::vec3 e1 = camera.GetFrustrumPoint(GlScene::FrustrumPoints::FarRD);
-        e1[1] = 0.0f;        
-        glm::vec3 e2 = camera.GetFrustrumPoint(GlScene::FrustrumPoints::FarLD);
-        e2[1] = 0.0f;
+        // glm::vec3 c = camera.m_position;
+        // c[1] = 0.0f;
+        // glm::vec3 e1 = camera.GetFrustrumPoint(GlScene::FrustrumPoints::FarRD);
+        // e1[1] = 0.0f;        
+        // glm::vec3 e2 = camera.GetFrustrumPoint(GlScene::FrustrumPoints::FarLD);
+        // e2[1] = 0.0f;
         
 
         glUseProgram(current_shader);

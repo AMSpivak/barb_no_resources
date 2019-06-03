@@ -50,13 +50,13 @@ float ShadowCalculation(vec4 PosLight, vec3 tNormal)
     //sqr_ang =sqr_ang ;//* sqr_ang* sqr_ang;
     float bias = 0.02 * sqr_ang;
 
-    currentDepth -= 0.1*bias;
+    currentDepth -= bias;
     vec2 shift = texelSize*vec2(0.0,1.0);
     
 
     float Factor = 0.0;
 
-    float weight[5] = {0.25,0.5,1.0,0.5,0.25};
+    float weight[5] = float[5](0.25,0.5,1.0,0.5,0.25);
 
     float w_summ = 0.0;
 

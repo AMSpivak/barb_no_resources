@@ -1,6 +1,6 @@
 #include "gl_render_target.h"
 
-void glRenderTarget::InitBuffer(unsigned int WIDTH, unsigned int HEIGHT,float buffer_scale)
+void glRenderTargetSimple::InitBuffer(unsigned int WIDTH, unsigned int HEIGHT,float buffer_scale)
 {
 	width = buffer_scale * WIDTH;
 	height = buffer_scale * HEIGHT;
@@ -21,24 +21,46 @@ void glRenderTarget::InitBuffer(unsigned int WIDTH, unsigned int HEIGHT,float bu
 
 }
 
-glRenderTarget::~glRenderTarget()
-{
-	glDeleteTextures(1,&depthMap);
-	glDeleteTextures(1,&NormalMap);
-	glDeleteTextures(1,&AlbedoMap);
-	glDeleteBuffers(1, &StencilBuffer);
-	glDeleteBuffers(1, &FBO);
-	std::cout << "RenderTarget cleared!" << std::endl;
-}
 
-void glRenderTarget::set()
+void glRenderTargetSimple::set()
 {
 	glViewport(0, 0, width, height);
 	glBindFramebuffer(GL_FRAMEBUFFER, FBO);
 }
 
+glRenderTargetSimple::~glRenderTargetSimple()
+{
+	glDeleteTextures(1,&AlbedoMap);
+	glDeleteBuffers(1, &FBO);
+	std::cout << "RenderTargetSimple cleared!" << std::endl;
+}
+
+void glRenderTargetSimple::GenerateBuffers()
+{
+	glGenTextures(1, &AlbedoMap);
+	glBindTexture(GL_TEXTURE_2D, AlbedoMap);
+
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F, width, height, 0, GL_RGBA, GL_FLOAT, NULL);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, AlbedoMap, 0);
+
+	unsigned int attachments[1] = {GL_COLOR_ATTACHMENT0};
+	glDrawBuffers(1, attachments);
+}
+
+glRenderTarget::~glRenderTarget()
+{
+	glDeleteTextures(1,&depthMap);
+	glDeleteTextures(1,&NormalMap);
+	glDeleteBuffers(1, &StencilBuffer);
+	std::cout << "RenderTarget cleared!" << std::endl;
+}
+
 void glRenderTarget::GenerateBuffers()
 {
+	glRenderTargetSimple::GenerateBuffers();
 	glGenRenderbuffers(1, &StencilBuffer);
 		  
 
@@ -58,16 +80,16 @@ void glRenderTarget::GenerateBuffers()
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_COMPARE_MODE, GL_NONE);
-	glGenTextures(1, &AlbedoMap);
-	glBindTexture(GL_TEXTURE_2D, AlbedoMap);
+	// glGenTextures(1, &AlbedoMap);
+	// glBindTexture(GL_TEXTURE_2D, AlbedoMap);
 
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F, width, height, 0, GL_RGBA, GL_FLOAT, NULL);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	// glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F, width, height, 0, GL_RGBA, GL_FLOAT, NULL);
+	// glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	// glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
 	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, depthMap, 0);
 	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_STENCIL_ATTACHMENT, GL_TEXTURE_2D, depthMap, 0);
-    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, AlbedoMap, 0);
+    // glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, AlbedoMap, 0);
 	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT1, GL_TEXTURE_2D, NormalMap, 0);
 
 

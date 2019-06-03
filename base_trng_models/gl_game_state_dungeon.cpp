@@ -1289,7 +1289,8 @@ IGlGameState *  GlGameStateDungeon::Process(std::map <int, bool> &inputs, float 
 AnimationCommand GlGameStateDungeon::ProcessInputs(std::map <int, bool> &inputs)
 {
     auto move_inputs = ProcessInputsMoveControl(inputs);
-    bool moving = (std::abs(move_inputs.first)+std::abs(move_inputs.second)>0.6f);
+    float move_square = move_inputs.first * move_inputs.first + move_inputs.second * move_inputs.second;
+    bool moving = move_square > 0.03f;//(std::abs(move_inputs.first)+std::abs(move_inputs.second)>0.2f);
 
     if(moving)
     {
@@ -1331,13 +1332,18 @@ AnimationCommand GlGameStateDungeon::ProcessInputs(std::map <int, bool> &inputs)
     bool attack = inputs[GLFW_MOUSE_BUTTON_LEFT]|inputs[GLFW_KEY_SPACE];  
     bool fast_move = inputs[GLFW_KEY_LEFT_SHIFT];
 
-    // GLFWgamepadstate state;
-    // if (glfwJoystickIsGamepad(GLFW_JOYSTICK_1)&&glfwGetGamepadState(GLFW_JOYSTICK_1, &state))
-    // {
-    //     attack |=state.buttons[GLFW_GAMEPAD_BUTTON_A];
-    //     action_use |=state.buttons[GLFW_GAMEPAD_BUTTON_X];
-    //     fast_move |=state.buttons[GLFW_GAMEPAD_BUTTON_LEFT_BUMPER];
-    // }
+    GLFWgamepadstate state;
+    if (glfwJoystickIsGamepad(GLFW_JOYSTICK_1)&&glfwGetGamepadState(GLFW_JOYSTICK_1, &state))
+    {
+        attack |=state.buttons[GLFW_GAMEPAD_BUTTON_A];
+        action_use |=state.buttons[GLFW_GAMEPAD_BUTTON_X];
+        fast_move |=state.buttons[GLFW_GAMEPAD_BUTTON_LEFT_BUMPER];
+
+        if(move_square > 0.36f)
+        {
+            fast_move = true;
+        }
+    }
 
     if(attack) 
         return AnimationCommand::kStrike;
@@ -1369,13 +1375,13 @@ void GlGameStateDungeon::ProcessInputsCamera(std::map <int, bool> &inputs,float 
         }
         old_joy_y = joy_y;
         
-        //GLFWgamepadstate state;
-        // if (glfwJoystickIsGamepad(GLFW_JOYSTICK_1)&&glfwGetGamepadState(GLFW_JOYSTICK_1, &state))
-        // {
-        //     joy_diff = state.axes[GLFW_GAMEPAD_AXIS_RIGHT_X];
-        //     //z = state.axes[GLFW_GAMEPAD_AXIS_LEFT_Y];
-        //     // Use as gamepad
-        // }
+        GLFWgamepadstate state;
+        if (glfwJoystickIsGamepad(GLFW_JOYSTICK_1)&&glfwGetGamepadState(GLFW_JOYSTICK_1, &state))
+        {
+            joy_diff = state.axes[GLFW_GAMEPAD_AXIS_RIGHT_X];
+            joy_diff_y = state.axes[GLFW_GAMEPAD_AXIS_RIGHT_Y];
+            // Use as gamepad
+        }
 
         
         const float joy_x_sensetivity = 12.0f;
@@ -1403,7 +1409,7 @@ void GlGameStateDungeon::ProcessInputsCamera(std::map <int, bool> &inputs,float 
         light_dir_vector = glm::normalize(light_position);
         
         Light.SetCameraLocation(light_position,glm::vec3(0.0f, 0.0f, 0.0f), light_orientation);
-        Light2.SetCameraLocation(light_position+light_orientation*10.0f,light_orientation*10.0f, light_orientation);    
+        //Light2.SetCameraLocation(light_position+light_orientation*10.0f,light_orientation*10.0f, light_orientation);    
 }
 
 
@@ -1414,14 +1420,14 @@ std::pair<float,float> GlGameStateDungeon::ProcessInputsMoveControl(std::map <in
     float x = 0;
     float z = 0;
 
-    // GLFWgamepadstate state;
-    // if (glfwJoystickIsGamepad(GLFW_JOYSTICK_1)&&glfwGetGamepadState(GLFW_JOYSTICK_1, &state))
-    // {
-    //     x = -state.axes[GLFW_GAMEPAD_AXIS_LEFT_X];
-    //     z = -state.axes[GLFW_GAMEPAD_AXIS_LEFT_Y];
-    //     // Use as gamepad
-    // }
-    // else
+    GLFWgamepadstate state;
+    if (glfwJoystickIsGamepad(GLFW_JOYSTICK_1)&&glfwGetGamepadState(GLFW_JOYSTICK_1, &state))
+    {
+        x = -state.axes[GLFW_GAMEPAD_AXIS_LEFT_X];
+        z = -state.axes[GLFW_GAMEPAD_AXIS_LEFT_Y];
+        // Use as gamepad
+    }
+    else
     {
         if(inputs[GLFW_KEY_UP])
         {
