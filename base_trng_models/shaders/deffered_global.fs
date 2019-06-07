@@ -13,13 +13,14 @@ layout (location = 1) out vec4 gNormal;
 uniform sampler2D DiffuseMap;
 uniform sampler2D NormalMap;
 uniform sampler2D PositionMap;
-uniform sampler2DShadow shadowMap;
+//uniform sampler2DShadow shadowMap;
+uniform sampler2D shadowMap;
 //uniform sampler2D shadowMap;
 
 uniform mat4 lightSpaceMatrix;
 
 uniform vec3 LightDir;
-uniform vec3 LightColor;
+uniform vec4 LightColor;
 uniform vec3 viewPos;
 
 float ShadowCalculation(vec4 PosLight, vec3 tNormal)
@@ -49,20 +50,27 @@ float ShadowCalculation(vec4 PosLight, vec3 tNormal)
     //sqr_ang =sqr_ang ;//* sqr_ang* sqr_ang;
     float bias = 0.02 * sqr_ang;
 
-    currentDepth -= 0.1*bias;
+    currentDepth -= bias;
     vec2 shift = texelSize*vec2(0.0,1.0);
     
 
     float Factor = 0.0;
 
-    for (int y = -1 ; y <= 1 ; y++) {
-        for (int x = -1 ; x <= 1 ; x++) {
+    float weight[5] = float[5](0.25,0.5,1.0,0.5,0.25);
+
+    float w_summ = 0.0;
+
+    for (int y = -2 ; y <= 2 ; y++) {
+        for (int x = -2 ; x <= 2 ; x++) {
             vec2 Offsets = texelSize*vec2(x, y);
-            vec3 UVC = vec3(projCoords.xy + Offsets, currentDepth);
-            Factor += texture(shadowMap, UVC);
+            vec2 UVC = vec2(projCoords.xy + Offsets);
+            float res = smoothstep(-bias,0.0,texture(shadowMap, UVC).x - currentDepth);
+            float k = weight[2 + x]*weight[2 + y];
+            Factor += k* res;
+            w_summ +=k;
         }
     }
-    float swadowing =Factor/9;
+    float swadowing =Factor/w_summ;
     
     swadowing = smoothstep(0.0,light_fall, swadowing);
     return swadowing;//mix(swadowing*swadowing,1.0,abs_x);
@@ -167,6 +175,7 @@ void main()
 
 
         float shadow_res = (ShadowCalculation(vec4(FragPos.xyz,1.0),texNormal));
+        shadow_res = mix(1.0,shadow_res,LightColor.w );
         //float shadow_norm =1.0 -  smoothstep(0.6,1.0,1.0-norm_l);//norm_l;//smoothstep(shadow_res,1.0,norm_l);
         //shadow_res = 1.0 - (1.0 - shadow_res) ;//* norm_l;
 
@@ -177,7 +186,7 @@ void main()
         vec3 kD = vec3(1.0) - kS;
 
         vec3 diffuse =kD/M_PI;
-        vec3 ShadowLightColor = shadow_res* LightColor;
+        vec3 ShadowLightColor = shadow_res* LightColor.xyz;
         gAlbedoSpec =vec4(ShadowLightColor *norm_l* diffuse,1.0);
         gNormal =vec4(ShadowLightColor * specular,1.0);
 

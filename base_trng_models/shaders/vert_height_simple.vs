@@ -25,6 +25,4 @@ void main()
 		
     gl_Position = camera * vec4(v_Position,1.0);
 
-    TexCoord.x = texCoord.x;
-	TexCoord.y = 1.0 - texCoord.y;
 }

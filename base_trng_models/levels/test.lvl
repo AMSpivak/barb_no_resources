@@ -1,13 +1,13 @@
 <sky>
 skybox skybox/violent.cub
-light_pos 10.0 30.0 -15.0
+light_pos 10.0 8.0 -15.0
 light_color 4.0 4.0 4.0
-camera_lens 50.0 1.0 45.0
+camera_lens 50.0 1.0 105.0
 <!sky>
 <heightmap>
 map desert_map.png
-height_scale 10.0
-map_scale 0.002
+height_scale 30.0
+map_scale 0.001
 map_size 200.0 100.0 200.0
 <!heightmap>
 <models>
@@ -17,33 +17,11 @@ material/tiles/tile_sand.mdl
 30 30 1
 <!dungeon_params>
 <object>
-name portal
-mass_inv 0.0
-radius 0.01
-position 25.0 0.0 25.0
-orientation 0.0 0.0 0.0
-model material/dungeon/circle/circle.mdl
-armor 0.0
-sequence damage 2 3 0 0  "" "" ""
-sequence base 0 1 0 0  "" "" ""
-<!object>
-<object>
 name stone_1
 mass_inv 0.0
 radius 1.01
-position 25.0 3.0 30.0
+position 25.0 8.0 30.0
 orientation 0.0 180.0 0.0
-model material/dungeon/stone/stone.mdl
-armor 0.0
-sequence damage 2 3 0 0  "" "" ""
-sequence base 0 1 0 0  "" "" ""
-<!object>
-<object>
-name stone_2
-mass_inv 0.0
-radius 1.01
-position 30.0 3.0 27.0
-orientation 0.0 -120.0 0.0
 model material/dungeon/stone/stone.mdl
 armor 0.0
 sequence damage 2 3 0 0  "" "" ""
@@ -53,15 +31,70 @@ sequence base 0 1 0 0  "" "" ""
 name stone_3
 mass_inv 0.0
 radius 1.01
-position 20.0 0.0 27.0
+position 20.0 7.6 27.0
 orientation 0.0 120.0 0.0
 model material/dungeon/stone/stone.mdl
 armor 0.0
 sequence damage 2 3 0 0  "" "" ""
 sequence base 0 1 0 0  "" "" ""
 <!object>
+<object>
+name stone_4
+mass_inv 0.0
+radius 1.01
+position 26.0 7.6 27.0
+orientation 0.0 55.0 0.0
+model material/dungeon/stone/stone.mdl
+armor 0.0
+sequence damage 2 3 0 0  "" "" ""
+sequence base 0 1 0 0  "" "" ""
+<!object>
+<object>
+name bigstone_1
+mass_inv 0.0
+radius 2.01
+position -16.0 4.0 23.0
+orientation 0.0 55.0 0.0
+model material/dungeon/bigstone1/stone.mdl
+armor 0.0
+sequence damage 2 3 0 0  "" "" ""
+sequence base 0 1 0 0  "" "" ""
+<!object>
+<object>
+name bigstone_2
+mass_inv 0.0
+radius 2.01
+position -18.0 4.0 26.0
+orientation 0.0 55.0 0.0
+model material/dungeon/bigstone2/stone.mdl
+armor 0.0
+sequence damage 2 3 0 0  "" "" ""
+sequence base 0 1 0 0  "" "" ""
+<!object>
+<object>
+name bigstone_2_1
+mass_inv 0.0
+radius 2.01
+position -3.0 9.0 2.0
+orientation 0.0 55.0 0.0
+model material/dungeon/bigstone2/stone.mdl
+armor 0.0
+sequence damage 2 3 0 0  "" "" ""
+sequence base 0 1 0 0  "" "" ""
+<!object>
+<object>
+name candle
+mass_inv 0.0
+radius 0.5
+armor 0.0
+position 23.0 7.5 24.0
+model material/candle/candle.mdl
+light 3.5 2.0 1.5 0.0 0.0 1.5 7.0
+sequence damage 2 3 0 0  "" "" ""
+sequence base 0 1 0 0  "" "" ""
+<!object>
 <starts> 
-base 25.0 0.0 19.0      
+base 0.0 0.0 0.0      
 start_top 9.0 0.0 16.0      
 start_bottom 9.0 0.0 2.5      
 start_left 2.5 0.0 9.0      

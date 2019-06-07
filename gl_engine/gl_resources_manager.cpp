@@ -5,6 +5,11 @@ void GLResourcesManager::Clean()
 {
 }
 
+GLuint GLResourcesManager::GetShader(const std::string &shader_name)
+{
+    return m_shader_map[shader_name];
+}
+
 static GLResourcesManager * main_resource_manager = nullptr;
 
 GLResourcesManager * GetResourceManager()

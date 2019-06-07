@@ -8,6 +8,9 @@ in mat3 TBN;
 layout (location = 0) out vec4 gAlbedoSpec;
 layout (location = 1) out vec4 gNormal;
 layout (location = 2) out vec4 gPosition;
+
+uniform vec3 zero_offset;
+
 uniform sampler2D ourTexture;
 uniform sampler2D UtilityTexture;
 uniform sampler2D NormalTexture;

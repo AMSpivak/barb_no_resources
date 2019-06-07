@@ -105,6 +105,7 @@ GlGameStateDungeon::GlGameStateDungeon(std::map<const std::string,GLuint> &shade
                                                         ,light_angle (90.0f)
                                                         ,light_radius (20.0f)
                                                         ,camera_distance(12.f)
+                                                        ,camera_height(1.0f)
                                                         ,now_frame(91)
                                                         ,key_angle(0.0f)
                                                         ,camera_rotation_angle(0.0f)
@@ -224,8 +225,8 @@ GlGameStateDungeon::GlGameStateDungeon(std::map<const std::string,GLuint> &shade
         
     });
 
+    Camera.SetCameraLens(45,(float)screen_width / (float)screen_height,0.1f, 400.0f);
     Camera.SetCameraLocation(glm::vec3(12.0f, 8.485f, -12.0f),glm::vec3(0.0f, 2.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
-    Camera.SetCameraLens(45,(float)screen_width / (float)screen_height,0.1f, 100.0f);
 
     time = glfwGetTime();
     LoadMap("levels/test.lvl","base");
@@ -430,7 +431,8 @@ void GlGameStateDungeon::SaveObjects(const std::string &filename)
 
 void GlGameStateDungeon::LoadMap(const std::string &filename,const std::string &start_place)
 {  
-    m_messages.clear();                                        
+    m_messages.clear();
+    m_daytime_in_hours =12.0f;                                        
     
     std::ifstream level_file;
 	level_file.open(filename); 
@@ -523,8 +525,12 @@ void GlGameStateDungeon::LoadMap(const std::string &filename,const std::string &
 }
 
 
-void GlGameStateDungeon::DrawDungeon(GLuint current_shader,std::shared_ptr<GlCharacter>hero)
+void GlGameStateDungeon::DrawDungeon(GLuint &current_shader,std::shared_ptr<GlCharacter>hero,const GlScene::glCamera &camera)
 {
+    glUseProgram(current_shader);
+    unsigned int cameraLoc  = glGetUniformLocation(current_shader, "camera");
+    glUniformMatrix4fv(cameraLoc, 1, GL_FALSE, glm::value_ptr(camera.CameraMatrix()));
+
     glm::vec3 tmp_hero_position = hero->GetPosition();
     tmp_hero_position[1] = m_heightmap.GetHeight(tmp_hero_position[0],tmp_hero_position[2]);
     //std::cout<<"Z: "<< tmp_hero_position[1] <<"\n";
@@ -565,10 +571,14 @@ void GlGameStateDungeon::DrawDungeon(GLuint current_shader,std::shared_ptr<GlCha
     //     }
     // }
 
-                
+    GlScene::Scene scene;
+    scene.render_shader =  current_shader;
+    scene.render_camera = &camera;       
+    scene.zero_offset = hero_position;       
     for(auto object : dungeon_objects)
-    {  
-        object->Draw(current_shader,glm::translate(glm::mat4(), object->GetPosition() - hero_position));
+    {
+
+        object->Draw(scene,glm::translate(glm::mat4(), object->GetPosition() - hero_position));
     }
 
     
@@ -708,13 +718,10 @@ void GlGameStateDungeon::PrerenderLight(glLight &Light,std::shared_ptr<GlCharact
 
     glClear( GL_DEPTH_BUFFER_BIT);
     GLuint current_shader = m_shader_map["shadowmap"];
-    glUseProgram(current_shader);
-    unsigned int cameraLoc  = glGetUniformLocation(current_shader, "camera");
-    glUniformMatrix4fv(cameraLoc, 1, GL_FALSE, glm::value_ptr(Light.CameraMatrix()));
 
-    DrawDungeon(current_shader,hero);
+    DrawDungeon(current_shader,hero,Light);
 
-    m_heightmap.Draw(m_shader_map["simple_heightmap"],hero_position,Light.CameraMatrix());
+    m_heightmap.Draw(m_shader_map["simple_heightmap"],hero_position,Light);
 
     glDisable(GL_POLYGON_OFFSET_FILL);
 }
@@ -728,7 +735,7 @@ void GlGameStateDungeon::DrawGlobalLight(const GLuint light_loc, const glLight &
 		renderQuad();
 }
 
-void GlGameStateDungeon::DrawHeightMap(GLuint current_shader, std::shared_ptr<GlCharacter>hero,const glm::mat4 camera)
+void GlGameStateDungeon::DrawHeightMap(GLuint current_shader, std::shared_ptr<GlCharacter>hero,const GlScene::glCamera &camera)
 {
     m_heightmap.Draw(current_shader,hero_position,camera);
 }
@@ -807,6 +814,7 @@ void GlGameStateDungeon::Draw()
         glDepthFunc(GL_LEQUAL);
 
 
+        //m_heightmap.Draw(m_shader_map["simple_heightmap"],hero_position,Camera.CameraMatrix());
   
 
 		GLuint current_shader = m_shader_map["deff_1st_pass"];
@@ -815,8 +823,9 @@ void GlGameStateDungeon::Draw()
 		glUniformMatrix4fv(cameraLoc, 1, GL_FALSE, glm::value_ptr(Camera.CameraMatrix()));
         glPolygonMode( GL_FRONT_AND_BACK, EngineSettings::GetEngineSettings()->IsPbrON()?GL_FILL: GL_LINE );
 
-        DrawDungeon(current_shader,hero);
-        m_heightmap.Draw(m_shader_map["deff_1st_pass_heght"],hero_position,Camera.CameraMatrix());
+        DrawDungeon(current_shader,hero,Camera);
+        m_heightmap.Draw(m_shader_map["deff_1st_pass_heght"],hero_position,Camera);
+        //m_heightmap.Draw(m_shader_map["deff_heght"],hero_position,Camera.CameraMatrix());
         
         glPolygonMode( GL_FRONT_AND_BACK,GL_FILL );
         
@@ -850,7 +859,8 @@ void GlGameStateDungeon::Draw()
 
 		glClear(GL_DEPTH_BUFFER_BIT);
 
-        current_shader = m_shader_map[EngineSettings::GetEngineSettings()->IsPbrON()?"deffered":"deffered_cheap"];
+        //current_shader = m_shader_map[EngineSettings::GetEngineSettings()->IsPbrON()?"deffered_global":"deffered_cheap"];
+        current_shader = m_shader_map["deffered_global"];
 
 
 		glUseProgram(current_shader);
@@ -875,7 +885,17 @@ void GlGameStateDungeon::Draw()
 
         
         GLuint light_color  = glGetUniformLocation(current_shader, "LightColor");
-        glUniform3fv(light_color, 1, glm::value_ptr(light_color_vector));
+
+        float sun_angle =  (m_daytime_in_hours - 12.0f)*360.0f/24.0f;
+        sun_angle = glm::cos(glm::radians(sun_angle));
+        sun_angle = glm::clamp(sun_angle + 0.05f,0.0f,1.0f);
+        float r = glm::smoothstep(0.0f,0.3f,sun_angle);
+        float g = glm::smoothstep(0.0f,0.5f,sun_angle);
+        float b = glm::smoothstep(0.0f,0.5f,sun_angle);
+        
+        glm::vec4 tmp_light_color = glm::vec4(light_color_vector[0] *r,light_color_vector[1] *g,light_color_vector[2] *b,r);
+
+        glUniform4fv(light_color, 1, glm::value_ptr(tmp_light_color));
 
         //glEnable(GL_STENCIL_TEST);
         //glClear(GL_STENCIL_BUFFER_BIT); 
@@ -892,6 +912,7 @@ void GlGameStateDungeon::Draw()
         glDisable(GL_STENCIL_TEST); 
 
 
+    
         
         DrawLight(glm::vec4(hero_position[0],hero_position[1],hero_position[2],0.0f),glm::vec3(0.98f,0.1f,0.1f),render_target);
         
@@ -915,6 +936,14 @@ void GlGameStateDungeon::Draw()
             cameraLoc  = glGetUniformLocation(current_shader, "camera");
 		    //glUniformMatrix4fv(cameraLoc, 1, GL_FALSE, glm::value_ptr(Camera.CameraMatrix()));
 		    glUniformMatrix4fv(cameraLoc, 1, GL_FALSE, glm::value_ptr(model_m));
+
+            light_dir  = glGetUniformLocation(current_shader, "LightDir");
+		    glUniform3fv(light_dir, 1, glm::value_ptr(light_dir_vector));
+
+       
+            //GLuint light_color  = glGetUniformLocation(current_shader, "LightColor");
+            //glUniform3fv(light_color, 1, glm::value_ptr(light_color_vector));
+
             glActiveTexture(GL_TEXTURE0);
             glBindTexture(GL_TEXTURE_CUBE_MAP, skybox.get()->m_texture);
             renderQuad();
@@ -1204,6 +1233,12 @@ IGlGameState *  GlGameStateDungeon::Process(std::map <int, bool> &inputs, float 
     else
     if((time_now - time)>(1.0/30.0))
     {
+        m_daytime_in_hours += 0.00055f;
+        if(m_daytime_in_hours>24.0f)
+        {
+            m_daytime_in_hours -= 24.0f;
+        }
+
         time = time_now;        
         processed = true;
         MapObjectsEventsInteract();
@@ -1254,7 +1289,8 @@ IGlGameState *  GlGameStateDungeon::Process(std::map <int, bool> &inputs, float 
 AnimationCommand GlGameStateDungeon::ProcessInputs(std::map <int, bool> &inputs)
 {
     auto move_inputs = ProcessInputsMoveControl(inputs);
-    bool moving = (std::abs(move_inputs.first)+std::abs(move_inputs.second)>0.6f);
+    float move_square = move_inputs.first * move_inputs.first + move_inputs.second * move_inputs.second;
+    bool moving = move_square > 0.03f;//(std::abs(move_inputs.first)+std::abs(move_inputs.second)>0.2f);
 
     if(moving)
     {
@@ -1302,6 +1338,11 @@ AnimationCommand GlGameStateDungeon::ProcessInputs(std::map <int, bool> &inputs)
         attack |=state.buttons[GLFW_GAMEPAD_BUTTON_A];
         action_use |=state.buttons[GLFW_GAMEPAD_BUTTON_X];
         fast_move |=state.buttons[GLFW_GAMEPAD_BUTTON_LEFT_BUMPER];
+
+        if(move_square > 0.36f)
+        {
+            fast_move = true;
+        }
     }
 
     if(attack) 
@@ -1320,46 +1361,55 @@ void GlGameStateDungeon::ProcessInputsCamera(std::map <int, bool> &inputs,float 
     
         camera_distance = glm::clamp(camera_distance,6.0f,14.0f);
 
-
-
         float joy_diff = joy_x - old_joy_x;
         if(std::abs(joy_diff) <  0.01f)
         {
             joy_diff = 0.0f;
         }
-        
-        
+        old_joy_x = joy_x;
 
+        float joy_diff_y = joy_y - old_joy_y;
+        if(std::abs(joy_diff_y) <  0.01f)
+        {
+            joy_diff_y = 0.0f;
+        }
+        old_joy_y = joy_y;
+        
         GLFWgamepadstate state;
-
         if (glfwJoystickIsGamepad(GLFW_JOYSTICK_1)&&glfwGetGamepadState(GLFW_JOYSTICK_1, &state))
         {
             joy_diff = state.axes[GLFW_GAMEPAD_AXIS_RIGHT_X];
-            //z = state.axes[GLFW_GAMEPAD_AXIS_LEFT_Y];
+            joy_diff_y = state.axes[GLFW_GAMEPAD_AXIS_RIGHT_Y];
             // Use as gamepad
         }
 
-        old_joy_x = joy_x;
-        camera_rotation_angle -= joy_diff * 12.0f;
+        
+        const float joy_x_sensetivity = 12.0f;
+        camera_rotation_angle = FitRing(camera_rotation_angle - joy_diff * joy_x_sensetivity,0.0f,360.0f);
+        const float joy_y_sensetivity = 0.07f;
+        camera_height = glm::clamp(camera_height + joy_y_sensetivity * joy_diff_y,-1.0f,1.0f);
 
-
-        if(camera_rotation_angle > 360.0f)
+        glm::vec3 camera_position = glm::vec3(-camera_distance * glm::cos(glm::radians(camera_rotation_angle)), camera_distance * camera_height,  camera_distance * glm::sin(glm::radians(camera_rotation_angle)));
+        float height = 1.0f + m_heightmap.GetHeight(hero_position[0] + camera_position[0],hero_position[2]+camera_position[2]) - hero_position[1];
+        if(camera_position[1]<height)
         {
-            camera_rotation_angle -=  360.0f;
-        }
-        if(camera_rotation_angle < 0.0f)
-        {
-            camera_rotation_angle +=  360.0f;
+            camera_position[1] = height;
         }
 
-        glm::vec3 camera_position = glm::vec3(-camera_distance * glm::cos(glm::radians(camera_rotation_angle)), camera_distance,  camera_distance * glm::sin(glm::radians(camera_rotation_angle)));
+
         Camera.SetCameraLocation(camera_position,glm::vec3(0.0f, 2.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
         
         glm::vec3 light_orientation = glm::normalize(glm::vec3(-camera_position.x,0.0f,-camera_position.z));
-        Light.SetCameraLocation(light_position,glm::vec3(0.0f, 0.0f, 0.0f), light_orientation);
-        Light2.SetCameraLocation(light_position+light_orientation*10.0f,light_orientation*10.0f, light_orientation);
-
         
+        constexpr float light_distance = 20.0f;
+        constexpr float light_offset = 2.0f;
+
+        float sun_angle =  (m_daytime_in_hours - 12.0f)*360.0f/24.0f;
+        light_position = glm::vec3(light_distance * glm::sin(glm::radians(sun_angle)), light_distance * glm::cos(glm::radians(sun_angle)),  light_offset);
+        light_dir_vector = glm::normalize(light_position);
+        
+        Light.SetCameraLocation(light_position,glm::vec3(0.0f, 0.0f, 0.0f), light_orientation);
+        //Light2.SetCameraLocation(light_position+light_orientation*10.0f,light_orientation*10.0f, light_orientation);    
 }
 
 

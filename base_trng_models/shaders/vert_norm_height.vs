@@ -1,12 +1,11 @@
 #version 330 core
 layout (location = 0) in vec3 a_Position;
 
-
-out vec3 v_Position;
 out vec3 ourColor;
-//out vec3 ourColorView;
+out vec3 v_materials;
+out vec3 v_Position;
 out vec2 TexCoord;
-//out mat3 TBN;
+out mat3 TBN;
 //
 
 
@@ -105,7 +104,9 @@ void main()
 	vec2 textureSize = textureSize(HeightMap, 0);
 	vec2 texelSize = 1.0 / textureSize;
 	vec4 texColor = texture(HeightMap , texCoord);//BiCubic(HeightMap, texCoord,textureSize,texelSize);
-	float multiplier = texelSize.x;//map_position.z * offset_position.w;
+	v_materials = vec3(texColor.y,texColor.z,texColor.w);
+	//v_materials = normalize(vec3(texColor.y,0.3,texColor.w));
+	float multiplier = map_position.z;//texelSize.x;//map_position.z * offset_position.w;
 	float height_x1 = texture(HeightMap , texCoord + vec2(1.0,0.0)* multiplier).x;
 	float height_x2 = texture(HeightMap , texCoord + vec2(-1.0,0.0)* multiplier).x;
 	float height_y1 = texture(HeightMap , texCoord + vec2(0.0,1.0)* multiplier).x;
@@ -115,26 +116,21 @@ void main()
 	//float gz = map_position.w *(height_y2 - height_y1);
 	//float gx = map_position.w *(height_x2 - height_x1);
 
-	vec3 nz = vec3(0.0,map_position.w *(height_y1 - height_y2),1.0);
-	vec3 nx = vec3(1.0,map_position.w *(height_x1 - height_x2),0.0);
+	vec3 nz = vec3(0.0,(height_y1 - height_y2)* map_position.w,2.0);
+	vec3 nx = vec3(2.0,(height_x1 - height_x2)* map_position.w,0.0);
 	ourColor = normalize(cross(nz,nx));
 
 	//position.y += 0.1f;//height * map_position.w;
 	position.y += height * map_position.w;
     v_Position = position.xyz;
 
-	//vec3 X = vec3(1.0 * offset_position.w, (height_x2 - height_x1)* map_position.w, 0.0);
-	//vec3 Z = vec3(0.0, -(height_y2 - height_y1)* map_position.w, 1.0 * offset_position.w);
-	//vec3 Normal = normalize(cross(Z, X));
-	//vec3 Normal = vec3(texColor.x,texColor.x,texColor.x);
 
-    //ourColor = vec3( vec4(Normal, 0.0));
 
-        //vec3 tangent = vec3(vec4(a_Tangent.xyz, 0.0));
-		//tangent = normalize(tangent - dot(tangent, ourColor) * ourColor);
-		//vec3 B = cross(ourColor, tangent);
+    vec3 tangent = vec3(vec4(0.0,0.0,-1.0, 0.0));
+	tangent = normalize(tangent - dot(tangent, ourColor) * ourColor);
+	vec3 B = cross(ourColor, tangent);
 
-		//TBN = mat3(tangent, B, ourColor);
+	TBN = mat3(tangent, B, ourColor);
 		
     gl_Position = camera * vec4(v_Position,1.0);
 

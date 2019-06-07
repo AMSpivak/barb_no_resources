@@ -25,44 +25,58 @@ void glModel::SetDrawMatrix(const glm::mat4 &value)
 {
 	draw_matrix = value;
 }
-void glModel::Draw(GLuint shaderProgram, Animation &animation, int now_frame)
+void glModel::Draw(GlScene::Scene &scene, Animation &animation, int now_frame)
 {
-	Draw(shaderProgram, animation,now_frame,draw_matrix);
+	Draw(scene, animation,now_frame,draw_matrix);
 }
-void glModel::Draw(GLuint shaderProgram, Animation &animation, int now_frame,const glm::mat4 &matrix)
+void glModel::Draw(GlScene::Scene &scene, Animation &animation, int now_frame,const glm::mat4 &matrix)
 {
 	//glUseProgram(shader);
-	unsigned int modelLoc = glGetUniformLocation(shaderProgram, "model");
-	unsigned int drawLoc = glGetUniformLocation(shaderProgram, "draw");
-	unsigned int boneLoc  = glGetUniformLocation(shaderProgram, "u_BoneMatrices");
+	// if(m_shader && (shaderProgram != m_shader) )
+	// {
+	// 	shaderProgram = m_shader;
+	// 	glUseProgram(shaderProgram);
+	// }
+	if(m_shader && (scene.render_shader != m_shader) )
+	{
+		scene.render_shader = m_shader;
+		glUseProgram(scene.render_shader);
+		unsigned int cameraLoc  = glGetUniformLocation(scene.render_shader, "camera");
+		glUniformMatrix4fv(cameraLoc, 1, GL_FALSE, glm::value_ptr(scene.render_camera->CameraMatrix()));
+		unsigned int zero_offset = glGetUniformLocation(scene.render_shader, "zero_offset");
+		glUniform3fv(zero_offset, 1, glm::value_ptr(scene.zero_offset));
+	}
+	unsigned int modelLoc = glGetUniformLocation(scene.render_shader, "model");
+	unsigned int drawLoc = glGetUniformLocation(scene.render_shader, "draw");
+	unsigned int boneLoc  = glGetUniformLocation(scene.render_shader, "u_BoneMatrices");
 
 
 	glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
 	glUniformMatrix4fv(drawLoc, 1, GL_FALSE, glm::value_ptr(matrix));
 
 	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D, diffuse_texture.get()->m_texture);
+	glBindTexture(GL_TEXTURE_2D, m_material->m_albedo_texture->m_texture);
 
-	glUniform1i(glGetUniformLocation(shaderProgram, "UtilityTexture"), 1);
+	glUniform1i(glGetUniformLocation(scene.render_shader, "UtilityTexture"), 1);
 	glActiveTexture(GL_TEXTURE1);
-	glBindTexture(GL_TEXTURE_2D, utility_texture.get()->m_texture);
+	glBindTexture(GL_TEXTURE_2D, m_material->m_roughness_metalness_texture->m_texture);
     
-	glUniform1i(glGetUniformLocation(shaderProgram, "NormalTexture"), 2);
+	glUniform1i(glGetUniformLocation(scene.render_shader, "NormalTexture"), 2);
 	glActiveTexture(GL_TEXTURE2);
-	glBindTexture(GL_TEXTURE_2D, normal_texture.get()->m_texture);
+	glBindTexture(GL_TEXTURE_2D, m_material->m_normal_height_texture->m_texture);
 	const std::vector <Bone> &bones = jub_bones.get()->bones;
 	glUniformMatrix4fv(boneLoc, bones.size(), GL_FALSE, animation.GetDrawValues(now_frame,bones));
 	//glUniformMatrix4fv(boneLoc, jub_bones.get()->bones.size(), GL_FALSE, glm::value_ptr(animation.frames[now_frame].bones[0]));
     Draw();
 }
 
-void glModel::Draw(GLuint shaderProgram, int now_frame)
+void glModel::Draw(GlScene::Scene &scene, int now_frame)
 {
-	Draw(shaderProgram, *animation ,now_frame);
+	Draw(scene, *animation ,now_frame);
 }
-void glModel::Draw(GLuint shaderProgram, int now_frame,const glm::mat4 &matrix)
+void glModel::Draw(GlScene::Scene &scene, int now_frame,const glm::mat4 &matrix)
 {
-	Draw(shaderProgram, *animation ,now_frame,matrix);
+	Draw(scene, *animation ,now_frame,matrix);
 }
 void glModel::AttachAnimation(std::vector <std::shared_ptr<Animation> > &animations, std::string Filename)
 {
@@ -106,18 +120,27 @@ void glModel::LoadAll(std::string FileName)
 	getline(modelfile, tmp_str);
     std::string png_normal_name = /*path + */tmp_str;
 	//std::cout<<"\n===\n";
-	modelfile >> parent_idx >> parent_bone>>frames_name;
+	modelfile >> parent_idx >> parent_bone >> frames_name;
     //std::cout<<jal_name<<"\n"<<jub_name<<"\n"<<png_name<<"\n"<<png_utility_name<<"\n"<<"!"<<parent_idx<<"!"<<parent_bone<<"\n"<<frames_name<<"\n";
+	getline(modelfile, tmp_str);
+
+	getline(modelfile, tmp_str);
+	if(tmp_str=="")
+	{
+		tmp_str=="deff_1st_pass";
+	}
+	m_shader = GetResourceManager()->GetShader(tmp_str);
 
 	modelfile.close();
-	//name = jal_name;
+
 
 	GLResourcesManager * resources = GetResourceManager();
-	//LoadModel(jal_name);
+
 	jal_mesh = resources->m_mesh_atlas.Assign(jal_name);
-	diffuse_texture = resources->m_texture_atlas.Assign(png_name);
-	utility_texture = resources->m_texture_atlas.Assign(png_utility_name);
-	normal_texture = resources->m_texture_atlas.Assign(png_normal_name);
+
+
+	m_material = std::make_shared<GameResource::GlMaterial>(png_name,png_normal_name,png_utility_name);
+
 	jub_bones = resources->m_bones_atlas.Assign(jub_name);
 	if(frames_name.compare("")) animation = resources->m_animation_atlas.Assign(frames_name);
 

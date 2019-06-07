@@ -74,11 +74,7 @@ void Fit_Tile_Matrix(glm::mat4 &matrix,float x,float y,float width,float height)
 
 }
 
-/*std::istream& operator>> ( std::istream& is, glm::vec3 & fill_vector)
-{
-	is>>fill_vector[0] >>fill_vector[1]>>fill_vector[2];
-	return is;
-}*/
+
 
 
 void renderSprite(GLuint current_shader,
@@ -237,7 +233,7 @@ void renderSpriteDepth(GLuint current_shader, GLuint depthmap, float sprite_dept
 void renderBillBoardDepth(GLuint current_shader, GLuint depthmap,const GLuint * texture,
 						 float width, float height,const glm::vec4 & corrector,
 						 const glm::vec3 & position, const glm::vec3 & offset, 
-						 glCamera & camera)
+						 GlScene::glCamera & camera)
 {
 	glEnable(GL_BLEND);
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
@@ -466,7 +462,7 @@ GLuint LoadShader(std::string FileName,GLenum shaderType)
     {
         glGetShaderInfoLog(Shader, 512, NULL, infoLog);
         std::cout << "ERROR::SHADER::"
-		<<(shaderType == GL_VERTEX_SHADER ? "VERTEX":"FRAGMENT")<<"::COMPILATION_FAILED\n"
+		<<"COMPILATION_FAILED\n"
 		<< infoLog << std::endl;
 		return -1;
     }
@@ -483,6 +479,20 @@ GLuint LoadshaderProgram(std::string FileNameVS,std::string FileNameFS)
     // Link shaders
     GLuint shaderProgram = LinkShaderProgram(Shaders,2);
     EmptyShaders(Shaders,2);
+	return shaderProgram;
+}
+
+GLuint LoadshaderProgram(std::string FileNameVS,std::string FileNameFS,std::string FileNameGS)
+{
+	GLuint Shaders[3];
+    /*GLuint vertexShader*/
+	Shaders[0] = LoadShader(FileNameVS,GL_VERTEX_SHADER);
+    /*GLuint fragmentShader*/
+	Shaders[1] =  LoadShader(FileNameGS,GL_GEOMETRY_SHADER );//glCreateShader(GL_FRAGMENT_SHADER);
+	Shaders[2] =  LoadShader(FileNameFS,GL_FRAGMENT_SHADER);//glCreateShader(GL_FRAGMENT_SHADER);
+    // Link shaders
+    GLuint shaderProgram = LinkShaderProgram(Shaders,3);
+    EmptyShaders(Shaders,3);
 	return shaderProgram;
 }
 
@@ -930,8 +940,12 @@ const glm::mat4 SlerpMatrix(const glm::mat4 & m1,const glm::mat4 & m2,float appr
 	return return_matrix;
 }
 
+
+
+
 std::istream& operator>> ( std::istream& is, glm::vec3 & glm_vector)
 {
+	
 	//float tmp[3];
 	for(size_t i =0; i<3; i++)
 	{
@@ -939,6 +953,9 @@ std::istream& operator>> ( std::istream& is, glm::vec3 & glm_vector)
 	}
 	return is;
 }
+
+
+//void(std::ostream& os,)
 
 std::ostream& operator << ( std::ostream& os, const glm::vec3 & glm_vector)
 {
@@ -952,4 +969,25 @@ std::ostream& operator << ( std::ostream& os, const glm::vec3 & glm_vector)
 	return os;
 }
 
+std::ostream& operator << ( std::ostream& os, const glm::vec2 & glm_vector)
+{
+	const size_t max = 2;
+	for(size_t i =0; i<max; i++)
+	{
+		os<<glm_vector[i];
+		if(i!=max-1) os<<" ";
+	}
+	return os;
+}
 
+
+std::ostream& operator << ( std::ostream& os, const glm::vec4 & glm_vector)
+{
+	const size_t max = 2;
+	for(size_t i =0; i<max; i++)
+	{
+		os<<glm_vector[i];
+		if(i!=max-1) os<<" ";
+	}
+	return os;
+}

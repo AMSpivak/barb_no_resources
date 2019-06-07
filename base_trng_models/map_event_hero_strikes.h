@@ -29,7 +29,7 @@ public:
 
     InteractionResult Interact(GlCharacter &model,std::string &return_value);
     EventProcessResult Process();
-    void Show(const glm::vec3 & offset, glCamera & camera);
+    void Show(const glm::vec3 & offset, GlScene::glCamera & camera);
     int AddAxes(std::vector<glm::vec3> &axes);
     void AddEdge(const std::pair<glm::vec3, glm::vec3> edge);
     std::pair<float, float> ProjectOnAxe(const glm::vec3 & axe);

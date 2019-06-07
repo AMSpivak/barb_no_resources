@@ -13,13 +13,39 @@ template <typename T1,typename T2>
 std::ostream& operator << ( std::ostream& os, const std::pair<T1,T2> & value)
 {
     os<<value.first<<" "<<value.second;
-
 	return os;
 }
+
 template <typename T1,typename T2>
 std::istream& operator>> ( std::istream& is, std::pair<T1,T2> & value)
 {
 	is>>value.first>>value.second;
+}
+
+template <class T>
+//T FitRing(T value, T min, T max)
+T FitRing(const T &value,const T &min, const T &max)
+{
+	T ret_value = value;
+	if(ret_value > max)
+	{
+		ret_value -=  max;
+	}
+	if(ret_value < min)
+	{
+		ret_value +=  max;
+	}
+	return ret_value;
+}
+
+inline glm::vec2 VectorToPlane(glm::vec3 value)
+{
+	return glm::vec2(value[0],-value[2]);
+}
+
+inline glm::vec3 VectorFromPlane(glm::vec2 vec_value, float value)
+{
+	return glm::vec3(vec_value[0],value,-vec_value[1]);
 }
 
 struct Bone {
@@ -61,21 +87,28 @@ private:
 };
 
 
-std::istream& operator>> ( std::istream& is, glm::mat4& mat);
 
 std::istream& operator>> ( std::istream& is, Bone& bone) ;
-std::istream& operator>> ( std::istream& is, glm::vec3 & fill_vector) ;
 
-std::istream& operator>> ( std::istream& is, glm::vec3 & glm_vector);
+
+
+std::istream& operator >> ( std::istream& is, glm::vec3 & glm_vector);
 std::ostream& operator << ( std::ostream& os, const glm::vec3 & glm_vector);
+
+std::istream& operator >> ( std::istream& is, glm::vec2 & glm_vector);
+std::ostream& operator << ( std::ostream& os, const glm::vec2 & glm_vector);
+
+std::istream& operator>> ( std::istream& is, glm::mat4& mat);
 std::ostream& operator << ( std::ostream& os, const glm::mat4 & mat);
 
+std::ostream& operator << ( std::ostream& os, const glm::vec2 & glm_vector);
 
 std::string readShaderFile(std::string FileName);
 
 GLuint LoadShader(std::string FileName,GLenum shaderType);
 GLuint LinkShaderProgram(GLuint * shaders, int shaders_count);
 GLuint LoadshaderProgram(std::string FileNameVS,std::string FileNameFS);
+GLuint LoadshaderProgram(std::string FileNameVS,std::string FileNameFS,std::string FileNameGS);
 
 void EmptyShaders(GLuint * shaders, int shaders_count);
 
@@ -105,7 +138,7 @@ void renderSpriteDepth(GLuint current_shader, GLuint depthmap, float sprite_dept
 void renderBillBoardDepth(GLuint current_shader, GLuint depthmap,const GLuint * texture,
 						 float width, float height,const glm::vec4 & corrector,
 						 const glm::vec3 & position, const glm::vec3 & offset, 
-						 glCamera & camera);
+						 GlScene::glCamera & camera);
 
 
 void RenderHeightMap();

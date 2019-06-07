@@ -12,6 +12,14 @@
 #include "glcamera.h"
 #include <iostream>
 
-
+namespace GlScene
+{
+    struct Scene
+    {
+        GLuint render_shader;
+        glm::vec3 zero_offset;
+        const glCamera * render_camera;
+    };
+}
 
 #endif

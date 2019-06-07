@@ -8,6 +8,18 @@ layout (location = 0) out vec4 gAlbedoSpec;
 layout (location = 1) out vec4 gNormal;
 layout (location = 2) out vec4 gPosition;
 
+uniform sampler2D Albedo_0;
+uniform sampler2D Normal_0;
+uniform sampler2D Utility_0;
+
+uniform sampler2D Albedo_1;
+uniform sampler2D Normal_1;
+uniform sampler2D Utility_1;
+
+uniform sampler2D Albedo_2;
+uniform sampler2D Normal_2;
+uniform sampler2D Utility_2;
+
 void main()
 {
 

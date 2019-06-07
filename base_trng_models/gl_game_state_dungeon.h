@@ -81,12 +81,16 @@ private:
     float light_angle;
     float light_radius;
     float camera_distance;
-    glCamera Camera;
+    GlScene::glCamera Camera;
     int now_frame;
     double time;
     float key_angle;
     float camera_rotation_angle;
+    float camera_height;
     float old_joy_x;
+    float old_joy_y;
+
+    float m_daytime_in_hours;
     
     glm::vec3 hero_position;
     glm::vec3 light_position;
@@ -116,8 +120,8 @@ private:
     void PrerenderLight(glLight &Light,std::shared_ptr<GlCharacter>hero);
     void DrawGlobalLight(const GLuint light_loc, const glLight &Light);
 
-    void DrawDungeon(GLuint current_shader, std::shared_ptr<GlCharacter>hero);
-    void DrawHeightMap(GLuint current_shader, std::shared_ptr<GlCharacter>hero,const glm::mat4 camera);
+    void DrawDungeon(GLuint &current_shader,  std::shared_ptr<GlCharacter>hero, const GlScene::glCamera &camera);
+    void DrawHeightMap(GLuint current_shader, std::shared_ptr<GlCharacter>hero,const GlScene::glCamera &camera);
     
     void DrawLight(const glm::vec4 &light_pos_vector,const glm::vec3 &light_color_vector,glRenderTargetDeffered &render_target );
     void Draw2D(GLuint depth_map);
