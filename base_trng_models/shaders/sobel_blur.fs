@@ -39,9 +39,8 @@ void main()
 	float blur = 1.0 - clamp(d_depth,0.0,1.0);
 	//blur = min(blur1,blur);
 
-	float edge_blur = 0.5 + 0.5*smoothstep(0.0,0.4, blur*blur);
+	float edge_blur = 0.6 + 0.4*smoothstep(0.0,0.4, blur*blur);
 
-	FragColor = vec4((edge_blur*Diffuse.xyz + (1.0 - edge_blur)*Diffuse_blur.xyz), 1.0);
-	//FragColor = vec4(edge_blur*Diffuse.xyz, 1.0);
-	//FragColor = vec4(texture(NormalMap, TexCoords.xy).xyz, 1.0);
+	//FragColor = vec4((edge_blur*Diffuse.xyz + (1.0 - edge_blur)*Diffuse_blur.xyz), 1.0);
+	FragColor = vec4(Diffuse.xyz, 1.0);
 }
