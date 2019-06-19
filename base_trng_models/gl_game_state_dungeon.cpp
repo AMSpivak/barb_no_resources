@@ -1009,8 +1009,8 @@ void GlGameStateDungeon::Draw()
 
 
     glActiveTexture(GL_TEXTURE0);
-    //glBindTexture(GL_TEXTURE_2D, postprocess_render_target.AlbedoMap);
-	glBindTexture(GL_TEXTURE_2D, render_target.NormalMap);
+    glBindTexture(GL_TEXTURE_2D, postprocess_render_target.AlbedoMap);
+	//glBindTexture(GL_TEXTURE_2D, render_target.NormalMap);
 
     glUniform1i(glGetUniformLocation(current_shader, "blurMap"), 1);
     glActiveTexture(GL_TEXTURE0+1);
