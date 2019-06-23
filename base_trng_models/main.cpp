@@ -114,6 +114,8 @@ int main(int argc, char const *argv[])
     inputs[GLFW_KEY_RIGHT_BRACKET] = false;
     inputs[GLFW_KEY_LEFT_BRACKET] = false;
     inputs[GLFW_KEY_F1] = false;
+    inputs[GLFW_KEY_F9] = false;
+    inputs[GLFW_KEY_F10] = false;
     inputs[GLFW_KEY_LEFT_ALT] = false;
 
 
@@ -286,6 +288,12 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
     if (key == GLFW_KEY_RIGHT_BRACKET )
         inputs[GLFW_KEY_RIGHT_BRACKET] = (action != GLFW_RELEASE) ?  true : false;
     
+	if (key == GLFW_KEY_F9 )
+        inputs[GLFW_KEY_F9] = (action != GLFW_RELEASE) ?  true : false;
+
+	if (key == GLFW_KEY_F10 )
+        inputs[GLFW_KEY_F10] = (action != GLFW_RELEASE) ?  true : false;
+
 	if (key == GLFW_KEY_F1 )
 	{
         inputs[GLFW_KEY_F1] = (action != GLFW_RELEASE) ?  true : false;

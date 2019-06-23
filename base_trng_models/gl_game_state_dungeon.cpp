@@ -1313,6 +1313,15 @@ IGlGameState *  GlGameStateDungeon::Process(std::map <int, bool> &inputs, float 
 
 AnimationCommand GlGameStateDungeon::ProcessInputs(std::map <int, bool> &inputs)
 {
+    if(inputs[GLFW_KEY_F9])
+    {
+        m_daytime_in_hours -= 0.1;
+    }
+
+    if(inputs[GLFW_KEY_F10])
+    {
+        m_daytime_in_hours += 0.1;
+    }
     auto move_inputs = ProcessInputsMoveControl(inputs);
     float move_square = move_inputs.first * move_inputs.first + move_inputs.second * move_inputs.second;
     bool moving = move_square > 0.03f;//(std::abs(move_inputs.first)+std::abs(move_inputs.second)>0.2f);
