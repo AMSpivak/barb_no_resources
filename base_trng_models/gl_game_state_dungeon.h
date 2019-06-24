@@ -72,6 +72,7 @@ private:
     std::map<std::string,std::vector<std::string>> m_scripts;
     
     std::shared_ptr<GlCharacter> hero;
+    std::shared_ptr<GlCharacter> mob;
     std::string m_level_file;
     std::shared_ptr<Gl2D::GlImage> m_intro;
     
@@ -140,7 +141,7 @@ private:
     void ProcessMessages();
     AnimationCommand ProcessInputs(std::map <int, bool> &inputs);
     void ProcessInputsCamera(std::map <int, bool> &inputs,float joy_x, float joy_y);
-    std::pair<float,float> ProcessInputsMoveControl(std::map <int, bool> &inputs);
+    
     
 };
 

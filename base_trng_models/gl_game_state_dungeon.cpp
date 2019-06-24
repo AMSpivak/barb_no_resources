@@ -29,6 +29,7 @@
 #include "game_event_fabric.h"
 #include "gl2d_progressbar.h"
 #include "glresourses.h"
+#include "game_inputs.h"
 //#include "glfw3.h"
 
 
@@ -233,6 +234,8 @@ GlGameStateDungeon::GlGameStateDungeon(std::map<const std::string,GLuint> &shade
 
     glEnable(GL_DEPTH_TEST);
 	glEnable(GL_CULL_FACE);
+
+    
 }
 
 
@@ -513,7 +516,12 @@ void GlGameStateDungeon::LoadMap(const std::string &filename,const std::string &
     dungeon_objects.push_back(hero);
     hero->UseSequence("stance");
 
-    
+    mob = std::make_shared<GlCharacter>(CharacterTypes::mob);
+	UpdateCharacterFromFile("material/hero.chr",*mob);
+	mob->SetName("Mob");
+
+    dungeon_objects.push_back(mob);    
+    mob->UseSequence("stance");
 
 
 
@@ -535,6 +543,12 @@ void GlGameStateDungeon::DrawDungeon(GLuint &current_shader,std::shared_ptr<GlCh
     tmp_hero_position[1] = m_heightmap.GetHeight(tmp_hero_position[0],tmp_hero_position[2]);
     //std::cout<<"Z: "<< tmp_hero_position[1] <<"\n";
     hero->SetPosition(tmp_hero_position);
+
+    tmp_hero_position = mob->GetPosition();
+    tmp_hero_position[1] = m_heightmap.GetHeight(tmp_hero_position[0],tmp_hero_position[2]);
+    //std::cout<<"Z: "<< tmp_hero_position[1] <<"\n";
+    mob->SetPosition(tmp_hero_position);
+
 
     // glm::mat4 model_matrix = Models[0]->model;
     // glm::mat4 pos_matrix;
@@ -1322,7 +1336,7 @@ AnimationCommand GlGameStateDungeon::ProcessInputs(std::map <int, bool> &inputs)
     {
         m_daytime_in_hours += 0.1;
     }
-    auto move_inputs = ProcessInputsMoveControl(inputs);
+    auto move_inputs = GameInputs::ProcessInputsMoveControl(inputs);
     float move_square = move_inputs.first * move_inputs.first + move_inputs.second * move_inputs.second;
     bool moving = move_square > 0.03f;//(std::abs(move_inputs.first)+std::abs(move_inputs.second)>0.2f);
 
@@ -1444,45 +1458,5 @@ void GlGameStateDungeon::ProcessInputsCamera(std::map <int, bool> &inputs,float 
         
         Light.SetCameraLocation(light_position,glm::vec3(0.0f, 0.0f, 0.0f), light_orientation);
         //Light2.SetCameraLocation(light_position+light_orientation*10.0f,light_orientation*10.0f, light_orientation);    
-}
-
-
-std::pair<float,float> GlGameStateDungeon::ProcessInputsMoveControl(std::map <int, bool> &inputs)
-{
-    //int joy_axes_count;
-    //const float* joy_axes = glfwGetJoystickAxes(GLFW_JOYSTICK_1, &joy_axes_count);  
-    float x = 0;
-    float z = 0;
-
-    GLFWgamepadstate state;
-    if (glfwJoystickIsGamepad(GLFW_JOYSTICK_1)&&glfwGetGamepadState(GLFW_JOYSTICK_1, &state))
-    {
-        x = -state.axes[GLFW_GAMEPAD_AXIS_LEFT_X];
-        z = -state.axes[GLFW_GAMEPAD_AXIS_LEFT_Y];
-        // Use as gamepad
-    }
-    else
-    {
-        if(inputs[GLFW_KEY_UP])
-        {
-            z=1.0f;
-        }
-        else
-        if(inputs[GLFW_KEY_DOWN])
-        {
-            z=-1.0f;                            
-        }
-
-        if(inputs[GLFW_KEY_LEFT])
-        {
-            x=1.0f;
-        }
-        else
-        if(inputs[GLFW_KEY_RIGHT])
-        {
-            x=-1.0f;                          
-        }
-    }
-    return std::make_pair(x,z); 
 }
 

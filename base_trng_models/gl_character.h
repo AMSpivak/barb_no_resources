@@ -9,7 +9,7 @@
 #include "loader.h"
 #include "gl_model.h"
 
-enum class CharacterTypes {hero,tile,map_object};
+enum class CharacterTypes {hero,tile,map_object,mob};
 
 class GlCharacter: public IGlModel
 {
