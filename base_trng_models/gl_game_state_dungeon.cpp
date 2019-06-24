@@ -91,7 +91,7 @@ bool GlGameStateDungeon::AddObjectFromFile(const std::string & object,const std:
 }
 
 GlGameStateDungeon::GlGameStateDungeon(std::map<const std::string,GLuint> &shader_map,
-                                    std::map<std::string,std::shared_ptr<glRenderTarget>> & render_target_map,
+                                    std::map<std::string,std::shared_ptr<glRenderTargetSimple>> & render_target_map,
                                     std::map<std::string,std::shared_ptr<GlCharacter>> & models_map,
                                     GLResourcesManager &resources_manager,
                                     size_t screen_width,
@@ -747,8 +747,10 @@ void GlGameStateDungeon::Draw()
     
 
     glRenderTargetDeffered &render_target = *(dynamic_cast<glRenderTargetDeffered*>(m_render_target_map["base_deffered"].get()));
-    glRenderTarget &final_render_target = *(m_render_target_map["final"].get());
-    glRenderTarget &postprocess_render_target = *(m_render_target_map["postprocess"].get());
+    glRenderTarget &final_render_target = *(dynamic_cast<glRenderTarget*>(m_render_target_map["final"].get()));
+    glRenderTarget &postprocess_render_target = *(dynamic_cast<glRenderTarget*>(m_render_target_map["postprocess"].get()));
+    glRenderTargetSimple &buffer1_render_target = *(m_render_target_map["buffer_1"].get());
+    glRenderTargetSimple &buffer2_render_target = *(m_render_target_map["buffer_2"].get());
 
     size_t width = IGlGameState::m_screen_width;
     size_t height = IGlGameState::m_screen_height;
@@ -960,22 +962,17 @@ void GlGameStateDungeon::Draw()
 		glActiveTexture(GL_TEXTURE0);
 		glBindTexture(GL_TEXTURE_2D, render_target.AlbedoMap);
 
-		glUniform1i(glGetUniformLocation(current_shader, "NormalMap"), 1);
+		glUniform1i(glGetUniformLocation(current_shader, "LightMap"), 1);
 		glActiveTexture(GL_TEXTURE0+1);
-		glBindTexture(GL_TEXTURE_2D, render_target.NormalMap);
-
-
-		glUniform1i(glGetUniformLocation(current_shader, "DepthMap"), 2);
-		glActiveTexture(GL_TEXTURE0+2);
-		glBindTexture(GL_TEXTURE_2D, render_target.depthMap);
-
-		glUniform1i(glGetUniformLocation(current_shader, "LightMap"), 3);
-		glActiveTexture(GL_TEXTURE0+3);
 		glBindTexture(GL_TEXTURE_2D, final_render_target.AlbedoMap);
 
-        glUniform1i(glGetUniformLocation(current_shader, "SpecMap"), 4);
-		glActiveTexture(GL_TEXTURE0+4);
+        glUniform1i(glGetUniformLocation(current_shader, "SpecMap"), 2);
+		glActiveTexture(GL_TEXTURE0+2);
 		glBindTexture(GL_TEXTURE_2D, final_render_target.NormalMap);
+
+        glUniform1i(glGetUniformLocation(current_shader, "DepthMap"), 3);
+        glActiveTexture(GL_TEXTURE0+3);
+        glBindTexture(GL_TEXTURE_2D, render_target.depthMap);
 
         renderQuad();/**/
 
@@ -988,15 +985,43 @@ void GlGameStateDungeon::Draw()
     glDisable(GL_STENCIL_TEST);
     glDisable(GL_DEPTH_TEST);
 
+    {
+        buffer1_render_target.set();
+        GLuint current_shader = m_shader_map["fullblur_h"];
+        glUseProgram(current_shader);
+        glActiveTexture(GL_TEXTURE0);
+        glBindTexture(GL_TEXTURE_2D, postprocess_render_target.AlbedoMap);
+        renderQuad(); 
+        buffer2_render_target.set();
+        current_shader = m_shader_map["fullblur_w"];
+        glUseProgram(current_shader);
+        glActiveTexture(GL_TEXTURE0);
+        glBindTexture(GL_TEXTURE_2D, buffer1_render_target.AlbedoMap);
+        renderQuad(); 
+    }
+
+
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
     glViewport(0, 0, width, height);
-    GLuint current_shader = m_shader_map["fullscreen"];
+    GLuint current_shader = m_shader_map["sobel_blur"];
 
     glUseProgram(current_shader);
 
 
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, postprocess_render_target.AlbedoMap);
+	//glBindTexture(GL_TEXTURE_2D, render_target.NormalMap);
+
+    glUniform1i(glGetUniformLocation(current_shader, "blurMap"), 1);
+    glActiveTexture(GL_TEXTURE0+1);
+    //glBindTexture(GL_TEXTURE_2D, buffer2_render_target.AlbedoMap);
+	glBindTexture(GL_TEXTURE_2D, render_target.NormalMap);
+
+
+    glUniform1i(glGetUniformLocation(current_shader, "DepthMap"), 2);
+    glActiveTexture(GL_TEXTURE0+2);
+    glBindTexture(GL_TEXTURE_2D, render_target.depthMap);
+
     renderQuad();/**/
 
     Draw2D(render_target.depthMap);

@@ -91,7 +91,7 @@ void main()
 
     
     normal = normal*materials.x + normal1*materials.y;
-
+    //normal.y = -normal.y;
     normal = normalize(normal * 2.0 - 1.0); 
     normal = normalize(TBN * normal); 
     //normal = normal * 0.5 + 0.5; 
