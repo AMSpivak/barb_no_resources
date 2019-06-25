@@ -1,6 +1,7 @@
 #define GLEW_STATIC
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
+#include <cstdlib>
 #include <iostream>
 #include <iomanip>
 #include <sstream>
@@ -516,12 +517,23 @@ void GlGameStateDungeon::LoadMap(const std::string &filename,const std::string &
     dungeon_objects.push_back(hero);
     hero->UseSequence("stance");
 
-    mob = std::make_shared<GlCharacter>(CharacterTypes::mob);
-	UpdateCharacterFromFile("material/hero.chr",*mob);
-	mob->SetName("Mob");
+    for(int i = 0; i <50; i++)
+    {
+        mob = std::make_shared<GlCharacter>(CharacterTypes::mob);
+        UpdateCharacterFromFile("material/hero.chr",*mob);
+        mob->SetName("Mob"+std::to_string(i));
+        float mob_x = std::rand();
+        float mob_z = std::rand();
+        mob_x = mob_x * 50.0f / RAND_MAX;
+        mob_z = mob_z * 50.0f / RAND_MAX;
+        float angle_in_radians = std::rand();
+        angle_in_radians = angle_in_radians * 6.0f / RAND_MAX;
 
-    dungeon_objects.push_back(mob);    
-    mob->UseSequence("stance");
+        mob->SetPosition(glm::vec3(mob_x,0.0f,mob_z));
+        mob->model_matrix = glm::rotate(mob->model_matrix, angle_in_radians, glm::vec3(0.0f, 1.0f, 0.0f)); 
+        mob->UseSequence("walk");
+        dungeon_objects.push_back(mob);    
+    }
 
 
 
@@ -544,10 +556,6 @@ void GlGameStateDungeon::DrawDungeon(GLuint &current_shader,std::shared_ptr<GlCh
     //std::cout<<"Z: "<< tmp_hero_position[1] <<"\n";
     hero->SetPosition(tmp_hero_position);
 
-    tmp_hero_position = mob->GetPosition();
-    tmp_hero_position[1] = m_heightmap.GetHeight(tmp_hero_position[0],tmp_hero_position[2]);
-    //std::cout<<"Z: "<< tmp_hero_position[1] <<"\n";
-    mob->SetPosition(tmp_hero_position);
 
 
     // glm::mat4 model_matrix = Models[0]->model;
@@ -591,7 +599,13 @@ void GlGameStateDungeon::DrawDungeon(GLuint &current_shader,std::shared_ptr<GlCh
     scene.zero_offset = hero_position;       
     for(auto object : dungeon_objects)
     {
-
+        if(object->GetType() == CharacterTypes::mob)
+        {
+            tmp_hero_position = object->GetPosition();
+            tmp_hero_position[1] = m_heightmap.GetHeight(tmp_hero_position[0],tmp_hero_position[2]);
+            //std::cout<<"Z: "<< tmp_hero_position[1] <<"\n";
+            object->SetPosition(tmp_hero_position);
+        }
         object->Draw(scene,glm::translate(glm::mat4(), object->GetPosition() - hero_position));
     }
 
