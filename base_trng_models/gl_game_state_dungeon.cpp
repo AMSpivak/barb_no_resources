@@ -1011,7 +1011,7 @@ std::pair<float,const glm::vec3> GlGameStateDungeon::FitObjectToMap(GlCharacter&
 {
     glm::vec3 position = object.GetPosition();
 
-    if(object->GetType() == CharacterTypes::mob || object->GetType() == CharacterTypes::hero)
+    if(object.GetType() == CharacterTypes::mob || object.GetType() == CharacterTypes::hero)
     {
         position[1] = m_heightmap.GetHeight(position[0],position[2]);
     }
@@ -1084,7 +1084,7 @@ void GlGameStateDungeon::FitObjects(int steps, float accuracy)
         }
         for(auto object : dungeon_objects)
         {  
-            auto res = FitObjectToMap(*object,object->GetPosition());
+            auto res = FitObjectToMap(*object);
             summ =std::max( summ, res.first);
             
             object->SetPosition(res.second);
