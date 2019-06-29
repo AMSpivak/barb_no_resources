@@ -547,65 +547,12 @@ void GlGameStateDungeon::LoadMap(const std::string &filename,const std::string &
 
 void GlGameStateDungeon::DrawDungeon(GLuint &current_shader,std::shared_ptr<GlCharacter>hero,const GlScene::glCamera &camera)
 {
-    glUseProgram(current_shader);
-    unsigned int cameraLoc  = glGetUniformLocation(current_shader, "camera");
-    glUniformMatrix4fv(cameraLoc, 1, GL_FALSE, glm::value_ptr(camera.CameraMatrix()));
-
-    glm::vec3 tmp_hero_position = hero->GetPosition();
-    tmp_hero_position[1] = m_heightmap.GetHeight(tmp_hero_position[0],tmp_hero_position[2]);
-    //std::cout<<"Z: "<< tmp_hero_position[1] <<"\n";
-    hero->SetPosition(tmp_hero_position);
-
-
-
-    // glm::mat4 model_matrix = Models[0]->model;
-    // glm::mat4 pos_matrix;
-    // size_t iz = 0;
-    // glm::mat4 rotation_matrixes[4];
-    // for(int i =0; i<4; i++)
-    // {
-    //     rotation_matrixes[i] = glm::rotate(rotation_matrixes[i], glm::radians(-90.0f * i), glm::vec3(0.0f, 1.0f, 0.0f));
-    // }
-                
-
-    // for(int iy = 0; iy < m_dungeon.Height(); iy++)
-    // {
-    //     pos_matrix = glm::mat4();
-    //     pos_matrix = glm::translate(pos_matrix, glm::vec3(0.0f, 0.0f, 2.0f*iy) - hero_position);
-
-    //     for(int ix = 0; ix < m_dungeon.Width(); ix++)
-    //     {
-    //         int index = m_dungeon.GetMapTilesIndex(ix,iy,iz);
-    //         if(index>=0)
-    //         {
-    //             Models[index]->Draw(current_shader,now_frame,pos_matrix);
-    //         }
-            
-    //         index = m_dungeon.GetMapObjectIndex(ix,iy,iz);
-    //         if(index>0)
-    //         {
-    //             int mod_index = index>>2;
-    //             int rot = index - (mod_index<<2);
-    //             model_matrix = Models[mod_index]->model;
-    //             Models[mod_index]->Draw(current_shader,now_frame,pos_matrix * rotation_matrixes[rot]);
-    //         }
-    //         pos_matrix = glm::translate(pos_matrix, glm::vec3(2.0f, 0.0f, 0.0f));
-    //     }
-    // }
-
     GlScene::Scene scene;
     scene.render_shader =  current_shader;
     scene.render_camera = &camera;       
     scene.zero_offset = hero_position;       
     for(auto object : dungeon_objects)
     {
-        if(object->GetType() == CharacterTypes::mob)
-        {
-            tmp_hero_position = object->GetPosition();
-            tmp_hero_position[1] = m_heightmap.GetHeight(tmp_hero_position[0],tmp_hero_position[2]);
-            //std::cout<<"Z: "<< tmp_hero_position[1] <<"\n";
-            object->SetPosition(tmp_hero_position);
-        }
         object->Draw(scene,glm::translate(glm::mat4(), object->GetPosition() - hero_position));
     }
 
@@ -699,7 +646,7 @@ void GlGameStateDungeon::DrawFxSprite(GLuint &current_shader, GLuint texture)
 
 void GlGameStateDungeon::Draw2D(GLuint depth_map)
 {
-    for(/*std::shared_ptr<IMapEvent>*/auto event :map_events) 
+    for(auto event :map_events) 
     {
         event->Show(hero_position,Camera);
     }
@@ -1059,68 +1006,23 @@ void GlGameStateDungeon::Draw()
 
 }
 
-glm::vec3 IntersectionProjection(const glm::vec3 & position_cube, const glm::vec3 & position_circle, float radius)
+
+std::pair<float,const glm::vec3> GlGameStateDungeon::FitObjectToMap(GlCharacter& object)
 {
-    glm::vec3 intersection = position_circle - position_cube;
-    glm::vec3 return_value = glm::vec3(0.0f,0.0f,0.0f);
-    float minimum = std::numeric_limits<float>::min();
-    
-    float intersect_x = Collision::CollisionOnAxe(position_cube[0] -1.0f,
-                                        position_cube[0] + 1.0f,
-                                        position_circle[0]  - radius,
-                                        position_circle[0]  + radius
-                                        );
+    glm::vec3 position = object.GetPosition();
 
-    if(intersect_x < minimum) return glm::vec3(0.0f,0.0f,0.0f);
-    float intersect = intersect_x;
-
-    return_value = glm::vec3(intersection[0] > 0 ? intersect_x : -intersect_x,0.0f,0.0f);
-
-    float intersect_z = Collision::CollisionOnAxe( position_cube[2] -1.0f,
-                                        position_cube[2] + 1.0f,
-                                        position_circle[2]  - radius,
-                                        position_circle[2]  + radius
-                                        );
-
-    if(intersect_z < minimum) return glm::vec3(0.0f,0.0f,0.0f);
-    if(intersect_z < intersect)
+    if(object->GetType() == CharacterTypes::mob || object->GetType() == CharacterTypes::hero)
     {
-        intersect = intersect_z;
-        return_value = glm::vec3(0.0f,0.0f,intersection[2] > 0 ? intersect_z : -intersect_z);
+        position[1] = m_heightmap.GetHeight(position[0],position[2]);
     }
-    glm::vec3 axe = glm::normalize(glm::vec3(1.0f,0.0f,1.0f));
 
-    float pos2_axe = glm::dot(position_circle - position_cube,axe);
-
-    float intersect_xz = Collision::CollisionOnAxe( -1.414f,
-                                        + 1.414f,
-                                        pos2_axe  - radius,
-                                        pos2_axe  + radius
-                                        );
-
-    if(intersect_xz < minimum) return glm::vec3(0.0f,0.0f,0.0f);
-    if(intersect_xz<intersect)
-    {
-        if(pos2_axe < 0 ) 
-            intersect_xz = -intersect_xz;
-
-        return_value = glm::vec3(intersect_xz,0.0f,intersect_xz);
-    }
-    return return_value;
-}
-
-
-std::pair<float,const glm::vec3> GlGameStateDungeon::FitObjectToMap(IGlModel& object, const glm::vec3 & position)
-{
     if(object.mass_inv < 0.001)
         return std::make_pair(0.0f,position);
         
-    float hero_radius = object.radius;
-
     const glm::vec3 edge=glm::vec3(100.0f,100.0f,100.0f);
     glm::vec3 new_position = glm::clamp(position,-edge,edge);
     
-
+    
     return std::make_pair(0.0f,new_position);
 }
 
@@ -1183,8 +1085,10 @@ void GlGameStateDungeon::FitObjects(int steps, float accuracy)
         for(auto object : dungeon_objects)
         {  
             auto res = FitObjectToMap(*object,object->GetPosition());
-            object->SetPosition(res.second);
             summ =std::max( summ, res.first);
+            
+            object->SetPosition(res.second);
+            
         }
         if(summ < accuracy)
         {
