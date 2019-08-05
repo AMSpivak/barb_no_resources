@@ -46,7 +46,7 @@ EventProcessResult IMapEventHeroStrike::Process()
 InteractionResult IMapEventHeroStrike::Interact(GlCharacter &model,std::string &return_value)
 {
     model.Damage(0.1f);
-    //std::cout<<"life "<<model.GetLifeValue()<<"\n";
+    std::cout<<"life "<<model.GetLifeValue()<<"\n";
     if(model.GetLifeValue()< 0)
         return InteractionResult::Kill;
     return InteractionResult::Damage;

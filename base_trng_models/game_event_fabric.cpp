@@ -23,7 +23,8 @@ namespace GameEvents
                 e_ptr->AddEdge(std::pair<glm::vec3,glm::vec3>(glm::vec3(-0.5f,0.0f,-2.5f),glm::vec3(-0.3f,0.0f,-0.5f)));
                 e_ptr->AddEdge(std::pair<glm::vec3,glm::vec3>(glm::vec3(-0.3f,0.0f,-0.5f),glm::vec3(0.3f,0.0f,-0.5f)));
                 e_ptr->position = ptr->GetPosition();
-                e_ptr->position[1] = 0;
+                //e_ptr->position[1] = 0;
+                std::cout <<e_ptr->position<<"\n";
                 return e_ptr;
             }
             break;
@@ -37,7 +38,7 @@ namespace GameEvents
                 e_ptr->AddEdge(std::pair<glm::vec3,glm::vec3>(glm::vec3(-0.5f,0.0f,-2.5f),glm::vec3(-0.3f,0.0f,-0.5f)));
                 e_ptr->AddEdge(std::pair<glm::vec3,glm::vec3>(glm::vec3(-0.3f,0.0f,-0.5f),glm::vec3(0.3f,0.0f,-0.5f)));
                 e_ptr->position = ptr->GetPosition();
-                e_ptr->position[1] = 0;
+                //e_ptr->position[1] = 0;
                 
                 return e_ptr;
             }
@@ -48,7 +49,7 @@ namespace GameEvents
                 auto ptr = static_cast<const GeneralEventStruct *>(parameters);                
                 auto e_ptr = std::make_shared<MapEventValhalla>(ptr->current_shader,ptr->depthmap,ptr->texture,1.0f,1.4f);
                 e_ptr->position = ptr->object->GetPosition();
-                e_ptr->position.y = 1.5f;
+                e_ptr->position.y += 1.5f;
                 return e_ptr;
             }
             break;    
