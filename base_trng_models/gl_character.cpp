@@ -331,7 +331,7 @@ std::pair<float, float> GlCharacter::ProjectOnAxe(const glm::vec3 &axe) const
 
 const glm::vec3 & MoveObjectAttempt(IGlModel &object,const glm::vec3 &desired_direction, float length)
 {
-    if(object.mass_inv < std::numeric_limits<float>::min())
+    if(object.mass_inv > std::numeric_limits<float>::min())
     {
         object.SetPosition(object.GetPosition() + length * desired_direction);
     }
