@@ -1049,8 +1049,8 @@ float GlGameStateDungeon::FitObjectToObject(IGlModel& object1,IGlModel& object2)
     float obj2_part = 1.0f - obj1_part;
 
 
-    object2.SetPosition( object2.GetPosition() + obj2_part * intersection.first * intersection.second);
-    object1.SetPosition (object1.GetPosition() - obj1_part * intersection.first * intersection.second);
+    MoveObjectAttempt( object2, intersection.second, obj2_part * intersection.first);
+    MoveObjectAttempt( object1, intersection.second, -obj1_part * intersection.first);
     
     return intersection.first;
     
@@ -1100,8 +1100,6 @@ void GlGameStateDungeon::FitObjects(int steps, float accuracy)
 
 
 
-bool IsKilled (std::shared_ptr<IMapEvent> value) { return value->Process() == EventProcessResult::Kill; }
-
 
 bool GlGameStateDungeon::MobKilled(std::shared_ptr<GlCharacter> obj)
 {
@@ -1129,6 +1127,8 @@ bool GlGameStateDungeon::MobKilled(std::shared_ptr<GlCharacter> obj)
         }
     return false;
 }
+
+bool IsKilled (std::shared_ptr<IMapEvent> value) { return value->Process() == EventProcessResult::Kill; }
 
 void GlGameStateDungeon::MapObjectsEventsInteract()
 {

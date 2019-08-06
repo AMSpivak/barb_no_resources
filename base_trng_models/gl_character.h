@@ -53,6 +53,9 @@ private:
 
 };
 
+
+const glm::vec3 & MoveObjectAttempt(IGlModel &object,const glm::vec3 &desired_direction, float length);
+
 void UpdateCharacterFromFile(const std::string &filename,GlCharacter & character);
 std::ostream& operator << ( std::ostream& os, const GlCharacter & character);
 
