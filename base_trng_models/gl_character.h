@@ -8,6 +8,7 @@
 #include <algorithm>
 #include "loader.h"
 #include "gl_model.h"
+#include "brain.h"
 
 enum class CharacterTypes {hero,tile,map_object,mob};
 
@@ -33,8 +34,10 @@ public:
     void UpdateFromLines(std::vector<std::string> &lines);
     void ToStream(std::ostream& os) const;
     CharacterTypes GetType() const;
+    void SetBrain(std::shared_ptr<Character::IBrain> brain);
 
 private:
+    std::shared_ptr<Character::IBrain> m_brain;
     CharacterTypes m_type;
     //glm::mat4 m_draw_matrix;
     size_t engine_frame;

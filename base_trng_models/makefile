@@ -9,7 +9,7 @@ else
 	LDFLAGS=  -lGLEW -lSOIL -lGL `pkg-config --cflags glfw3` `pkg-config --static --libs glfw3`
 endif
 ENGINE_SOURCES= $(ENGINE)\octree.cpp $(ENGINE)\gl_material.cpp $(ENGINE)\glcamera.cpp $(ENGINE)\gl2d_image.cpp $(ENGINE)\gl2d_progressbar.cpp $(ENGINE)\gl_font16x16.cpp $(ENGINE)\glresourses.cpp $(ENGINE)\glscene.cpp $(ENGINE)\collision.cpp $(ENGINE)\engine_settings.cpp $(ENGINE)\loader.cpp $(ENGINE)\gl_resources_manager.cpp
-SOURCES= $(ENGINE_SOURCES) game_inputs.cpp map_heightmap.cpp game_event_fabric.cpp animation_sequence.cpp game_status.cpp main.cpp map_event_general.cpp map_event_valhalla.cpp map_event_hero_action.cpp map_event_hero_strikes.cpp  gl_render_target.cpp gl_character.cpp gl_model.cpp gl_game_state_dungeon.cpp
+SOURCES= $(ENGINE_SOURCES) brain.cpp game_inputs.cpp map_heightmap.cpp game_event_fabric.cpp animation_sequence.cpp game_status.cpp main.cpp map_event_general.cpp map_event_valhalla.cpp map_event_hero_action.cpp map_event_hero_strikes.cpp  gl_render_target.cpp gl_character.cpp gl_model.cpp gl_game_state_dungeon.cpp
 OBJECTS=$(SOURCES:.cpp=.o)
 EXECUTABLE=game
 

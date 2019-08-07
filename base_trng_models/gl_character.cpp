@@ -17,6 +17,7 @@ GlCharacter::GlCharacter(CharacterTypes type):
                             ,current_animation(nullptr)
                             ,m_type(type)
 {
+    m_brain = Character::CreateBrain(Character::BrainTypes::Empty,[]() { return; });
     // if(!comand_proc_ready)
     // {
     //     comand_proc.Add()
@@ -259,10 +260,17 @@ void GlCharacter::ExecuteCommand(const std::pair<AnimationCommand,std::string> &
     }
     //m_messages.push_back(current_animation->m_end_message);
 }
+void GlCharacter::SetBrain(std::shared_ptr<Character::IBrain> brain)
+{
+    m_brain = brain;
+}
+
 
 int GlCharacter::Process(std::list<std::string> &m_messages)
 {
     if(GetLifeValue() <=0.0f) return 1;
+    m_brain->Think(*this);
+
     auto control = now_frame;
     if(current_animation == nullptr)
     {
