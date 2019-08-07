@@ -139,7 +139,7 @@ private:
     bool MobKilled(std::shared_ptr<GlCharacter> obj);
     void PostMessage(const std::string & event_string);
     void ProcessMessages();
-    AnimationCommand ProcessInputs(std::map <int, bool> &inputs);
+    std::pair<AnimationCommand,const glm::mat4> ProcessInputs(std::map <int, bool> &inputs);
     void ProcessInputsCamera(std::map <int, bool> &inputs,float joy_x, float joy_y);
     
     

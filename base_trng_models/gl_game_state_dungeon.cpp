@@ -1210,7 +1210,8 @@ IGlGameState *  GlGameStateDungeon::Process(std::map <int, bool> &inputs, float 
         ProcessInputsCamera(inputs,joy_x, joy_y);
               
         auto action = ProcessInputs(inputs);
-        switch(action)
+
+        switch(action.first)
         {
             case AnimationCommand::kStrike:
                 hero->UseSequence("strike");
@@ -1231,6 +1232,8 @@ IGlGameState *  GlGameStateDungeon::Process(std::map <int, bool> &inputs, float 
             break;
         }
 
+        hero->model_matrix = action.second;
+
 
         for(auto object : dungeon_objects)
         {  
@@ -1243,7 +1246,7 @@ IGlGameState *  GlGameStateDungeon::Process(std::map <int, bool> &inputs, float 
     return this;
 }
 
-AnimationCommand GlGameStateDungeon::ProcessInputs(std::map <int, bool> &inputs)
+std::pair<AnimationCommand,const glm::mat4>  GlGameStateDungeon::ProcessInputs(std::map <int, bool> &inputs)
 {
     if(inputs[GLFW_KEY_F9])
     {
@@ -1257,7 +1260,15 @@ AnimationCommand GlGameStateDungeon::ProcessInputs(std::map <int, bool> &inputs)
     auto move_inputs = GameInputs::ProcessInputsMoveControl(inputs);
     float move_square = move_inputs.first * move_inputs.first + move_inputs.second * move_inputs.second;
     bool moving = move_square > 0.03f;//(std::abs(move_inputs.first)+std::abs(move_inputs.second)>0.2f);
-
+    
+    glm::mat4 rm(
+            glm::vec4(1.0f,0.0f,0.0f,0.0f),
+            glm::vec4(0.0f,1.0f,0.0f,0.0f),
+            glm::vec4(0.0f,0.0f,1.0f,0.0f),
+            glm::vec4(0.0,0.0,0.0,1.0f)
+            );        
+    
+    
     if(moving)
     {
         glm::vec3 y_basis = glm::vec3(0.0f,1.0f,0.0f);
@@ -1283,16 +1294,16 @@ AnimationCommand GlGameStateDungeon::ProcessInputs(std::map <int, bool> &inputs)
 
         glm::vec3 z_basis = glm::cross(x_basis, y_basis);
 
-        glm::mat4 rm(
+        rm = glm::mat4(
             glm::vec4(x_basis[0],x_basis[1],x_basis[2],0.0f),
             glm::vec4(y_basis[0],y_basis[1],y_basis[2],0.0f),
             glm::vec4(z_basis[0],z_basis[1],z_basis[2],0.0f),
             glm::vec4(0.0,0.0,0.0,1.0f)
             );
-
-        hero->model_matrix = rm;
-        
+              
     }
+
+    //hero->model_matrix = rm;  
 
     bool action_use = inputs[GLFW_KEY_LEFT_ALT];
     bool attack = inputs[GLFW_MOUSE_BUTTON_LEFT]|inputs[GLFW_KEY_SPACE];  
@@ -1312,11 +1323,13 @@ AnimationCommand GlGameStateDungeon::ProcessInputs(std::map <int, bool> &inputs)
     }
 
     if(attack) 
-        return AnimationCommand::kStrike;
+        return std::make_pair(AnimationCommand::kStrike,rm);
     if(action_use) 
-        return AnimationCommand::kUse;
+        return std::make_pair(AnimationCommand::kUse,rm);
     if(moving)
-        return fast_move ? AnimationCommand::kFastMove:AnimationCommand::kMove;
+        return std::make_pair(fast_move ? AnimationCommand::kFastMove:AnimationCommand::kMove,rm);
+
+    return std::make_pair(AnimationCommand::kNone,rm);    
 }
 
 void GlGameStateDungeon::ProcessInputsCamera(std::map <int, bool> &inputs,float joy_x, float joy_y)
