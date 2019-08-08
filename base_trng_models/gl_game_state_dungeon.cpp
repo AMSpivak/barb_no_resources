@@ -31,6 +31,7 @@
 #include "gl2d_progressbar.h"
 #include "glresourses.h"
 #include "game_inputs.h"
+#include "brain.h"
 //#include "glfw3.h"
 
 
@@ -115,7 +116,10 @@ GlGameStateDungeon::GlGameStateDungeon(std::map<const std::string,GLuint> &shade
                                                         ,m_dungeon(10,10,1)
                                                         ,m_show_intro(false)
                                                         ,m_info_message("")
+                                                        ,unit_control_action(AnimationCommand::kNone,glm::mat4(1))
 {
+    hero->SetBrain(Character::CreateBrain(Character::BrainTypes::Hero,[this](GlCharacter & character){ControlUnit(character);}));
+
     glClearColor(0.0f,0.0f,0.0f,1.0f);
 
 
@@ -1168,6 +1172,33 @@ bool GlGameStateDungeon::HeroEventsInteract(std::shared_ptr<GlCharacter> hero_pt
     return false;
 }
 
+void GlGameStateDungeon::ControlUnit(GlCharacter & character)
+{
+    switch(unit_control_action.first)
+        {
+            case AnimationCommand::kStrike:
+                character.UseSequence("strike");
+                m_messages.push_back("hero_strike");
+            break;
+            case AnimationCommand::kUse:
+                character.UseSequence("use");
+                m_messages.push_back("hero_use");
+            break;
+            case AnimationCommand::kMove:
+                character.UseSequence("walk");
+            break;
+            case AnimationCommand::kFastMove:
+                character.UseSequence("run");
+            break;
+            default:
+                character.UseSequence("stance");
+            break;
+        }
+
+        character.model_matrix = unit_control_action.second;
+}
+
+
 IGlGameState *  GlGameStateDungeon::Process(std::map <int, bool> &inputs, float joy_x, float joy_y)
 {
     glRenderTargetDeffered &render_target = *(dynamic_cast<glRenderTargetDeffered*>(m_render_target_map["base_deffered"].get()));
@@ -1209,31 +1240,9 @@ IGlGameState *  GlGameStateDungeon::Process(std::map <int, bool> &inputs, float 
          
         ProcessInputsCamera(inputs,joy_x, joy_y);
               
-        auto action = ProcessInputs(inputs);
-
-        switch(action.first)
-        {
-            case AnimationCommand::kStrike:
-                hero->UseSequence("strike");
-                m_messages.push_back("hero_strike");
-            break;
-            case AnimationCommand::kUse:
-                hero->UseSequence("use");
-                m_messages.push_back("hero_use");
-            break;
-            case AnimationCommand::kMove:
-                hero->UseSequence("walk");
-            break;
-            case AnimationCommand::kFastMove:
-                hero->UseSequence("run");
-            break;
-            default:
-                hero->UseSequence("stance");
-            break;
-        }
-
-        hero->model_matrix = action.second;
-
+        unit_control_action = ProcessInputs(inputs);
+        
+        //ControlUnit(*hero);
 
         for(auto object : dungeon_objects)
         {  

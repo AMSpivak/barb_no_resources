@@ -17,7 +17,7 @@ GlCharacter::GlCharacter(CharacterTypes type):
                             ,current_animation(nullptr)
                             ,m_type(type)
 {
-    m_brain = Character::CreateBrain(Character::BrainTypes::Empty,[]() { return; });
+    m_brain = Character::CreateBrain(Character::BrainTypes::Empty,[](GlCharacter & character) { return; });
     // if(!comand_proc_ready)
     // {
     //     comand_proc.Add()

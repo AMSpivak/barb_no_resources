@@ -14,10 +14,10 @@ namespace Character
         virtual void Think(GlCharacter & character) {}
         virtual ~IBrain(){}
         protected:
-        std::function<void()> m_world_reaction;
+        std::function<void(GlCharacter & character)> m_world_reaction;
     };
     
 
-    std::shared_ptr<IBrain> CreateBrain(BrainTypes brain_type, std::function<void()> world_reaction);
+    std::shared_ptr<IBrain> CreateBrain(BrainTypes brain_type, std::function<void(GlCharacter & character)> world_reaction);
 }
 #endif

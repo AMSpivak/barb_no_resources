@@ -10,17 +10,17 @@ namespace Character
     class BrainHero: public IBrain
     {
         public:
-        BrainHero(std::function<void()> world_reaction)
+        BrainHero(std::function<void(GlCharacter & character)> world_reaction)
         {
             m_world_reaction = world_reaction;
         }
         virtual void Think(GlCharacter & character) 
         {
-            m_world_reaction();
+            m_world_reaction(character);
         }
     };
 
-    std::shared_ptr<IBrain> CreateBrain(BrainTypes brain_type, std::function<void()> world_reaction)
+    std::shared_ptr<IBrain> CreateBrain(BrainTypes brain_type, std::function<void(GlCharacter & character)> world_reaction)
     {
         switch(brain_type)
         {

@@ -91,6 +91,8 @@ private:
     float old_joy_x;
     float old_joy_y;
 
+    std::pair<AnimationCommand, glm::mat4> unit_control_action;
+
     float m_daytime_in_hours;
     
     glm::vec3 hero_position;
@@ -100,6 +102,8 @@ private:
     std::string m_info_message;
 
     LoaderUtility::LinesProcessor m_message_processor;
+
+
     
     void SaveObjects(const std::string &filename);
 
@@ -141,6 +145,7 @@ private:
     void ProcessMessages();
     std::pair<AnimationCommand,const glm::mat4> ProcessInputs(std::map <int, bool> &inputs);
     void ProcessInputsCamera(std::map <int, bool> &inputs,float joy_x, float joy_y);
+    void ControlUnit(GlCharacter & character);
     
     
 };
