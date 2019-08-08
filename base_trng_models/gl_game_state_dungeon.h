@@ -48,6 +48,8 @@ public:
     void SwitchOut(){}
 private:
 
+    unsigned char simple_screen;
+
     //std::shared_ptr<IGlTextureStruct> heightmap_texture;
     GameMap::HeightMap m_heightmap;
     bool m_show_intro;

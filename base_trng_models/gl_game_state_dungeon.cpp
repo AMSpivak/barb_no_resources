@@ -117,6 +117,7 @@ GlGameStateDungeon::GlGameStateDungeon(std::map<const std::string,GLuint> &shade
                                                         ,m_show_intro(false)
                                                         ,m_info_message("")
                                                         ,unit_control_action(AnimationCommand::kNone,glm::mat4(1))
+                                                        ,simple_screen(0)
 {
     hero->SetBrain(Character::CreateBrain(Character::BrainTypes::Hero,[this](GlCharacter & character){ControlUnit(character);}));
 
@@ -535,7 +536,8 @@ void GlGameStateDungeon::LoadMap(const std::string &filename,const std::string &
 
         mob->SetPosition(glm::vec3(mob_x,0.0f,mob_z));
         mob->model_matrix = glm::rotate(mob->model_matrix, angle_in_radians, glm::vec3(0.0f, 1.0f, 0.0f)); 
-        mob->UseSequence("walk");
+        mob->UseSequence("stance");
+        mob->SetBrain(Character::CreateBrain(Character::BrainTypes::Npc,[this](GlCharacter & character){/*ControlUnit(character);*/}));
         dungeon_objects.push_back(mob);    
     }
 
@@ -688,6 +690,9 @@ void GlGameStateDungeon::Draw2D(GLuint depth_map)
 }
 void GlGameStateDungeon::PrerenderLight(glLight &Light,std::shared_ptr<GlCharacter>hero)
 {
+    if(simple_screen)
+        return;
+
     Light.SetLigtRender();
     glDrawBuffer(GL_NONE);
     glReadBuffer(GL_NONE);
@@ -1221,6 +1226,8 @@ IGlGameState *  GlGameStateDungeon::Process(std::map <int, bool> &inputs, float 
     else
     if((time_now - time)>(1.0/30.0))
     {
+        //simple_screen = !simple_screen;
+
         m_daytime_in_hours += 0.00055f;
         if(m_daytime_in_hours>24.0f)
         {
@@ -1393,10 +1400,19 @@ void GlGameStateDungeon::ProcessInputsCamera(std::map <int, bool> &inputs,float 
         constexpr float light_offset = 2.0f;
 
         float sun_angle =  (m_daytime_in_hours - 12.0f)*360.0f/24.0f;
-        light_position = glm::vec3(light_distance * glm::sin(glm::radians(sun_angle)), light_distance * glm::cos(glm::radians(sun_angle)),  light_offset);
-        light_dir_vector = glm::normalize(light_position);
         
-        Light.SetCameraLocation(light_position,glm::vec3(0.0f, 0.0f, 0.0f), light_orientation);
+        
+        if(!simple_screen)
+        {
+            light_position = glm::vec3(light_distance * glm::sin(glm::radians(sun_angle)), light_distance * glm::cos(glm::radians(sun_angle)),  light_offset);
+            light_dir_vector = glm::normalize(light_position);
+            Light.SetCameraLocation(light_position,glm::vec3(0.0f, 0.0f, 0.0f), light_orientation);
+        }
+        else
+        {
+            /* code */
+        }
+        
         //Light2.SetCameraLocation(light_position+light_orientation*10.0f,light_orientation*10.0f, light_orientation);    
 }
 
