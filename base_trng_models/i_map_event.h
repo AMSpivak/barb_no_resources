@@ -14,6 +14,8 @@ enum class EventProcessResult { Nothing, Kill, Used };
 class IMapEvent
 {
 private:
+protected:
+    GlCharacter * m_owner;
 
 public:
     glm::mat4 model_matrix;
@@ -21,7 +23,7 @@ public:
     float hero_dependence;
     float mobs_dependence;
     glm::vec3 position;
-    IMapEvent():model_matrix(),radius(1.0f), position(0.0f,0.0f,0.0f)
+    IMapEvent():m_owner(nullptr),model_matrix(),radius(1.0f), position(0.0f,0.0f,0.0f)
     {
 
     }
@@ -42,6 +44,7 @@ public:
     virtual void Show(const glm::vec3 & offset, GlScene::glCamera & camera){};
     virtual int AddAxes(std::vector<glm::vec3> &axes) = 0;
     virtual std::pair<float, float> ProjectOnAxe(const glm::vec3 & axe) = 0;
+    virtual bool IsInteractable(GlCharacter * obj){return true;}
 };
 
 #endif
