@@ -215,7 +215,15 @@ GlGameStateDungeon::GlGameStateDungeon(std::map<const std::string,GLuint> &shade
 
     m_message_processor.Add("hero_strike",[this](std::stringstream &sstream)
     {                                
-        mob_events.push_back(GameEvents::CreateGameEvent(GameEvents::EventTypes::HeroStrike,&(*hero)));
+        mob_events.push_back(GameEvents::CreateGameEvent(GameEvents::EventTypes::HeroStrike,hero.get()));
+    });
+
+    m_message_processor.Add("strike",[this](std::stringstream &sstream)
+    { 
+        std::string name;
+        sstream >> name;
+        auto obj = MobPointer(name);
+        mob_events.push_back(GameEvents::CreateGameEvent(GameEvents::EventTypes::HeroStrike,obj));
     });
 
     m_message_processor.Add("hero_use",[this](std::stringstream &sstream)
@@ -1183,7 +1191,8 @@ void GlGameStateDungeon::ControlUnit(GlCharacter & character)
         {
             case AnimationCommand::kStrike:
                 character.UseSequence("strike");
-                m_messages.push_back("hero_strike");
+                //m_messages.push_back("hero_strike");
+                m_messages.push_back("strike " + character.GetName());
             break;
             case AnimationCommand::kUse:
                 character.UseSequence("use");
@@ -1277,12 +1286,7 @@ std::pair<AnimationCommand,const glm::mat4>  GlGameStateDungeon::ProcessInputs(s
     float move_square = move_inputs.first * move_inputs.first + move_inputs.second * move_inputs.second;
     bool moving = move_square > 0.03f;//(std::abs(move_inputs.first)+std::abs(move_inputs.second)>0.2f);
     
-    glm::mat4 rm(
-            glm::vec4(1.0f,0.0f,0.0f,0.0f),
-            glm::vec4(0.0f,1.0f,0.0f,0.0f),
-            glm::vec4(0.0f,0.0f,1.0f,0.0f),
-            glm::vec4(0.0,0.0,0.0,1.0f)
-            );        
+    glm::mat4 rm(hero->model_matrix);      
     
     
     if(moving)
@@ -1415,4 +1419,18 @@ void GlGameStateDungeon::ProcessInputsCamera(std::map <int, bool> &inputs,float 
         
         //Light2.SetCameraLocation(light_position+light_orientation*10.0f,light_orientation*10.0f, light_orientation);    
 }
+
+GlCharacter * GlGameStateDungeon::MobPointer(const std::string & name)
+{
+    auto result = std::find_if(dungeon_objects.begin(),dungeon_objects.end(),[&](std::shared_ptr<GlCharacter> obj){return obj->GetName() == name;});
+    if(result == dungeon_objects.end())
+    {
+        return nullptr;
+    }
+    else
+    {
+        return result->get();
+    }
+}
+
 

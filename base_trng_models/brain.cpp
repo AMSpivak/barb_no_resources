@@ -54,7 +54,6 @@ namespace Character
                 else
                 {
                     character.UseSequence("stance");
-                    /* code */
                 }
                 
                 // switch(unit_control_action.first)

@@ -148,6 +148,7 @@ private:
     std::pair<AnimationCommand,const glm::mat4> ProcessInputs(std::map <int, bool> &inputs);
     void ProcessInputsCamera(std::map <int, bool> &inputs,float joy_x, float joy_y);
     void ControlUnit(GlCharacter & character);
+    GlCharacter * MobPointer(const std::string & name);
     
     
 };
