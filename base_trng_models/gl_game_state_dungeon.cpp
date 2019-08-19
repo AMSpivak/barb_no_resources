@@ -223,7 +223,8 @@ GlGameStateDungeon::GlGameStateDungeon(std::map<const std::string,GLuint> &shade
         std::string name;
         sstream >> name;
         auto obj = MobPointer(name);
-        mob_events.push_back(GameEvents::CreateGameEvent(GameEvents::EventTypes::HeroStrike,obj));
+        //mob_events.push_back(GameEvents::CreateGameEvent(GameEvents::EventTypes::HeroStrike,obj));
+        map_events.push_back(GameEvents::CreateGameEvent(GameEvents::EventTypes::HeroStrike,obj));
     });
 
     m_message_processor.Add("hero_use",[this](std::stringstream &sstream)
@@ -1075,8 +1076,12 @@ float GlGameStateDungeon::FitObjectToObject(IGlModel& object1,IGlModel& object2)
 
 InteractionResult GlGameStateDungeon::ReactObjectToEvent(GlCharacter& object,IMapEvent& event,std::string &return_value)
 {
-    auto intersection = Physics::Intersection(object,event);
-    return intersection.first < std::numeric_limits<float>::min() ? InteractionResult::Nothing : event.Interact(object,return_value);
+    if(event.IsInteractable(&object))
+    {
+        auto intersection = Physics::Intersection(object,event);
+        return intersection.first < std::numeric_limits<float>::min() ? InteractionResult::Nothing : event.Interact(object,return_value);
+    }
+    return InteractionResult::Nothing;
 }
 
 void GlGameStateDungeon::FitObjects(int steps, float accuracy)

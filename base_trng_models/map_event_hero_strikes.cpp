@@ -45,9 +45,16 @@ EventProcessResult IMapEventHeroStrike::Process()
 
 InteractionResult IMapEventHeroStrike::Interact(GlCharacter &model,std::string &return_value)
 {
-    model.Damage(0.1f);
-    std::cout<<"life "<<model.GetLifeValue()<<"\n";
-    if(model.GetLifeValue()< 0)
+    model.Damage(0.01f);
+    std::cout<<model.GetName()<<" life "<<model.GetLifeValue()<<"\n";
+    if((model.GetLifeValue()< 0)&&(model.GetType() != CharacterTypes::hero))
+    {
         return InteractionResult::Kill;
+    }
     return InteractionResult::Damage;
+}
+
+bool IMapEventHeroStrike::IsInteractable(GlCharacter * obj)
+{
+    return m_owner != obj;
 }

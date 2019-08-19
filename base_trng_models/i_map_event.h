@@ -15,7 +15,7 @@ class IMapEvent
 {
 private:
 protected:
-    GlCharacter * m_owner;
+    const GlCharacter * m_owner;
 
 public:
     glm::mat4 model_matrix;
@@ -36,6 +36,12 @@ public:
     {
         return position;
     }
+
+    void SetOwner(const GlCharacter * owner)
+    {
+        m_owner = owner;
+    }
+
     virtual ~IMapEvent(){}
 
     virtual InteractionResult Interact(GlCharacter &model,std::string &return_value) = 0;
@@ -45,6 +51,7 @@ public:
     virtual int AddAxes(std::vector<glm::vec3> &axes) = 0;
     virtual std::pair<float, float> ProjectOnAxe(const glm::vec3 & axe) = 0;
     virtual bool IsInteractable(GlCharacter * obj){return true;}
+
 };
 
 #endif
