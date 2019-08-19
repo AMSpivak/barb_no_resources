@@ -13,8 +13,8 @@ namespace Gl2D
 		float m_progress = m_value_function();
         renderSprite(m_shader,
 			real_x, real_y,
-			real_x + real_width, real_y, 
-			real_x + real_width, real_y + real_height,
+			real_x + m_progress * real_width * 0.99, real_y, 
+			real_x + m_progress * real_width * 0.99, real_y + real_height,
 			real_x, real_y + real_height,
 			glm::vec4(1.0f,1.0f,1.0f,1.0f),&(m_fill_texture->m_texture),
 			m_progress *0.99, 1.0f,

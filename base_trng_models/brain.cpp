@@ -53,29 +53,18 @@ namespace Character
                 }
                 else
                 {
-                    character.UseSequence("stance");
+                    if(dice_roll > (random_maximum/4))
+                    {
+                        character.UseSequence("stance");
+                    }
+                    else
+                    {
+                        character.UseSequence("strike");
+                    }
+                    
+
                 }
                 
-                // switch(unit_control_action.first)
-                // {
-                //     case AnimationCommand::kStrike:
-                //         character.UseSequence("strike");
-                //         m_messages.push_back("hero_strike");
-                //     break;
-                //     case AnimationCommand::kUse:
-                //         character.UseSequence("use");
-                //         m_messages.push_back("hero_use");
-                //     break;
-                //     case AnimationCommand::kMove:
-                //         character.UseSequence("walk");
-                //     break;
-                //     case AnimationCommand::kFastMove:
-                //         character.UseSequence("run");
-                //     break;
-                //     default:
-                //         character.UseSequence("stance");
-                //     break;
-                // }
             }
 
             if(rotator == 0)

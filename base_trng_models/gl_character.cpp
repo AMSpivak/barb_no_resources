@@ -253,7 +253,7 @@ void GlCharacter::ExecuteCommand(const std::pair<AnimationCommand,std::string> &
             m_messages.push_back(command.second);
         break;
         case AnimationCommand::kStrike:
-
+            m_messages.push_back("strike " + GetName());
         break;
         default:
         break;
@@ -291,6 +291,7 @@ int GlCharacter::Process(std::list<std::string> &m_messages)
                 now_frame = current_animation->start_frame;
             }
         }
+        ExecuteCommand(current_animation->m_frame_message,m_messages);
     }
 
     size_t diff_frame = current_animation->end_frame - current_animation->start_frame > 2 ?now_frame - current_animation->start_frame:4;

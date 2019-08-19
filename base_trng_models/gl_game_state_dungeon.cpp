@@ -1197,7 +1197,7 @@ void GlGameStateDungeon::ControlUnit(GlCharacter & character)
             case AnimationCommand::kStrike:
                 character.UseSequence("strike");
                 //m_messages.push_back("hero_strike");
-                m_messages.push_back("strike " + character.GetName());
+                //m_messages.push_back("strike " + character.GetName());
             break;
             case AnimationCommand::kUse:
                 character.UseSequence("use");
@@ -1221,7 +1221,7 @@ void GlGameStateDungeon::ControlUnit(GlCharacter & character)
 IGlGameState *  GlGameStateDungeon::Process(std::map <int, bool> &inputs, float joy_x, float joy_y)
 {
     glRenderTargetDeffered &render_target = *(dynamic_cast<glRenderTargetDeffered*>(m_render_target_map["base_deffered"].get()));
-    std::shared_ptr<GlCharacter> hero_ptr = m_models_map["Hero"];
+    //std::shared_ptr<GlCharacter> hero_ptr = m_models_map["Hero"];
    
     GLuint current_shader;
 
@@ -1252,7 +1252,7 @@ IGlGameState *  GlGameStateDungeon::Process(std::map <int, bool> &inputs, float 
         processed = true;
         MapObjectsEventsInteract();
         hero_position = hero->GetPosition();
-        HeroEventsInteract(hero_ptr);
+        HeroEventsInteract(hero);
 
         ProcessMessages();
         
@@ -1271,6 +1271,7 @@ IGlGameState *  GlGameStateDungeon::Process(std::map <int, bool> &inputs, float 
         }
 
         FitObjects(10,0.01f);
+        GameSettings::GetHeroStatus()->SetLife(hero->GetLifeValue());
     }
 
     return this;
