@@ -54,7 +54,8 @@ InteractionResult IMapEventHeroStrike::Interact(GlCharacter &model,std::string &
     return InteractionResult::Damage;
 }
 
-bool IMapEventHeroStrike::IsInteractable(GlCharacter * obj)
+bool IMapEventHeroStrike::IsInteractable(std::weak_ptr<GlCharacter> obj)
 {
-    return m_owner != obj;
+    //if(m_owner.expired)
+    return m_owner.lock() != obj.lock();
 }

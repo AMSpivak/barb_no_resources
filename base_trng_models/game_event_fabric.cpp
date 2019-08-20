@@ -15,17 +15,18 @@ namespace GameEvents
             case EventTypes::HeroStrike:
             {
                 
-                auto ptr = static_cast<const GlCharacter *>(parameters);
+                auto ptrtoptr = static_cast<const std::shared_ptr<GlCharacter> *>(parameters);
+                auto ptr = *ptrtoptr;
                 auto e_ptr = std::make_shared<IMapEventHeroStrike>(1.0f,1.4f);
                 e_ptr->model_matrix = ptr->model_matrix;
-                e_ptr->AddEdge(std::pair<glm::vec3,glm::vec3>(glm::vec3(0.3f,0.0f,-0.5f),glm::vec3(0.5f,0.0f,-2.5f)));
-                e_ptr->AddEdge(std::pair<glm::vec3,glm::vec3>(glm::vec3(0.5f,0.0f,-2.5f),glm::vec3(-0.5f,0.0f,-2.5f)));
-                e_ptr->AddEdge(std::pair<glm::vec3,glm::vec3>(glm::vec3(-0.5f,0.0f,-2.5f),glm::vec3(-0.3f,0.0f,-0.5f)));
-                e_ptr->AddEdge(std::pair<glm::vec3,glm::vec3>(glm::vec3(-0.3f,0.0f,-0.5f),glm::vec3(0.3f,0.0f,-0.5f)));
+                e_ptr->AddEdge(std::pair<glm::vec3,glm::vec3>(glm::vec3(0.1f,0.0f,-0.5f),glm::vec3(0.2f,0.0f,-2.5f)));
+                e_ptr->AddEdge(std::pair<glm::vec3,glm::vec3>(glm::vec3(0.2f,0.0f,-2.5f),glm::vec3(-0.2f,0.0f,-2.5f)));
+                e_ptr->AddEdge(std::pair<glm::vec3,glm::vec3>(glm::vec3(-0.2f,0.0f,-2.5f),glm::vec3(-0.1f,0.0f,-0.5f)));
+                e_ptr->AddEdge(std::pair<glm::vec3,glm::vec3>(glm::vec3(-0.1f,0.0f,-0.5f),glm::vec3(0.1f,0.0f,-0.5f)));
                 e_ptr->position = ptr->GetPosition();
                 e_ptr->SetOwner(ptr);
                 //e_ptr->position[1] = 0;
-                std::cout <<e_ptr->position<<"\n";
+                //std::cout <<e_ptr->position<<"\n";
                 return e_ptr;
             }
             break;

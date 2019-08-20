@@ -33,7 +33,7 @@ public:
     int AddAxes(std::vector<glm::vec3> &axes);
     void AddEdge(const std::pair<glm::vec3, glm::vec3> edge);
     std::pair<float, float> ProjectOnAxe(const glm::vec3 & axe);
-    bool IsInteractable(GlCharacter * obj);
+    bool IsInteractable(std::weak_ptr<GlCharacter> obj);
 };
 
 #endif

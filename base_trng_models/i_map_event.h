@@ -15,7 +15,7 @@ class IMapEvent
 {
 private:
 protected:
-    const GlCharacter * m_owner;
+    std::weak_ptr<GlCharacter> m_owner;
 
 public:
     glm::mat4 model_matrix;
@@ -23,7 +23,7 @@ public:
     float hero_dependence;
     float mobs_dependence;
     glm::vec3 position;
-    IMapEvent():m_owner(nullptr),model_matrix(),radius(1.0f), position(0.0f,0.0f,0.0f)
+    IMapEvent():model_matrix(),radius(1.0f), position(0.0f,0.0f,0.0f)
     {
 
     }
@@ -37,7 +37,7 @@ public:
         return position;
     }
 
-    void SetOwner(const GlCharacter * owner)
+    void SetOwner(std::weak_ptr<GlCharacter> owner)
     {
         m_owner = owner;
     }
@@ -50,7 +50,7 @@ public:
     virtual void Show(const glm::vec3 & offset, GlScene::glCamera & camera){};
     virtual int AddAxes(std::vector<glm::vec3> &axes) = 0;
     virtual std::pair<float, float> ProjectOnAxe(const glm::vec3 & axe) = 0;
-    virtual bool IsInteractable(GlCharacter * obj){return true;}
+    virtual bool IsInteractable(std::weak_ptr<GlCharacter> obj){return true;}
 
 };
 

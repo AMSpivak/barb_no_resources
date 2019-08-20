@@ -11,6 +11,7 @@
 #include "brain.h"
 
 enum class CharacterTypes {hero,tile,map_object,mob};
+enum class AffectionCharacters {enemy,ally,map_object};
 
 class GlCharacter: public IGlModel
 {

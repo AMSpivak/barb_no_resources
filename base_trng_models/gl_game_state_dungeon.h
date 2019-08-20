@@ -136,7 +136,7 @@ private:
     void FitObjects(int steps, float accuracy);
     std::pair<float,const glm::vec3>  FitObjectToMap(GlCharacter& object);
     float FitObjectToObject(IGlModel& object1,IGlModel& object2);
-    InteractionResult ReactObjectToEvent(GlCharacter& object,IMapEvent& event,std::string &return_value);
+    InteractionResult ReactObjectToEvent(std::weak_ptr<GlCharacter> object,IMapEvent& event,std::string &return_value);
 
     void DrawFxSprite(GLuint &current_shader, GLuint texture);
     void SetMapLight(std::vector<std::string> &lines);
@@ -148,7 +148,7 @@ private:
     std::pair<AnimationCommand,const glm::mat4> ProcessInputs(std::map <int, bool> &inputs);
     void ProcessInputsCamera(std::map <int, bool> &inputs,float joy_x, float joy_y);
     void ControlUnit(GlCharacter & character);
-    GlCharacter * MobPointer(const std::string & name);
+    std::shared_ptr<GlCharacter> MobPointer(const std::string & name);
     
     
 };

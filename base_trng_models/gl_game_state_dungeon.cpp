@@ -224,7 +224,10 @@ GlGameStateDungeon::GlGameStateDungeon(std::map<const std::string,GLuint> &shade
         sstream >> name;
         auto obj = MobPointer(name);
         //mob_events.push_back(GameEvents::CreateGameEvent(GameEvents::EventTypes::HeroStrike,obj));
-        map_events.push_back(GameEvents::CreateGameEvent(GameEvents::EventTypes::HeroStrike,obj));
+        if(obj)
+        {
+            map_events.push_back(GameEvents::CreateGameEvent(GameEvents::EventTypes::HeroStrike,&obj));
+        }
     });
 
     m_message_processor.Add("hero_use",[this](std::stringstream &sstream)
@@ -1074,12 +1077,13 @@ float GlGameStateDungeon::FitObjectToObject(IGlModel& object1,IGlModel& object2)
     
 }
 
-InteractionResult GlGameStateDungeon::ReactObjectToEvent(GlCharacter& object,IMapEvent& event,std::string &return_value)
+InteractionResult GlGameStateDungeon::ReactObjectToEvent(std::weak_ptr<GlCharacter> object,IMapEvent& event,std::string &return_value)
 {
-    if(event.IsInteractable(&object))
+    if(!object.expired() && event.IsInteractable(object))
     {
-        auto intersection = Physics::Intersection(object,event);
-        return intersection.first < std::numeric_limits<float>::min() ? InteractionResult::Nothing : event.Interact(object,return_value);
+        auto ptr = object.lock();
+        auto intersection = Physics::Intersection(*ptr,event);
+        return intersection.first < std::numeric_limits<float>::min() ? InteractionResult::Nothing : event.Interact(*ptr,return_value);
     }
     return InteractionResult::Nothing;
 }
@@ -1130,14 +1134,14 @@ bool GlGameStateDungeon::MobKilled(std::shared_ptr<GlCharacter> obj)
     std::string event_return_string;
     for(auto event : map_events)
     {
-        ReactObjectToEvent(*obj,*event.get(),event_return_string);
+        ReactObjectToEvent(obj,*event.get(),event_return_string);
     }
     
     if(obj->GetType() != CharacterTypes::hero)
     {
         for(auto event : mob_events)
         {
-            ReactObjectToEvent(*obj,*event.get(),event_return_string);
+            ReactObjectToEvent(obj,*event.get(),event_return_string);
         }
     }
 
@@ -1179,7 +1183,7 @@ bool GlGameStateDungeon::HeroEventsInteract(std::shared_ptr<GlCharacter> hero_pt
     std::string event_return_string;
     for(auto event : hero_events)
     {
-       if(ReactObjectToEvent(*hero_ptr,*event.get(),event_return_string) == InteractionResult::PostMessage)
+       if(ReactObjectToEvent(hero_ptr,*event.get(),event_return_string) == InteractionResult::PostMessage)
        {
            //std::cout<<"\n"<<event_return_string<<"\n"<< hero_ptr->GetPosition()<<"\n";
            
@@ -1426,7 +1430,7 @@ void GlGameStateDungeon::ProcessInputsCamera(std::map <int, bool> &inputs,float 
         //Light2.SetCameraLocation(light_position+light_orientation*10.0f,light_orientation*10.0f, light_orientation);    
 }
 
-GlCharacter * GlGameStateDungeon::MobPointer(const std::string & name)
+std::shared_ptr<GlCharacter> GlGameStateDungeon::MobPointer(const std::string & name)
 {
     auto result = std::find_if(dungeon_objects.begin(),dungeon_objects.end(),[&](std::shared_ptr<GlCharacter> obj){return obj->GetName() == name;});
     if(result == dungeon_objects.end())
@@ -1435,7 +1439,7 @@ GlCharacter * GlGameStateDungeon::MobPointer(const std::string & name)
     }
     else
     {
-        return result->get();
+        return *result;
     }
 }
 
