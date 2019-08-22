@@ -338,6 +338,29 @@ std::pair<float, float> GlCharacter::ProjectOnAxe(const glm::vec3 &axe) const
     }
 }
 
+void GlCharacter::AddEnemy(std::weak_ptr<GlCharacter> enemy)
+{
+    if(!enemy.expired())
+    {
+        auto finder = enemy.lock();
+        auto result = std::find_if(enemies_list.begin(),enemies_list.end(),[&](std::pair<std::weak_ptr<GlCharacter>,float> obj){
+                    auto candidate = obj.first.lock();
+                    return finder == candidate;
+                    });
+        if(result == enemies_list.end())
+        {
+            enemies_list.emplace_back(std::make_pair(enemy,1.0f));
+            std::cout<<GetName()<<" hates "<<finder->GetName();
+        }
+        else
+        {
+            result->second = 1.0f;
+            std::cout<<GetName()<<" hates again "<<finder->GetName();
+        }
+        
+    }
+}
+
 const glm::vec3 & MoveObjectAttempt(IGlModel &object,const glm::vec3 &desired_direction, float length)
 {
     if(object.mass_inv > std::numeric_limits<float>::min())
@@ -346,6 +369,8 @@ const glm::vec3 & MoveObjectAttempt(IGlModel &object,const glm::vec3 &desired_di
     }
     return object.GetPosition();
 }
+
+
 
 
 
