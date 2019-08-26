@@ -37,6 +37,8 @@ public:
     CharacterTypes GetType() const;
     void SetBrain(std::shared_ptr<Character::IBrain> brain);
     void AddEnemy(std::weak_ptr<GlCharacter> enemy);
+    std::list<std::pair<std::weak_ptr<GlCharacter>,float>> enemies_list;
+
 
 private:
     std::shared_ptr<Character::IBrain> m_brain;
@@ -51,7 +53,7 @@ private:
     std::list<std::string> model_list;
     std::vector<std::pair<glm::vec3, glm::vec3>> m_edges; 
     std::map<std::string, AnimationSequence> sequence;
-    std::list<std::pair<std::weak_ptr<GlCharacter>,float>> enemies_list;
+    //std::list<std::pair<std::weak_ptr<GlCharacter>,float>> enemies_list;
     AnimationSequence * current_animation;
     void ExecuteCommand(const std::pair<AnimationCommand,std::string> &command,std::list<std::string> &m_messages);
 
