@@ -1199,9 +1199,7 @@ void GlGameStateDungeon::ControlUnit(GlCharacter & character)
     switch(unit_control_action.first)
         {
             case AnimationCommand::kStrike:
-                character.UseSequence("strike");
-                //m_messages.push_back("hero_strike");
-                //m_messages.push_back("strike " + character.GetName());
+                character.UseCommand(AnimationCommand::kStrike);
             break;
             case AnimationCommand::kUse:
                 character.UseSequence("use");

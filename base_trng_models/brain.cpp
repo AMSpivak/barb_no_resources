@@ -132,7 +132,7 @@ namespace Character
                         dice_roll = distribution(random_generator);
                         if(dice_roll>(random_maximum - 50))
                         {
-                            character.UseSequence("strike");/* code */
+                            character.UseCommand(AnimationCommand::kStrike);/* code */
                         }
                     }
                     
