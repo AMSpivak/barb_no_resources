@@ -1196,27 +1196,14 @@ bool GlGameStateDungeon::HeroEventsInteract(std::shared_ptr<GlCharacter> hero_pt
 
 void GlGameStateDungeon::ControlUnit(GlCharacter & character)
 {
-    switch(unit_control_action.first)
-        {
-            case AnimationCommand::kStrike:
-                character.UseCommand(AnimationCommand::kStrike);
-            break;
-            case AnimationCommand::kUse:
-                character.UseSequence("use");
-                m_messages.push_back("hero_use");
-            break;
-            case AnimationCommand::kMove:
-                character.UseSequence("walk");
-            break;
-            case AnimationCommand::kFastMove:
-                character.UseSequence("run");
-            break;
-            default:
-                character.UseSequence("stance");
-            break;
-        }
+    if(unit_control_action.first == AnimationCommand::kNone)
+    {
+        unit_control_action.first = AnimationCommand::kStance;
+    }
 
-        character.model_matrix = unit_control_action.second;
+    character.UseCommand(unit_control_action.first);
+
+    character.model_matrix = unit_control_action.second;
 }
 
 

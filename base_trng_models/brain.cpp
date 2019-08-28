@@ -23,6 +23,33 @@ namespace Character
     };
 
     
+    bool HatesLess(const std::pair<std::weak_ptr<GlCharacter>,float> a,const std::pair<std::weak_ptr<GlCharacter>,float> b, const GlCharacter & character)
+    {
+        auto a_ptr = a.first.lock();
+        if(!a_ptr)
+        {
+            return false;
+        }
+        auto b_ptr = b.first.lock();
+        if(!b_ptr)
+        {
+            return false;
+        }
+
+        auto l_a = character.GetPosition() - a_ptr->GetPosition();
+        auto l_b = character.GetPosition() - b_ptr->GetPosition();
+
+        float d_a = glm::dot(l_a,l_a);
+        if(d_a < 0.001f)
+            return true;
+
+        float d_b = glm::dot(l_b,l_b);
+        if(d_b < 0.001f)
+            return false; 
+
+        return a.second/d_a < b.second/d_b;
+    }
+
     class BrainMob: public IBrain
     {
         public:
@@ -38,12 +65,27 @@ namespace Character
 
             if(!character.enemies_list.empty())
             {
-                auto enemy_it = std::max_element( character.enemies_list.begin(),
+                auto enemy_it = std::max_element(   character.enemies_list.begin(),
                                                     character.enemies_list.end(),
-                                                    [](std::pair<std::weak_ptr<GlCharacter>,float> a,std::pair<std::weak_ptr<GlCharacter>,float> b){return a.second < b.second;});
+                                                    [&](std::pair<std::weak_ptr<GlCharacter>,float> a,std::pair<std::weak_ptr<GlCharacter>,float> b)->bool
+                                                    {
+                                                        return HatesLess(a,b,character);
+                                                        //return a.second < b.second;
+                                                    });
                 
-                arch_enemy = enemy_it->first;
+                if((enemy_it->second > 0.0f) && !enemy_it->first.expired() && (enemy_it->first.lock()->GetLifeValue() > 0.0f))
+                {
+                    arch_enemy = enemy_it->first;
+                }
+                else
+                {
+                    character.enemies_list.erase(enemy_it);
+                }
+                
+
+                
             }
+
 
             std::uniform_int_distribution<int> distribution(1,random_maximum);
             int dice_roll = distribution(random_generator);

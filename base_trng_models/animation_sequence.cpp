@@ -12,10 +12,12 @@ std::map<std::string,AnimationCommand> commands = {
                                                         {"message", AnimationCommand::kMessage},
                                                         {"strike", AnimationCommand::kStrike},
                                                         {"move", AnimationCommand::kMove},
+                                                        {"move_fast", AnimationCommand::kFastMove},
                                                         {"rotate", AnimationCommand::kRotate},
                                                         {"use", AnimationCommand::kUse},
                                                         {"executed", AnimationCommand::kExecuted},
                                                         {"damage", AnimationCommand::kDamaged},
+                                                        {"stance", AnimationCommand::kStance}
 
                                                     };
 
@@ -24,11 +26,12 @@ std::map<AnimationCommand,std::string> command_names = {
                                                         { AnimationCommand::kNone,""},
                                                         { AnimationCommand::kStrike,"strike"},
                                                         { AnimationCommand::kMove,"move"},
+                                                        { AnimationCommand::kFastMove,"move_fast"},
                                                         { AnimationCommand::kRotate,"rotate",},
                                                         { AnimationCommand::kUse,"use" },
                                                         { AnimationCommand::kExecuted,"executed"},
-                                                        { AnimationCommand::kDamaged,"damage"}
-
+                                                        { AnimationCommand::kDamaged,"damage"},
+                                                        { AnimationCommand::kStance,"stance"}
                                                     };
 
 std::pair<AnimationCommand,std::string> ParseCommand(const std::string &command)
