@@ -1,5 +1,8 @@
 #define GLEW_STATIC
 #include <iostream>
+#include <sstream>
+#include <fstream>
+
 #include <memory>
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
@@ -73,28 +76,51 @@ void SetRenderTargets(
 void FillShaders(std::map<const std::string,GLuint> &shader_map, const std::string filename)
 {
 	std::cout<<"\nTextures max:"<<(GL_MAX_TEXTURE_UNITS - GL_TEXTURE0)<<"\n";
+	std::ifstream shaders_file;
+	shaders_file.open(filename);
+    if(shaders_file.is_open())
+    {
+
+        while(!shaders_file.eof())
+        {
+
+            std::string line;
+            getline(shaders_file, line);
+			{
+				std::stringstream ss(line);
+				std::string name;
+				std::string vs;
+				std::string fs;
+				ss >> name >> vs >> fs;
+				
+				shader_map.insert ( std::pair<const std::string,GLuint>(name, LoadshaderProgram(vs,fs)));
+			}
+
+        }
+        shaders_file.close();
+    }
     //shader_map.insert ( std::pair<const std::string,GLuint>("sobel", LoadshaderProgram("shaders/dbg.vs","shaders/sobel_cross.fs")) );
-    shader_map.insert ( std::pair<const std::string,GLuint>("sobel_aa", LoadshaderProgram("shaders/dbg.vs","shaders/sobel_aa.fs")) );
-    shader_map.insert ( std::pair<const std::string,GLuint>("sobel_blur", LoadshaderProgram("shaders/dbg.vs","shaders/sobel_blur.fs")) );
-	shader_map.insert ( std::pair<const std::string,GLuint>("shadowmap", LoadshaderProgram("shaders/vertex1.vs","shaders/frag1.fs")) );
-	shader_map.insert ( std::pair<const std::string,GLuint>("sprite", LoadshaderProgram("shaders/sprite.vs","shaders/sprite.fs")) );
-	shader_map.insert ( std::pair<const std::string,GLuint>("fullscreen", LoadshaderProgram("shaders/dbg.vs","shaders/sprite.fs")) );
-	shader_map.insert ( std::pair<const std::string,GLuint>("fullblur_h", LoadshaderProgram("shaders/dbg.vs","shaders/sprite_blur_h.fs")) );
-	shader_map.insert ( std::pair<const std::string,GLuint>("fullblur_w", LoadshaderProgram("shaders/dbg.vs","shaders/sprite_blur_w.fs")) );
-	shader_map.insert ( std::pair<const std::string,GLuint>("sprite2d", LoadshaderProgram("shaders/sprite2d.vs","shaders/sprite2d.fs")) );
-	shader_map.insert ( std::pair<const std::string,GLuint>("sprite2dsimple", LoadshaderProgram("shaders/sprite2dsimple.vs","shaders/sprite2dsimple.fs")) );
-	shader_map.insert ( std::pair<const std::string,GLuint>("skybox", LoadshaderProgram("shaders/skybox.vs","shaders/skybox.fs")) );
-	shader_map.insert ( std::pair<const std::string,GLuint>("deffered",LoadshaderProgram("shaders/dbg.vs","shaders/deffered.fs")) );
-	shader_map.insert ( std::pair<const std::string,GLuint>("deffered_global",LoadshaderProgram("shaders/dbg.vs","shaders/deffered_global.fs")) );
-    shader_map.insert ( std::pair<const std::string,GLuint>("deffered_simple",LoadshaderProgram("shaders/dbg.vs","shaders/deff_simple.fs")) );
-	shader_map.insert ( std::pair<const std::string,GLuint>("deffered_cheap",LoadshaderProgram("shaders/dbg.vs","shaders/deffered_cheap.fs")) );
-    shader_map.insert ( std::pair<const std::string,GLuint>("deffered_simple_cheap",LoadshaderProgram("shaders/dbg.vs","shaders/deff_simple_cheap.fs")) );
-    shader_map.insert ( std::pair<const std::string,GLuint>("deff_1st_pass",LoadshaderProgram("shaders/vert_norm.vs","shaders/frag_norm.fs")) );
-    shader_map.insert ( std::pair<const std::string,GLuint>("deff_1st_pass_terrain",LoadshaderProgram("shaders/vert_norm.vs","shaders/frag_norm_terrain.fs")) );
-    shader_map.insert ( std::pair<const std::string,GLuint>("deff_1st_pass_heght",LoadshaderProgram("shaders/vert_norm_height.vs","shaders/frag_norm_height.fs")) );
-    shader_map.insert ( std::pair<const std::string,GLuint>("deff_heght",LoadshaderProgram("shaders/norm_height.vs","shaders/normals.fs","shaders/norm_height.gs")) );
-	shader_map.insert ( std::pair<const std::string,GLuint>("luminocity",LoadshaderProgram("shaders/dbg.vs","shaders/luminocity.fs")) );
-	shader_map.insert ( std::pair<const std::string,GLuint>("simple_heightmap",LoadshaderProgram("shaders/vert_height_simple.vs","shaders/frag_height_simple.fs")) );
+    // shader_map.insert ( std::pair<const std::string,GLuint>("sobel_aa", LoadshaderProgram("shaders/dbg.vs","shaders/sobel_aa.fs")) );
+    // shader_map.insert ( std::pair<const std::string,GLuint>("sobel_blur", LoadshaderProgram("shaders/dbg.vs","shaders/sobel_blur.fs")) );
+	// shader_map.insert ( std::pair<const std::string,GLuint>("shadowmap", LoadshaderProgram("shaders/vertex1.vs","shaders/frag1.fs")) );
+	// shader_map.insert ( std::pair<const std::string,GLuint>("sprite", LoadshaderProgram("shaders/sprite.vs","shaders/sprite.fs")) );
+	// shader_map.insert ( std::pair<const std::string,GLuint>("fullscreen", LoadshaderProgram("shaders/dbg.vs","shaders/sprite.fs")) );
+	// shader_map.insert ( std::pair<const std::string,GLuint>("fullblur_h", LoadshaderProgram("shaders/dbg.vs","shaders/sprite_blur_h.fs")) );
+	// shader_map.insert ( std::pair<const std::string,GLuint>("fullblur_w", LoadshaderProgram("shaders/dbg.vs","shaders/sprite_blur_w.fs")) );
+	// shader_map.insert ( std::pair<const std::string,GLuint>("sprite2d", LoadshaderProgram("shaders/sprite2d.vs","shaders/sprite2d.fs")) );
+	// shader_map.insert ( std::pair<const std::string,GLuint>("sprite2dsimple", LoadshaderProgram("shaders/sprite2dsimple.vs","shaders/sprite2dsimple.fs")) );
+	// shader_map.insert ( std::pair<const std::string,GLuint>("skybox", LoadshaderProgram("shaders/skybox.vs","shaders/skybox.fs")) );
+	// shader_map.insert ( std::pair<const std::string,GLuint>("deffered",LoadshaderProgram("shaders/dbg.vs","shaders/deffered.fs")) );
+	// shader_map.insert ( std::pair<const std::string,GLuint>("deffered_global",LoadshaderProgram("shaders/dbg.vs","shaders/deffered_global.fs")) );
+    // shader_map.insert ( std::pair<const std::string,GLuint>("deffered_simple",LoadshaderProgram("shaders/dbg.vs","shaders/deff_simple.fs")) );
+	// shader_map.insert ( std::pair<const std::string,GLuint>("deffered_cheap",LoadshaderProgram("shaders/dbg.vs","shaders/deffered_cheap.fs")) );
+    // shader_map.insert ( std::pair<const std::string,GLuint>("deffered_simple_cheap",LoadshaderProgram("shaders/dbg.vs","shaders/deff_simple_cheap.fs")) );
+    // shader_map.insert ( std::pair<const std::string,GLuint>("deff_1st_pass",LoadshaderProgram("shaders/vert_norm.vs","shaders/frag_norm.fs")) );
+    // shader_map.insert ( std::pair<const std::string,GLuint>("deff_1st_pass_terrain",LoadshaderProgram("shaders/vert_norm.vs","shaders/frag_norm_terrain.fs")) );
+    // shader_map.insert ( std::pair<const std::string,GLuint>("deff_1st_pass_heght",LoadshaderProgram("shaders/vert_norm_height.vs","shaders/frag_norm_height.fs")) );
+    // shader_map.insert ( std::pair<const std::string,GLuint>("deff_heght",LoadshaderProgram("shaders/norm_height.vs","shaders/normals.fs","shaders/norm_height.gs")) );
+	// shader_map.insert ( std::pair<const std::string,GLuint>("luminocity",LoadshaderProgram("shaders/dbg.vs","shaders/luminocity.fs")) );
+	// shader_map.insert ( std::pair<const std::string,GLuint>("simple_heightmap",LoadshaderProgram("shaders/vert_height_simple.vs","shaders/frag_height_simple.fs")) );
 }
 
 std::map<std::string,std::shared_ptr<glRenderTargetSimple>> m_render_target_map;

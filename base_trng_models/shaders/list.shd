@@ -1,4 +1,5 @@
 sobel_aa shaders/dbg.vs shaders/sobel_aa.fs
+sobel_blur shaders/dbg.vs shaders/sobel_blur.fs
 shadowmap shaders/vertex1.vs shaders/frag1.fs
 sprite shaders/sprite.vs shaders/sprite.fs
 fullscreen shaders/dbg.vs shaders/sprite.fs

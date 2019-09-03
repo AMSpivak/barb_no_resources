@@ -569,12 +569,11 @@ void GlGameStateDungeon::DrawDungeon(GLuint &current_shader,std::shared_ptr<GlCh
     scene.render_shader =  current_shader;
     scene.render_camera = &camera;       
     scene.zero_offset = hero_position;       
+    
     for(auto object : dungeon_objects)
     {
         object->Draw(scene,glm::translate(glm::mat4(), object->GetPosition() - hero_position));
-    }
-
-    
+    }    
 }
 
 void DrawSimpleLight(const glm::vec4 &light_pos_vector,const glm::vec3 &light_color_vector,const glm::vec3 &camera_position,GLuint current_shader,glRenderTargetDeffered &render_target)
@@ -1244,10 +1243,6 @@ IGlGameState *  GlGameStateDungeon::Process(std::map <int, bool> &inputs, float 
         HeroEventsInteract(hero);
 
         ProcessMessages();
-        
-
-       
-         
         ProcessInputsCamera(inputs,joy_x, joy_y);
               
         unit_control_action = ProcessInputs(inputs);
