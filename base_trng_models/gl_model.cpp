@@ -45,7 +45,38 @@ void glModel::Draw(GlScene::Scene &scene, Animation &animation, int now_frame,co
 		glUniformMatrix4fv(cameraLoc, 1, GL_FALSE, glm::value_ptr(scene.render_camera->CameraMatrix()));
 		unsigned int zero_offset = glGetUniformLocation(scene.render_shader, "zero_offset");
 		glUniform3fv(zero_offset, 1, glm::value_ptr(scene.zero_offset));
+
+		glActiveTexture(GL_TEXTURE0);
+		glBindTexture(GL_TEXTURE_2D, m_material->m_albedo_texture->m_texture);
+
+		glUniform1i(glGetUniformLocation(scene.render_shader, "UtilityTexture"), 1);
+		glActiveTexture(GL_TEXTURE1);
+		glBindTexture(GL_TEXTURE_2D, m_material->m_roughness_metalness_texture->m_texture);
+
+		glUniform1i(glGetUniformLocation(scene.render_shader, "NormalTexture"), 2);
+		glActiveTexture(GL_TEXTURE2);
+		glBindTexture(GL_TEXTURE_2D, m_material->m_normal_height_texture->m_texture);
+		scene.material = m_material;
 	}
+	else
+	{
+		/* code */
+		if((scene.material.expired())||(m_material != scene.material.lock()))
+		{
+			glActiveTexture(GL_TEXTURE0);
+			glBindTexture(GL_TEXTURE_2D, m_material->m_albedo_texture->m_texture);
+
+			glUniform1i(glGetUniformLocation(scene.render_shader, "UtilityTexture"), 1);
+			glActiveTexture(GL_TEXTURE1);
+			glBindTexture(GL_TEXTURE_2D, m_material->m_roughness_metalness_texture->m_texture);
+
+			glUniform1i(glGetUniformLocation(scene.render_shader, "NormalTexture"), 2);
+			glActiveTexture(GL_TEXTURE2);
+			glBindTexture(GL_TEXTURE_2D, m_material->m_normal_height_texture->m_texture);
+			scene.material = m_material;
+		}
+	}
+	
 	unsigned int modelLoc = glGetUniformLocation(scene.render_shader, "model");
 	unsigned int drawLoc = glGetUniformLocation(scene.render_shader, "draw");
 	unsigned int boneLoc  = glGetUniformLocation(scene.render_shader, "u_BoneMatrices");

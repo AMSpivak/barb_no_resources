@@ -9,6 +9,7 @@
 #include <vector>
 #include <memory>
 #include "glresourses.h"
+#include "gl_material.h"
 #include "glcamera.h"
 #include <iostream>
 
@@ -19,6 +20,7 @@ namespace GlScene
         GLuint render_shader;
         glm::vec3 zero_offset;
         const glCamera * render_camera;
+        std::weak_ptr<GameResource::GlMaterial> material;
     };
 }
 

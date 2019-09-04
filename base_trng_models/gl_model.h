@@ -32,9 +32,6 @@ public:
 
 	glm::mat4 model;
 	glm::mat4 draw_matrix;
-	// std::shared_ptr<IGlTextureStruct> diffuse_texture;
-    // std::shared_ptr<IGlTextureStruct> utility_texture;
-    // std::shared_ptr<IGlTextureStruct> normal_texture;
 	std::shared_ptr<GameResource::GlMaterial> m_material;
 	std::shared_ptr<IGlJubStruct> jub_bones;
 	std::shared_ptr<Animation> animation;
