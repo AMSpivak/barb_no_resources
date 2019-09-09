@@ -221,12 +221,16 @@ GlGameStateDungeon::GlGameStateDungeon(std::map<const std::string,GLuint> &shade
     m_message_processor.Add("strike",[this](std::stringstream &sstream)
     { 
         std::string name;
-        sstream >> name;
+        float force = 0.0f;
+        sstream >> name >> force;
         auto obj = MobPointer(name);
         //mob_events.push_back(GameEvents::CreateGameEvent(GameEvents::EventTypes::HeroStrike,obj));
         if(obj)
         {
-            map_events.push_back(GameEvents::CreateGameEvent(GameEvents::EventTypes::HeroStrike,&obj));
+            GameEvents::GeneralEventStrike strike;
+            strike.source = obj;
+            strike.strike_force = force;
+            map_events.push_back(GameEvents::CreateGameEvent(GameEvents::EventTypes::HeroStrike,&strike));
         }
     });
 
@@ -822,7 +826,7 @@ void GlGameStateDungeon::Draw()
 
         DrawDungeon(current_shader,hero,Camera);
         m_heightmap.Draw(m_shader_map["deff_1st_pass_heght"],hero_position,Camera);
-        //m_heightmap.Draw(m_shader_map["deff_heght"],hero_position,Camera.CameraMatrix());
+
         
         glPolygonMode( GL_FRONT_AND_BACK,GL_FILL );
         
@@ -904,8 +908,7 @@ void GlGameStateDungeon::Draw()
         glUniform1i(glGetUniformLocation(current_shader, "shadowMap"), 3);
 
         DrawGlobalLight(ligh_loc,Light);
-        //DrawGlobalLight(ligh_loc,Light2);
-
+        
         glDisable(GL_STENCIL_TEST); 
 
 

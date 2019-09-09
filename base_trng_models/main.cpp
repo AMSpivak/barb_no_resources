@@ -33,7 +33,8 @@ extern "C" {
 
 void key_callback(GLFWwindow* window, int key, int scancode, int action, int mode);
 
-GLuint SCR_WIDTH = 800, SCR_HEIGHT = 600;
+//GLuint SCR_WIDTH = 800, SCR_HEIGHT = 600;
+GLuint SCR_WIDTH = 1200, SCR_HEIGHT =1000;
 
 float key_angle = 0.0f;
 
@@ -66,11 +67,11 @@ void SetRenderTargets(
 
 	auto buff1 = std::make_pair("buffer_1",std::make_shared<glRenderTargetSimple>());
 	render_target_map.insert( buff1);
-	buff1.second->InitBuffer(width, height,quality);
+	buff1.second->InitBuffer(width/2, height/2,quality);
 
 	auto buff2 = std::make_pair("buffer_2",std::make_shared<glRenderTargetSimple>());
 	render_target_map.insert( buff2);
-	buff2.second->InitBuffer(width, height,quality);
+	buff2.second->InitBuffer(width/2, height/2,quality);
 }
 
 void FillShaders(std::map<const std::string,GLuint> &shader_map, const std::string filename)

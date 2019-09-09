@@ -45,7 +45,7 @@ EventProcessResult IMapEventHeroStrike::Process()
 
 InteractionResult IMapEventHeroStrike::Interact(GlCharacter &model,std::string &return_value)
 {
-    model.Damage(0.01f);
+    model.Damage(m_damage);
     model.AddEnemy(m_owner);
     std::cout<<model.GetName()<<" life "<<model.GetLifeValue()<<"\n";
     if((model.GetLifeValue()< 0)&&(model.GetType() != CharacterTypes::hero))

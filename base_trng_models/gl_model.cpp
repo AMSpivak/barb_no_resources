@@ -46,6 +46,7 @@ void glModel::Draw(GlScene::Scene &scene, Animation &animation, int now_frame,co
 		unsigned int zero_offset = glGetUniformLocation(scene.render_shader, "zero_offset");
 		glUniform3fv(zero_offset, 1, glm::value_ptr(scene.zero_offset));
 
+		
 		glActiveTexture(GL_TEXTURE0);
 		glBindTexture(GL_TEXTURE_2D, m_material->m_albedo_texture->m_texture);
 

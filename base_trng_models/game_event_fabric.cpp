@@ -14,10 +14,12 @@ namespace GameEvents
         {
             case EventTypes::HeroStrike:
             {
+
+                auto ptrtoptr = static_cast<const GeneralEventStrike *>(parameters);
                 
-                auto ptrtoptr = static_cast<const std::shared_ptr<GlCharacter> *>(parameters);
-                auto ptr = *ptrtoptr;
-                auto e_ptr = std::make_shared<IMapEventHeroStrike>(1.0f,1.4f);
+                //auto ptrtoptr = static_cast<const std::shared_ptr<GlCharacter> *>(parameters);
+                auto ptr = ptrtoptr->source;
+                auto e_ptr = std::make_shared<IMapEventHeroStrike>(1.0f,1.4f,ptrtoptr->strike_force);
                 e_ptr->model_matrix = ptr->model_matrix;
                 e_ptr->AddEdge(std::pair<glm::vec3,glm::vec3>(glm::vec3(0.1f,0.0f,-0.5f),glm::vec3(0.2f,0.0f,-2.5f)));
                 e_ptr->AddEdge(std::pair<glm::vec3,glm::vec3>(glm::vec3(0.2f,0.0f,-2.5f),glm::vec3(-0.2f,0.0f,-2.5f)));

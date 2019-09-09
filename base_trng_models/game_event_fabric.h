@@ -15,6 +15,14 @@ namespace GameEvents
         // float height;
     };
 
+    struct GeneralEventStrike
+    {
+        std::shared_ptr<GlCharacter> source;
+        float strike_force;
+        // float width;
+        // float height;
+    };
+
     std::shared_ptr<IMapEvent> CreateGameEvent(EventTypes event_type, const void * parameters);
 }
 #endif

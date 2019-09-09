@@ -253,8 +253,7 @@ void GlCharacter::ExecuteCommand(const std::pair<AnimationCommand,std::string> &
             m_messages.push_back(command.second);
         break;
         case AnimationCommand::kStrike:
-            m_messages.push_back("strike " + GetName());
-            std::cout << "strike " + GetName() << "\n";
+            m_messages.push_back("strike " + GetName() + " " + command.second);
         break;
         default:
         break;
@@ -353,12 +352,12 @@ void GlCharacter::AddEnemy(std::weak_ptr<GlCharacter> enemy)
         if(result == enemies_list.end())
         {
             enemies_list.emplace_back(std::make_pair(enemy,1.0f));
-            std::cout<<GetName()<<" hates "<<finder->GetName();
+            //std::cout<<GetName()<<" hates "<<finder->GetName();
         }
         else
         {
             result->second = 1.0f;
-            std::cout<<GetName()<<" hates again "<<finder->GetName();
+            //std::cout<<GetName()<<" hates again "<<finder->GetName();
         }
         
     }

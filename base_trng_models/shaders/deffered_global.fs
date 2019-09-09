@@ -225,8 +225,6 @@ void main()
 
         float shadow_res = (ShadowCalculation(vec4(FragPos.xyz,1.0),texNormal));
         shadow_res = mix(1.0,shadow_res,LightColor.w );
-        //float shadow_norm =1.0 -  smoothstep(0.6,1.0,1.0-norm_l);//norm_l;//smoothstep(shadow_res,1.0,norm_l);
-        //shadow_res = 1.0 - (1.0 - shadow_res) ;//* norm_l;
 
         vec3 numerator    = D * G * shlick;
         float denominator = 4.0 * max(dotNV, 0.0);
