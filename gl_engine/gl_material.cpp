@@ -29,7 +29,7 @@ namespace GameResource
     {
         GLenum texture =  GL_TEXTURE0 + start_texture;
 
-        glUniform1i(glGetUniformLocation(shader, albedo), start_texture);
+        if(albedo) glUniform1i(glGetUniformLocation(shader, albedo), start_texture);
         glActiveTexture(texture);
         glBindTexture(GL_TEXTURE_2D, m_albedo_texture->m_texture);
         ++start_texture;

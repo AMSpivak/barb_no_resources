@@ -1045,7 +1045,6 @@ std::pair<float,const glm::vec3> GlGameStateDungeon::FitObjectToMap(GlCharacter&
     const glm::vec3 edge=glm::vec3(100.0f,100.0f,100.0f);
     glm::vec3 new_position = glm::clamp(position,-edge,edge);
     
-    
     return std::make_pair(0.0f,new_position);
 }
 
