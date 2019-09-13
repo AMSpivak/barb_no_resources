@@ -16,6 +16,7 @@ GlCharacter::GlCharacter(CharacterTypes type):
                             ,now_frame(0)
                             ,current_animation(nullptr)
                             ,m_type(type)
+                            ,m_is_armed(false)
 {
     m_brain = Character::CreateBrain(Character::BrainTypes::Empty,[](GlCharacter & character) { return; });
     // if(!comand_proc_ready)
@@ -112,6 +113,7 @@ void GlCharacter::UpdateFromLines(std::vector<std::string> &lines)
     proc.Add("radius",[this](std::stringstream &sstream){ sstream >> radius;});                                
     proc.Add("edge",[this](std::stringstream &sstream){AddEdge(LoaderUtility::GetFromStream<std::pair<glm::vec3,glm::vec3>>(sstream));});
     proc.Add("position",[this](std::stringstream &sstream){SetPosition(LoaderUtility::GetFromStream<glm::vec3>(sstream));}); 
+    proc.Add("weapon",[this](std::stringstream &sstream){sstream >> m_weapon_model >> m_weapon_bone; m_is_armed = true;}); 
 
     proc.Add("light",[this](std::stringstream &sstream)
                                         {

@@ -1,6 +1,7 @@
 *.o
 *.tags
 *.exe
+*.gcda
 CAT.blend
 CAT.blend1
 base_trng_models/game

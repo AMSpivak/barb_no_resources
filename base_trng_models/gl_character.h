@@ -57,6 +57,8 @@ private:
     AnimationSequence * current_animation;
     void ExecuteCommand(const std::pair<AnimationCommand,std::string> &command,std::list<std::string> &m_messages);
 
+    bool m_is_armed;
+
     //void RefreshMatrixes();
 
 };
