@@ -175,15 +175,16 @@ int main(int argc, char const *argv[])
         glfwWindowHint(GLFW_RED_BITS, mode->redBits);
         glfwWindowHint(GLFW_GREEN_BITS, mode->greenBits);
         glfwWindowHint(GLFW_BLUE_BITS, mode->blueBits);
-        glfwWindowHint(GLFW_REFRESH_RATE, mode->refreshRate);
+        glfwWindowHint(GLFW_REFRESH_RATE, GLFW_DONT_CARE/*mode->refreshRate*/);
+		glfwWindowHint(GLFW_DOUBLEBUFFER, GLFW_TRUE);
 
         SCR_WIDTH = mode->width;
     	SCR_HEIGHT = mode->height;
-        window = glfwCreateWindow(SCR_WIDTH, SCR_HEIGHT, "OpenGL", monitor, nullptr);
+        window = glfwCreateWindow(SCR_WIDTH, SCR_HEIGHT, "Brutales", monitor, nullptr);
     }
     else
     {
-	    window = glfwCreateWindow(SCR_WIDTH, SCR_HEIGHT, "OpenGL", nullptr, nullptr);
+	    window = glfwCreateWindow(SCR_WIDTH, SCR_HEIGHT, "Brutales", nullptr, nullptr);
     }
 
 	if (window == nullptr)
@@ -193,8 +194,9 @@ int main(int argc, char const *argv[])
 		return -1;
 	}
 	glfwMakeContextCurrent(window);
-	glfwSetKeyCallback(window, key_callback);
+	glfwSwapInterval(0);
 
+	glfwSetKeyCallback(window, key_callback);
 	glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
 	glewExperimental = GL_TRUE;

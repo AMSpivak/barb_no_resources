@@ -1,3 +1,4 @@
+#-fprofile-generate -fprofile-use  
 CC=g++
 ENGINE=..\gl_engine
 CFLAGS=-c  -I".\includes" -I".\glm" -I"$(ENGINE)" -O3  -std=gnu++14 -D _GLFW_WIN32
@@ -12,6 +13,7 @@ ENGINE_SOURCES= $(ENGINE)\octree.cpp $(ENGINE)\gl_material.cpp $(ENGINE)\glcamer
 SOURCES= $(ENGINE_SOURCES) brain.cpp game_inputs.cpp map_heightmap.cpp game_event_fabric.cpp animation_sequence.cpp game_status.cpp main.cpp map_event_general.cpp map_event_valhalla.cpp map_event_hero_action.cpp map_event_hero_strikes.cpp  gl_render_target.cpp gl_character.cpp gl_model.cpp gl_game_state_dungeon.cpp
 OBJECTS=$(SOURCES:.cpp=.o)
 EXECUTABLE=game
+
 
 all: build
 
