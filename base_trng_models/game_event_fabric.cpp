@@ -19,12 +19,38 @@ namespace GameEvents
                 
                 //auto ptrtoptr = static_cast<const std::shared_ptr<GlCharacter> *>(parameters);
                 auto ptr = ptrtoptr->source;
-                auto e_ptr = std::make_shared<IMapEventHeroStrike>(1.0f,1.4f,ptrtoptr->strike_force);
+                auto e_ptr = std::make_shared<IMapEventHeroStrike>(ptrtoptr->current_shader,ptrtoptr->depthmap,ptrtoptr->texture,0.3f,0.3f,ptrtoptr->strike_force);
                 e_ptr->model_matrix = ptr->model_matrix;
-                e_ptr->AddEdge(std::pair<glm::vec3,glm::vec3>(glm::vec3(0.1f,0.0f,-0.5f),glm::vec3(0.2f,0.0f,-2.5f)));
-                e_ptr->AddEdge(std::pair<glm::vec3,glm::vec3>(glm::vec3(0.2f,0.0f,-2.5f),glm::vec3(-0.2f,0.0f,-2.5f)));
-                e_ptr->AddEdge(std::pair<glm::vec3,glm::vec3>(glm::vec3(-0.2f,0.0f,-2.5f),glm::vec3(-0.1f,0.0f,-0.5f)));
-                e_ptr->AddEdge(std::pair<glm::vec3,glm::vec3>(glm::vec3(-0.1f,0.0f,-0.5f),glm::vec3(0.1f,0.0f,-0.5f)));
+
+                std::pair<glm::vec3, glm::vec3> edge = ptr->GetWeaponPosition();
+                std::pair<glm::vec3, glm::vec3> edge_old = ptr->GetWeaponPositionOld();
+                e_ptr->SetIndicator(edge.first);
+
+                edge.first[1] = 0.0f;
+                edge.second[1] = 0.0f;
+
+                edge_old.first[1] = 0.0f;
+                edge_old.second[1] = 0.0f;
+
+                e_ptr->AddEdge(edge);
+                e_ptr->AddEdge(std::make_pair(edge.second,edge_old.second));
+                e_ptr->AddEdge(std::make_pair(edge_old.second,edge.first));
+
+                // std::cout <<"Pos: "<<edge;
+                // std::swap(edge.first,edge.second);
+                // e_ptr->AddEdge(edge);
+                // std::cout <<" "<<edge<<"\n";
+
+                //e_ptr->AddEdge(std::pair<glm::vec3,glm::vec3>(glm::vec3(0.1f,0.0f,-0.5f),glm::vec3(0.2f,0.0f,-2.5f)));
+                //e_ptr->AddEdge(std::pair<glm::vec3,glm::vec3>(glm::vec3(0.2f,0.0f,-2.5f),glm::vec3(-0.2f,0.0f,-2.5f)));
+                //e_ptr->AddEdge(std::pair<glm::vec3,glm::vec3>(glm::vec3(-0.2f,0.0f,-2.5f),glm::vec3(-0.1f,0.0f,-0.5f)));
+                //e_ptr->AddEdge(std::pair<glm::vec3,glm::vec3>(glm::vec3(-0.1f,0.0f,-0.5f),glm::vec3(0.1f,0.0f,-0.5f)));
+                //e_ptr->AddEdge(std::pair<glm::vec3,glm::vec3>(glm::vec3(0.0f,0.0f,-0.5f),glm::vec3(0.0f,0.0f,-2.5f)));
+                //e_ptr->AddEdge(std::pair<glm::vec3,glm::vec3>(glm::vec3(-0.0f,0.0f,-2.5f),glm::vec3(-0.0f,0.0f,-0.5f)));
+
+
+                
+
                 e_ptr->position = ptr->GetPosition();
                 e_ptr->SetOwner(ptr);
                 //e_ptr->position[1] = 0;

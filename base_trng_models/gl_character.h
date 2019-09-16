@@ -39,6 +39,9 @@ public:
     void AddEnemy(std::weak_ptr<GlCharacter> enemy);
     std::list<std::pair<std::weak_ptr<GlCharacter>,float>> enemies_list;
 
+    const std::pair<glm::vec3, glm::vec3> GetWeaponPosition();
+    const std::pair<glm::vec3, glm::vec3> GetWeaponPositionOld();
+
 
 private:
     std::shared_ptr<Character::IBrain> m_brain;
@@ -58,6 +61,16 @@ private:
     void ExecuteCommand(const std::pair<AnimationCommand,std::string> &command,std::list<std::string> &m_messages);
 
     bool m_is_armed;
+
+    int m_weapon_model;
+    int m_weapon_bone;
+
+
+    std::pair<glm::vec3, glm::vec3>  m_weapon_now;
+    std::pair<glm::vec3, glm::vec3>  m_weapon_base;
+    std::pair<glm::vec3, glm::vec3>  m_weapon_old;
+
+
 
     //void RefreshMatrixes();
 

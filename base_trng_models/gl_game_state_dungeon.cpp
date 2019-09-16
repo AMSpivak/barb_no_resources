@@ -227,9 +227,13 @@ GlGameStateDungeon::GlGameStateDungeon(std::map<const std::string,GLuint> &shade
         //mob_events.push_back(GameEvents::CreateGameEvent(GameEvents::EventTypes::HeroStrike,obj));
         if(obj)
         {
+            glRenderTargetDeffered &render_target = *(dynamic_cast<glRenderTargetDeffered*>(m_render_target_map["base_deffered"].get()));
             GameEvents::GeneralEventStrike strike;
             strike.source = obj;
             strike.strike_force = force;
+            strike.texture = &(fx_texture_2->m_texture);
+            strike.current_shader = m_shader_map["sprite2d"];
+            strike.depthmap = render_target.depthMap;
             map_events.push_back(GameEvents::CreateGameEvent(GameEvents::EventTypes::HeroStrike,&strike));
         }
     });
@@ -562,6 +566,7 @@ void GlGameStateDungeon::LoadMap(const std::string &filename,const std::string &
     level_file.close(); 
 
     fx_texture = resources_manager->m_texture_atlas.Assign("valh.png");  
+    fx_texture_2 = resources_manager->m_texture_atlas.Assign("fireball.png");  
     GetResourceManager()->Clean();  
 
 }

@@ -66,7 +66,7 @@ void glModel::Draw(GlScene::Scene &scene, Animation &animation, int now_frame,co
 	glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
 	glUniformMatrix4fv(drawLoc, 1, GL_FALSE, glm::value_ptr(matrix));
 
-	const std::vector <Bone> &bones = jub_bones.get()->bones;
+	const std::vector <Bone> &bones = jub_bones->bones;
 	glUniformMatrix4fv(boneLoc, bones.size(), GL_FALSE, animation.GetDrawValues(now_frame,bones));
 	
 	Draw();

@@ -63,7 +63,7 @@ private:
     std::vector <std::shared_ptr<glModel> > Models;
     std::map<std::string,std::shared_ptr<glRenderTargetSimple>> &m_render_target_map;
     std::map<std::string,std::shared_ptr<GlCharacter>> & m_models_map;
-    std::shared_ptr<IGlTextureStruct> fx_texture, skybox, debug_texture;
+    std::shared_ptr<IGlTextureStruct> fx_texture, fx_texture_2,skybox, debug_texture;
     GlDungeon m_dungeon;
     std::list<std::shared_ptr<GlCharacter>>  dungeon_objects;
     std::list<std::shared_ptr<IMapEvent>> map_events;

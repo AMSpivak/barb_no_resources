@@ -113,7 +113,7 @@ void GlCharacter::UpdateFromLines(std::vector<std::string> &lines)
     proc.Add("radius",[this](std::stringstream &sstream){ sstream >> radius;});                                
     proc.Add("edge",[this](std::stringstream &sstream){AddEdge(LoaderUtility::GetFromStream<std::pair<glm::vec3,glm::vec3>>(sstream));});
     proc.Add("position",[this](std::stringstream &sstream){SetPosition(LoaderUtility::GetFromStream<glm::vec3>(sstream));}); 
-    proc.Add("weapon",[this](std::stringstream &sstream){sstream >> m_weapon_model >> m_weapon_bone; m_is_armed = true;}); 
+    proc.Add("weapon",[this](std::stringstream &sstream){sstream >> m_weapon_model >> m_weapon_bone >> m_weapon_base.first >> m_weapon_base.second; m_is_armed = true;}); 
 
     proc.Add("light",[this](std::stringstream &sstream)
                                         {
@@ -214,10 +214,10 @@ void GlCharacter::RefreshMatrixes(float approximation)
 
         if(Models[i]->parent_idx != -1)
         {
-            IGlJubStruct * bone_ptr = Models[Models[i]->parent_idx]->jub_bones.get();
+            auto bone_ptr = Models[Models[i]->parent_idx]->jub_bones;
             target_matrix = Models[Models[i]->parent_idx]->model *
                 Models[Models[i]->parent_idx]->GetBoneMatrix(now_frame,Models[i]->parent_bone) *
-                bone_ptr->bones[Models[i]->parent_bone].matrix * glm::inverse(Models[i]-> jub_bones.get()->bones[0].matrix);
+                bone_ptr->bones[Models[i]->parent_bone].matrix * glm::inverse(Models[i]-> jub_bones->bones[0].matrix);
         }
         else
         {
@@ -238,15 +238,27 @@ void GlCharacter::RefreshMatrixes(float approximation)
 
         // if(approximation > 0.9f)
         // {
-            Models[i]-> model = target_matrix;
+            
+        Models[i]-> model = target_matrix;
         // }
         // else
         // {
         //     std::cout<<"approx: "<<approximation<<"\n";
         //     Models[i]-> model = SlerpMatrix(Models[i]-> model,target_matrix,approximation);
         // }
+
+        
+    }
+
+    if(m_is_armed)
+    {
+        const auto & mul = Models[m_weapon_model]->GetBoneMatrix(now_frame,m_weapon_bone);
+        m_weapon_old =  m_weapon_now;
+        m_weapon_now.first = glm::vec3(mul * glm::vec4(m_weapon_base.first,1.0f));
+        m_weapon_now.second = glm::vec3(mul * glm::vec4(m_weapon_base.second,1.0f));
     }
 }
+
 void GlCharacter::ExecuteCommand(const std::pair<AnimationCommand,std::string> &command,std::list<std::string> &m_messages)
 {
     switch(command.first)
@@ -365,6 +377,16 @@ void GlCharacter::AddEnemy(std::weak_ptr<GlCharacter> enemy)
     }
 }
 
+const std::pair<glm::vec3, glm::vec3> GlCharacter::GetWeaponPosition()
+{
+    return m_weapon_now;
+}
+
+const std::pair<glm::vec3, glm::vec3> GlCharacter::GetWeaponPositionOld()
+{
+    return m_weapon_old;
+}
+
 const glm::vec3 & MoveObjectAttempt(IGlModel &object,const glm::vec3 &desired_direction, float length)
 {
     if(object.mass_inv > std::numeric_limits<float>::min())
@@ -373,6 +395,9 @@ const glm::vec3 & MoveObjectAttempt(IGlModel &object,const glm::vec3 &desired_di
     }
     return object.GetPosition();
 }
+
+
+
 
 
 

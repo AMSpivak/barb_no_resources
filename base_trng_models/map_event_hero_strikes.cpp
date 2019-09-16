@@ -6,6 +6,11 @@ void IMapEventHeroStrike::AddEdge(const std::pair<glm::vec3, glm::vec3> edge)
     m_edges.push_back(edge);
 }
 
+void IMapEventHeroStrike::SetIndicator(glm::vec3 indicator)
+{
+    m_indicator = indicator;
+}
+
 void IMapEventHeroStrike::Show(const glm::vec3 & offset, GlScene::glCamera & camera)
 {
     /*renderBillBoardDepth(m_current_shader,m_depthmap,m_texture,   
@@ -21,7 +26,16 @@ void IMapEventHeroStrike::Show(const glm::vec3 & offset, GlScene::glCamera & cam
         renderBillBoardDepth(m_current_shader,m_depthmap,m_texture,   
             m_width,m_height,glm::vec4(1.0,1.0,1.0,1.0),norm,offset,camera);
     }*/
+    //m_edges[0].first
+    if(m_texture)
+    {
+        float m_alpha = 1.0f;
 
+        auto v = glm::vec3(model_matrix * glm::vec4(m_indicator,1.0));
+        renderBillBoardDepth(m_current_shader,m_depthmap,m_texture,   
+            m_width,m_height,glm::vec4(m_alpha,m_alpha,m_alpha,m_alpha),position + v,offset,camera);
+
+    }
 }
 
 

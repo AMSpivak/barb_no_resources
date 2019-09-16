@@ -19,6 +19,9 @@ namespace GameEvents
     {
         std::shared_ptr<GlCharacter> source;
         float strike_force;
+        const GLuint * texture;
+        GLuint current_shader;
+        GLuint depthmap;
         // float width;
         // float height;
     };
