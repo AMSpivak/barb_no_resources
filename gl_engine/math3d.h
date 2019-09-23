@@ -8,5 +8,11 @@ namespace Math3D
                             const glm::vec3 & object_direction,
                             const glm::vec3 & positive_disorientation);
 
+    bool IsCounterClockwiseTriangle(    const glm::vec3 & a1, 
+                                    const glm::vec3 & a2,
+                                    const glm::vec3 & a3,
+                                    const glm::vec3 & normal,
+                                    );
+
 }
 #endif

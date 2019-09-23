@@ -31,12 +31,6 @@ void glModel::Draw(GlScene::Scene &scene, Animation &animation, int now_frame)
 }
 void glModel::Draw(GlScene::Scene &scene, Animation &animation, int now_frame,const glm::mat4 &matrix)
 {
-	//glUseProgram(shader);
-	// if(m_shader && (shaderProgram != m_shader) )
-	// {
-	// 	shaderProgram = m_shader;
-	// 	glUseProgram(shaderProgram);
-	// }
 	if(m_shader && (scene.render_shader != m_shader) )
 	{
 		
@@ -89,12 +83,12 @@ void glModel::AttachAnimation(std::vector <std::shared_ptr<Animation> > &animati
 	
 const glm::mat4 &glModel::GetBoneMatrix(size_t frame, size_t bone)
 {
-	animation->GetBoneMatrix(frame,bone,jub_bones.get()->bones);//frames[now_frame].bones[Models[i]->parent_bone];
+	animation->GetBoneMatrix(frame,bone,jub_bones->bones);//frames[now_frame].bones[Models[i]->parent_bone];
 }
 
 const glm::mat4 &glModel::GetRotationMatrix(size_t frame)
 {
-	animation->GetRotationMatrix(frame,jub_bones.get()->bones);//frames[now_frame].bones[Models[i]->parent_bone];
+	animation->GetRotationMatrix(frame,jub_bones->bones);//frames[now_frame].bones[Models[i]->parent_bone];
 }
 
 void glModel::LoadAll(std::string FileName)
@@ -145,8 +139,4 @@ void glModel::LoadAll(std::string FileName)
 
 	jub_bones = resources->m_bones_atlas.Assign(jub_name);
 	if(frames_name.compare("")) animation = resources->m_animation_atlas.Assign(frames_name);
-
-	//if(frames_name.compare("")) AttachAnimation(animations,path + frames_name);
-
-
 }
