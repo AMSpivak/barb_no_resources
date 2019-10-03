@@ -13,18 +13,13 @@ namespace Collision
         float val;
         for(auto edge :edges)
         {
-
-            norm4 = model_matrix * glm::vec4(edge.second[0],edge.second[1],edge.second[2],0.0f);
-            norm = position + glm::vec3(norm4[0],norm4[1],norm4[2]) ;
+            norm4 = model_matrix * glm::vec4(edge.second,0.0f);
+            norm = position + glm::vec3(norm4) ;
 
             val = glm::dot(norm,axe);
 
             if(val < min) min = val;
-
             if(val > max) max = val;
-
-            
-
         }
         return std::pair<float, float>(min, max);
         
@@ -40,13 +35,13 @@ namespace Collision
 
         for(auto edge :m_edges)
         {
-            norm4 = model_matrix * glm::vec4(edge.second[0],edge.second[1],edge.second[2],0.0f);
-            norm = glm::vec3(norm4[0],norm4[1],norm4[2]);        
+            norm4 = model_matrix * glm::vec4(edge.second,0.0f);
+            norm = glm::vec3(norm4);        
             axes.push_back(glm::normalize(norm));
             norm = edge.second - edge.first;
             norm = glm::cross(norm_z,norm);
-            norm4 = model_matrix * glm::vec4(norm[0],norm[1],norm[2],0.0f);
-            norm = glm::vec3(norm4[0],norm4[1],norm4[2]);
+            norm4 = model_matrix * glm::vec4(norm,0.0f);
+            norm = glm::vec3(norm4);
             axes.push_back(glm::normalize(norm));
         }
         

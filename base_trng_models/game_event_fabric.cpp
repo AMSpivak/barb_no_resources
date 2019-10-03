@@ -3,6 +3,7 @@
 #include "map_event_hero_action.h"
 #include "map_event_valhalla.h"
 #include "gl_character.h"
+#include "math3d.h"
 namespace GameEvents
 {
     
@@ -31,10 +32,19 @@ namespace GameEvents
 
                 edge_old.first[1] = 0.0f;
                 edge_old.second[1] = 0.0f;
+                glm::vec3 norm_z(0.0f,0.0f,1.0f);
+               // norm = glm::cross(norm_z,norm);
+                auto second_m = (edge_old.first + edge_old.second) * 0.5f;
+                
+                if(!Math3D::IsCounterClockwiseTriangle(edge.first,edge.second,second_m,norm_z))
+                {
+                    std::swap(edge.first,edge.second);
+                }
 
-                e_ptr->AddEdge(edge);
-                e_ptr->AddEdge(std::make_pair(edge.second,edge_old.second));
-                e_ptr->AddEdge(std::make_pair(edge_old.second,edge.first));
+
+                e_ptr->AddEdge(edge);        
+                e_ptr->AddEdge(std::make_pair(edge.second,second_m));
+                e_ptr->AddEdge(std::make_pair(second_m,edge.first));
 
                 // std::cout <<"Pos: "<<edge;
                 // std::swap(edge.first,edge.second);

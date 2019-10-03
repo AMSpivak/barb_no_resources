@@ -16,7 +16,7 @@ namespace Math3D
         bool IsCounterClockwiseTriangle(    const glm::vec3 & a1, 
                                     const glm::vec3 & a2,
                                     const glm::vec3 & a3,
-                                    const glm::vec3 & normal,
+                                    const glm::vec3 & normal
                                     )
         {
             const glm::vec3 a12(a2- a1);
