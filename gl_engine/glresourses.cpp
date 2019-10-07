@@ -150,6 +150,62 @@ void renderSprite(GLuint current_shader,
     glBindVertexArray(0);
 }
 
+void RenderSingleTriangle(GLuint current_shader, GLuint depthmap, 
+	const glm::vec3 & p1, const glm::vec2 & t1,
+	const glm::vec3 & p2, const glm::vec2 & t2,
+	const glm::vec3 & p3, const glm::vec2 & t3,
+	const glm::vec4 & corrector_v,
+	const GLuint * texture)
+{
+	unsigned int trisVAO = 0;
+    unsigned int trisVBO;
+	float trisVertices[] = {
+            // positions        // texture Coords
+
+			p1[0], p1[1], p1[2], 1.0f,
+			t1[0], t1[1],
+
+			p2[0], p2[1], p2[2], 1.0f,
+			t2[0], t2[1],
+
+			p3[0], p3[1], p3[2], 1.0f,
+			t3[0], t3[1]
+
+        };
+        // setup plane VAO
+	glGenVertexArrays(1, &trisVAO);
+	glGenBuffers(1, &trisVBO);
+	glBindVertexArray(trisVAO);
+	glBindBuffer(GL_ARRAY_BUFFER, trisVBO);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(trisVertices), &trisVertices, GL_STATIC_DRAW);
+	glEnableVertexAttribArray(0);
+	glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0);
+	glEnableVertexAttribArray(1);
+	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)(4 * sizeof(float)));
+	
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_2D, *texture);
+
+	glUniform1i(glGetUniformLocation(current_shader, "DepthMap"), 1);
+	glActiveTexture(GL_TEXTURE0+1);
+	glBindTexture(GL_TEXTURE_2D, depthmap);
+
+	glActiveTexture(GL_TEXTURE0);
+	
+	GLuint corrector_u  = glGetUniformLocation(current_shader, "corrector");
+	glUniform4fv(corrector_u, 1, glm::value_ptr(corrector_v));
+
+
+
+    glBindVertexArray(trisVAO);
+    glDrawArrays(GL_TRIANGLE_STRIP, 0, 3);
+    glBindVertexArray(0);
+	
+
+
+}
+
+
 void renderSpriteDepth(GLuint current_shader, GLuint depthmap, float sprite_depth,
 	float x0,float y0,float x1,float y1,float x2,float y2,float x3,float y3,
 	const glm::vec4 & corrector_v,

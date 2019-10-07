@@ -224,7 +224,7 @@ GlGameStateDungeon::GlGameStateDungeon(std::map<const std::string,GLuint> &shade
         float force = 0.0f;
         sstream >> name >> force;
         auto obj = MobPointer(name);
-        //mob_events.push_back(GameEvents::CreateGameEvent(GameEvents::EventTypes::HeroStrike,obj));
+        
         if(obj)
         {
             glRenderTargetDeffered &render_target = *(dynamic_cast<glRenderTargetDeffered*>(m_render_target_map["base_deffered"].get()));
