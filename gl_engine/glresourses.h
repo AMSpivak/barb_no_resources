@@ -9,6 +9,7 @@
 #include "glm/gtc/matrix_transform.hpp"
 #include "glm/gtc/type_ptr.hpp"
 #include "glcamera.h"
+#include "glscene.h"
 template <typename T1,typename T2>
 std::ostream& operator << ( std::ostream& os, const std::pair<T1,T2> & value)
 {
@@ -140,6 +141,13 @@ void renderBillBoardDepth(GLuint current_shader, GLuint depthmap,const GLuint * 
 						 const glm::vec3 & position, const glm::vec3 & offset, 
 						 GlScene::glCamera & camera);
 
+void RenderSingleTriangle(GLuint current_shader, GLuint depthmap, 
+	const glm::vec3 & p1, const glm::vec2 & t1,
+	const glm::vec3 & p2, const glm::vec2 & t2,
+	const glm::vec3 & p3, const glm::vec2 & t3,
+	const glm::vec4 & corrector_v,
+	GlScene::Scene &scene,
+	const GLuint * texture)
 
 void RenderHeightMap();
 

@@ -155,6 +155,7 @@ void RenderSingleTriangle(GLuint current_shader, GLuint depthmap,
 	const glm::vec3 & p2, const glm::vec2 & t2,
 	const glm::vec3 & p3, const glm::vec2 & t3,
 	const glm::vec4 & corrector_v,
+	GlScene::Scene &scene,
 	const GLuint * texture)
 {
 	unsigned int trisVAO = 0;
@@ -201,6 +202,8 @@ void RenderSingleTriangle(GLuint current_shader, GLuint depthmap,
     glDrawArrays(GL_TRIANGLE_STRIP, 0, 3);
     glBindVertexArray(0);
 	
+    glDeleteVertexArrays(1, &trisVAO);
+	glDeleteBuffers(1, &trisVBO);
 
 
 }
