@@ -196,10 +196,13 @@ void RenderSingleTriangle(GLuint current_shader, GLuint depthmap,
 	GLuint corrector_u  = glGetUniformLocation(current_shader, "corrector");
 	glUniform4fv(corrector_u, 1, glm::value_ptr(corrector_v));
 
-
+	GLuint camera_u  = glGetUniformLocation(current_shader, "camera");
+	glUniformMatrix4fv(position_u, 1, GL_FALSE, glm::value_ptr(scene->render_camera->CameraMatrix()));
 
     glBindVertexArray(trisVAO);
+	glDisable(GL_CULL_FACE);
     glDrawArrays(GL_TRIANGLE_STRIP, 0, 3);
+	glEnable(GL_CULL_FACE);
     glBindVertexArray(0);
 	
     glDeleteVertexArrays(1, &trisVAO);
