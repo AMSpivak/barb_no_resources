@@ -34,16 +34,28 @@ void IMapEventHeroStrike::Show(const glm::vec3 & offset, GlScene::glCamera & cam
         const glm::vec2 t(0.0f,1.0f);
 
         auto v = glm::vec3(model_matrix * glm::vec4(m_indicator,1.0));
+        auto draw_position = position - offset;
+        
+         auto d0 =draw_position + glm::vec3(model_matrix * glm::vec4(m_points[0],1.0f));
+         auto d1 =draw_position + glm::vec3(model_matrix * glm::vec4(m_points[1],1.0f));
+         auto d2 =draw_position + glm::vec3(model_matrix * glm::vec4(m_points[2],1.0f));
+
         // renderBillBoardDepth(m_current_shader,m_depthmap,m_texture,   
         //     m_width,m_height,glm::vec4(m_alpha,m_alpha,m_alpha,m_alpha),position + v,offset,camera);
         RenderSingleTriangle(m_current_shader, m_depthmap, 
-        position + m_points[0], t,
-        position + m_points[1], t,
-        position + m_points[2], t,
+        d0, t, d1, t, d2, t,
         glm::vec4(m_alpha,m_alpha,m_alpha,m_alpha),
         camera,
         m_texture);
 
+        // renderBillBoardDepth(m_current_shader,m_depthmap,m_texture,   
+        //      m_width,m_height,glm::vec4(m_alpha,m_alpha,m_alpha,m_alpha),position + m_points[0],offset,camera);
+       
+        // renderBillBoardDepth(m_current_shader,m_depthmap,m_texture,   
+        //      m_width,m_height,glm::vec4(m_alpha,m_alpha,m_alpha,m_alpha),position + m_points[1],offset,camera);
+        // renderBillBoardDepth(m_current_shader,m_depthmap,m_texture,   
+        //      m_width,m_height,glm::vec4(m_alpha,m_alpha,m_alpha,m_alpha),position + m_points[2],offset,camera);
+       
     }
 }
 
@@ -78,7 +90,7 @@ InteractionResult IMapEventHeroStrike::Interact(GlCharacter &model,std::string &
 {
     model.Damage(m_damage);
     model.AddEnemy(m_owner);
-    std::cout<<model.GetName()<<" life "<<model.GetLifeValue()<<"\n";
+    //std::cout<<model.GetName()<<" life "<<model.GetLifeValue()<<"\n";
     if((model.GetLifeValue()< 0)&&(model.GetType() != CharacterTypes::hero))
     {
         return InteractionResult::Kill;

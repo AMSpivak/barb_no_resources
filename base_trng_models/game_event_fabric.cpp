@@ -25,6 +25,13 @@ namespace GameEvents
                 auto edge = ptr->GetWeaponPosition();
                 auto edge_old = ptr->GetWeaponPositionOld();
                 auto second_m = (edge_old.first + edge_old.second) * 0.5f;
+                auto fist_m = glm::normalize(edge.first - edge.second);
+                edge.first += fist_m * 0.1f;
+                edge.second -= fist_m * 0.1f;
+                fist_m = glm::normalize((edge.first + edge.second) * 0.5f - second_m);
+                second_m -= fist_m * 0.1f;
+
+
                 e_ptr->SetIndicator(edge.first);
 
                 e_ptr->AssignPoints(edge.first,edge.second,second_m);

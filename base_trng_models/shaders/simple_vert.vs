@@ -2,7 +2,7 @@
 layout (location = 0) in vec3 a_Position;
 layout (location = 1) in vec2 v_Tex;
 
-out vec2 v_Tex;
+out vec2 Tex;
 out vec3 v_Depth;
 
 
@@ -20,6 +20,6 @@ void main()
 	tv_Position /= tv_Position.w;
 	float z = tv_Position.z *0.5 + 0.5;
 	v_Depth.z = z; 
-	v_Tex.x = v_Tex.x;
-	v_Tex.y = 1.0 - v_Tex.y;
+	Tex.x = v_Tex.x;
+	Tex.y = 1.0 - v_Tex.y;
 }

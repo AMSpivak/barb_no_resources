@@ -232,7 +232,8 @@ GlGameStateDungeon::GlGameStateDungeon(std::map<const std::string,GLuint> &shade
             strike.source = obj;
             strike.strike_force = force;
             strike.texture = &(fx_texture_2->m_texture);
-            strike.current_shader = m_shader_map["sprite2d"];
+            //strike.current_shader = m_shader_map["sprite2d"];
+            strike.current_shader = m_shader_map["simple"];
             strike.depthmap = render_target.depthMap;
             map_events.push_back(GameEvents::CreateGameEvent(GameEvents::EventTypes::HeroStrike,&strike));
         }

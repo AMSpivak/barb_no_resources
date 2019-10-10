@@ -170,9 +170,26 @@ void RenderSingleTriangle(GLuint current_shader, GLuint depthmap,
 			t2[0], t2[1],
 
 			p3[0], p3[1], p3[2], 1.0f,
-			t3[0], t3[1]
+			t3[0], t3[1],
+
+			p1[0], p1[1], p1[2], 1.0f,
+			t1[0], t1[1]
 
         };
+
+		// float trisVertices[] = {
+        //     // positions        // texture Coords
+
+		// 	0.0f, 0.0f, 0.0f, 1.0f,
+		// 	t1[0], t1[1],
+
+		// 	1.0f, 0.0f, 0.0f, 1.0f,
+		// 	t2[0], t2[1],
+
+		// 	0.0f, 1.0f, 0.0f, 1.0f,
+		// 	t3[0], t3[1]
+
+        // };
         // setup plane VAO
 	glGenVertexArrays(1, &trisVAO);
 	glGenBuffers(1, &trisVBO);
@@ -183,7 +200,13 @@ void RenderSingleTriangle(GLuint current_shader, GLuint depthmap,
 	glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0);
 	glEnableVertexAttribArray(1);
 	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)(4 * sizeof(float)));
-	
+	glEnableVertexAttribArray(0); 
+
+	glBindVertexArray(0);
+
+
+	glUseProgram(current_shader);
+
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, *texture);
 
@@ -201,7 +224,7 @@ void RenderSingleTriangle(GLuint current_shader, GLuint depthmap,
 
     glBindVertexArray(trisVAO);
 	glDisable(GL_CULL_FACE);
-    glDrawArrays(GL_TRIANGLE_STRIP, 0, 3);
+    glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 	glEnable(GL_CULL_FACE);
     glBindVertexArray(0);
 	

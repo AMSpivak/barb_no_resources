@@ -5,11 +5,11 @@ uniform sampler2D u_Texture;
 uniform sampler2D DepthMap;
 uniform vec4 corrector;
 
-in  vec2 v_Tex;
+in  vec2 Tex;
 in  vec3 v_Depth;
 void main()
 {
     //if(texture2D(DepthMap, v_Depth).x < Depth.z) discard;
-    //FragColor =  corrector*(texture2D(u_Texture, v_Tex));
-    FragColor =  vec4(1.0,1.0,1.0,1.0); 
+    //FragColor =  corrector*(texture2D(u_Texture, Tex));
+    FragColor =  vec4(1.0,0.0,0.0,1.0); 
 }
