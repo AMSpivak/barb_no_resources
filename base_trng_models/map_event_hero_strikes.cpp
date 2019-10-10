@@ -36,13 +36,13 @@ void IMapEventHeroStrike::Show(const glm::vec3 & offset, GlScene::glCamera & cam
         auto v = glm::vec3(model_matrix * glm::vec4(m_indicator,1.0));
         // renderBillBoardDepth(m_current_shader,m_depthmap,m_texture,   
         //     m_width,m_height,glm::vec4(m_alpha,m_alpha,m_alpha,m_alpha),position + v,offset,camera);
-        void RenderSingleTriangle(m_current_shader, m_depthmap, 
-        m_points[0], t,
-        m_points[1], t,
-        m_points[2], t,
+        RenderSingleTriangle(m_current_shader, m_depthmap, 
+        position + m_points[0], t,
+        position + m_points[1], t,
+        position + m_points[2], t,
         glm::vec4(m_alpha,m_alpha,m_alpha,m_alpha),
         camera,
-        m_texture)
+        m_texture);
 
     }
 }

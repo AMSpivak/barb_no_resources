@@ -9,7 +9,7 @@
 #include "glm/gtc/matrix_transform.hpp"
 #include "glm/gtc/type_ptr.hpp"
 #include "glcamera.h"
-#include "glscene.h"
+
 template <typename T1,typename T2>
 std::ostream& operator << ( std::ostream& os, const std::pair<T1,T2> & value)
 {
