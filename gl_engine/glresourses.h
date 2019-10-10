@@ -146,8 +146,8 @@ void RenderSingleTriangle(GLuint current_shader, GLuint depthmap,
 	const glm::vec3 & p2, const glm::vec2 & t2,
 	const glm::vec3 & p3, const glm::vec2 & t3,
 	const glm::vec4 & corrector_v,
-	GlScene::Scene &scene,
-	const GLuint * texture)
+	GlScene::glCamera & camera,
+	const GLuint * texture);
 
 void RenderHeightMap();
 

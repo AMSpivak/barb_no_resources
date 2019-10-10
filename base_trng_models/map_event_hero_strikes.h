@@ -14,6 +14,7 @@ private:
     float m_height;
     float m_damage;
     glm::vec3 m_indicator;
+    glm::vec3 m_points[3];
 public:
 
     int frames_lifetime;
@@ -38,6 +39,9 @@ public:
     std::pair<float, float> ProjectOnAxe(const glm::vec3 & axe);
     bool IsInteractable(std::weak_ptr<GlCharacter> obj);
     void SetIndicator(glm::vec3 indicator);
+    void AssignPoints(  const glm::vec3 & p1,
+                        const glm::vec3 & p2,
+                        const glm::vec3 & p3);
 };
 
 #endif

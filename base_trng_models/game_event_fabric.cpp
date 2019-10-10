@@ -24,7 +24,10 @@ namespace GameEvents
 
                 auto edge = ptr->GetWeaponPosition();
                 auto edge_old = ptr->GetWeaponPositionOld();
+                auto second_m = (edge_old.first + edge_old.second) * 0.5f;
                 e_ptr->SetIndicator(edge.first);
+
+                e_ptr->AssignPoints(edge.first,edge.second,second_m);
 
                 edge.first[1] = 0.0f;
                 edge.second[1] = 0.0f;
@@ -32,7 +35,7 @@ namespace GameEvents
                 edge_old.first[1] = 0.0f;
                 edge_old.second[1] = 0.0f;
                 glm::vec3 norm_z(0.0f,0.0f,1.0f);
-                auto second_m = (edge_old.first + edge_old.second) * 0.5f;
+                second_m[1] = 0.0f;
                 
                 if(!Math3D::IsCounterClockwiseTriangle(edge.first,edge.second,second_m,norm_z))
                 {

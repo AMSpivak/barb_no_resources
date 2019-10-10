@@ -259,9 +259,7 @@ GlGameStateDungeon::GlGameStateDungeon(std::map<const std::string,GLuint> &shade
     LoadMap("levels/test.lvl","base");
 
     glEnable(GL_DEPTH_TEST);
-	glEnable(GL_CULL_FACE);
-
-    
+	glEnable(GL_CULL_FACE);   
 }
 
 

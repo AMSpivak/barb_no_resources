@@ -31,13 +31,30 @@ void IMapEventHeroStrike::Show(const glm::vec3 & offset, GlScene::glCamera & cam
     {
         float m_alpha = 1.0f;
 
+        const glm::vec2 t(0.0f,1.0f);
+
         auto v = glm::vec3(model_matrix * glm::vec4(m_indicator,1.0));
-        renderBillBoardDepth(m_current_shader,m_depthmap,m_texture,   
-            m_width,m_height,glm::vec4(m_alpha,m_alpha,m_alpha,m_alpha),position + v,offset,camera);
+        // renderBillBoardDepth(m_current_shader,m_depthmap,m_texture,   
+        //     m_width,m_height,glm::vec4(m_alpha,m_alpha,m_alpha,m_alpha),position + v,offset,camera);
+        void RenderSingleTriangle(m_current_shader, m_depthmap, 
+        m_points[0], t,
+        m_points[1], t,
+        m_points[2], t,
+        glm::vec4(m_alpha,m_alpha,m_alpha,m_alpha),
+        camera,
+        m_texture)
 
     }
 }
 
+void IMapEventHeroStrike::AssignPoints( const glm::vec3 & p1,
+                                        const glm::vec3 & p2,
+                                        const glm::vec3 & p3)
+{
+    m_points[0] = p1;
+    m_points[1] = p2;
+    m_points[2] = p3;
+}
 
 int IMapEventHeroStrike::AddAxes(std::vector<glm::vec3> &axes)
 {
