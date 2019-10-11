@@ -269,6 +269,9 @@ void GlCharacter::ExecuteCommand(const std::pair<AnimationCommand,std::string> &
         case AnimationCommand::kStrike:
             m_messages.push_back("strike " + GetName() + " " + command.second);
         break;
+        case AnimationCommand::kSound:
+            m_messages.push_back("sound3d " + GetName() + " " + command.second);
+        break;
         default:
         break;
     }
@@ -292,6 +295,11 @@ int GlCharacter::Process(std::list<std::string> &m_messages)
     }
     else
     {
+        if(now_frame == current_animation->start_frame)
+        {
+            ExecuteCommand(current_animation->m_start_message,m_messages);
+        }
+
         ++now_frame;
 
         if(now_frame < current_animation->start_frame) now_frame = current_animation->start_frame;

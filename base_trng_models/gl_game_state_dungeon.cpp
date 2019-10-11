@@ -34,7 +34,7 @@
 #include "brain.h"
 //#include "glfw3.h"
 
-
+constexpr float sound_mul = 0.1f;
 
 
 void ResetModels(std::vector <std::shared_ptr<glModel> > &Models)
@@ -121,7 +121,7 @@ GlGameStateDungeon::GlGameStateDungeon(std::map<const std::string,GLuint> &shade
                                                         ,simple_screen(0)
                                                         ,m_sound_engine(sound_engine)
 {
-    m_sound_engine->play2D("material/audio/breakout.mp3", GL_TRUE);
+    //m_sound_engine->play2D("material/audio/breakout.mp3", GL_TRUE);
 
     hero->SetBrain(Character::CreateBrain(Character::BrainTypes::Hero,[this](GlCharacter & character){ControlUnit(character);}));
 
@@ -222,13 +222,24 @@ GlGameStateDungeon::GlGameStateDungeon(std::map<const std::string,GLuint> &shade
         mob_events.push_back(GameEvents::CreateGameEvent(GameEvents::EventTypes::HeroStrike,hero.get()));
     });
 
+    m_message_processor.Add("sound3d",[this](std::stringstream &sstream)
+    {  
+        std::string name;
+        std::string sound;
+        sstream >> name >> sound;   
+        //m_sound_engine->play2D(sound.c_str(), GL_FALSE);
+        auto obj = FindSharedCollectionByName(dungeon_objects.begin(), dungeon_objects.end(),name);
+        auto vec = sound_mul *obj->GetPosition();
+        m_sound_engine->play3D(sound.c_str(),irrklang::vec3df(vec[0],vec[1],vec[2]), false, false, false);
+    });
+
     m_message_processor.Add("strike",[this](std::stringstream &sstream)
     { 
-        m_sound_engine->play2D("material/audio/punch.wav", GL_FALSE);
+        //m_sound_engine->play2D("material/audio/punch.wav", GL_FALSE);
         std::string name;
         float force = 0.0f;
         sstream >> name >> force;
-        auto obj = MobPointer(name);
+        auto obj = FindSharedCollectionByName(dungeon_objects.begin(), dungeon_objects.end(),name);//MobPointer(name);
         
         if(obj)
         {
@@ -1408,6 +1419,10 @@ void GlGameStateDungeon::ProcessInputsCamera(std::map <int, bool> &inputs,float 
 
 
         Camera.SetCameraLocation(camera_position,glm::vec3(0.0f, 2.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+        auto norm = glm::normalize(-camera_position);
+        auto sound_pos = sound_mul * (hero_position + camera_position);
+        m_sound_engine->setListenerPosition(irrklang::vec3df(sound_pos[0],sound_pos[1],sound_pos[2]),
+                                            irrklang::vec3df(norm[0],norm[1],norm[2]));
         
         glm::vec3 light_orientation = glm::normalize(glm::vec3(-camera_position.x,0.0f,-camera_position.z));
         
