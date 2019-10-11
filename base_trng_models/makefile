@@ -4,7 +4,7 @@ ENGINE=..\gl_engine
 CFLAGS=-c  -I".\includes" -I".\glm" -I"$(ENGINE)" -O3  -std=gnu++14 -D _GLFW_WIN32
 ifeq ($(OS),Windows_NT)
 	DELOPERATOR= del /q
-	LDFLAGS=  -lglew32 -lSOIL -l:..\libglfw3.a -lopengl32 -static-libgcc -static-libstdc++  -l:libgdi32.a -L".\gl"
+	LDFLAGS=  -lglew32 -lSOIL -l:..\libglfw3.a libirrKlang.a -lopengl32 -static-libgcc -static-libstdc++  -l:libgdi32.a -L".\gl"
 else
 	DELOPERATOR= rm
 	LDFLAGS=  -lGLEW -lSOIL -lGL `pkg-config --cflags glfw3` `pkg-config --static --libs glfw3`

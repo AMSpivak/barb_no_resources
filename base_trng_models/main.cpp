@@ -7,6 +7,7 @@
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 #include <map>
+#include <sound/irrKlang.h>
 
 #include "glm/glm.hpp"
 #include "glm/trigonometric.hpp"
@@ -100,31 +101,11 @@ void FillShaders(std::map<const std::string,GLuint> &shader_map, const std::stri
         }
         shaders_file.close();
     }
-    //shader_map.insert ( std::pair<const std::string,GLuint>("sobel", LoadshaderProgram("shaders/dbg.vs","shaders/sobel_cross.fs")) );
-    // shader_map.insert ( std::pair<const std::string,GLuint>("sobel_aa", LoadshaderProgram("shaders/dbg.vs","shaders/sobel_aa.fs")) );
-    // shader_map.insert ( std::pair<const std::string,GLuint>("sobel_blur", LoadshaderProgram("shaders/dbg.vs","shaders/sobel_blur.fs")) );
-	// shader_map.insert ( std::pair<const std::string,GLuint>("shadowmap", LoadshaderProgram("shaders/vertex1.vs","shaders/frag1.fs")) );
-	// shader_map.insert ( std::pair<const std::string,GLuint>("sprite", LoadshaderProgram("shaders/sprite.vs","shaders/sprite.fs")) );
-	// shader_map.insert ( std::pair<const std::string,GLuint>("fullscreen", LoadshaderProgram("shaders/dbg.vs","shaders/sprite.fs")) );
-	// shader_map.insert ( std::pair<const std::string,GLuint>("fullblur_h", LoadshaderProgram("shaders/dbg.vs","shaders/sprite_blur_h.fs")) );
-	// shader_map.insert ( std::pair<const std::string,GLuint>("fullblur_w", LoadshaderProgram("shaders/dbg.vs","shaders/sprite_blur_w.fs")) );
-	// shader_map.insert ( std::pair<const std::string,GLuint>("sprite2d", LoadshaderProgram("shaders/sprite2d.vs","shaders/sprite2d.fs")) );
-	// shader_map.insert ( std::pair<const std::string,GLuint>("sprite2dsimple", LoadshaderProgram("shaders/sprite2dsimple.vs","shaders/sprite2dsimple.fs")) );
-	// shader_map.insert ( std::pair<const std::string,GLuint>("skybox", LoadshaderProgram("shaders/skybox.vs","shaders/skybox.fs")) );
-	// shader_map.insert ( std::pair<const std::string,GLuint>("deffered",LoadshaderProgram("shaders/dbg.vs","shaders/deffered.fs")) );
-	// shader_map.insert ( std::pair<const std::string,GLuint>("deffered_global",LoadshaderProgram("shaders/dbg.vs","shaders/deffered_global.fs")) );
-    // shader_map.insert ( std::pair<const std::string,GLuint>("deffered_simple",LoadshaderProgram("shaders/dbg.vs","shaders/deff_simple.fs")) );
-	// shader_map.insert ( std::pair<const std::string,GLuint>("deffered_cheap",LoadshaderProgram("shaders/dbg.vs","shaders/deffered_cheap.fs")) );
-    // shader_map.insert ( std::pair<const std::string,GLuint>("deffered_simple_cheap",LoadshaderProgram("shaders/dbg.vs","shaders/deff_simple_cheap.fs")) );
-    // shader_map.insert ( std::pair<const std::string,GLuint>("deff_1st_pass",LoadshaderProgram("shaders/vert_norm.vs","shaders/frag_norm.fs")) );
-    // shader_map.insert ( std::pair<const std::string,GLuint>("deff_1st_pass_terrain",LoadshaderProgram("shaders/vert_norm.vs","shaders/frag_norm_terrain.fs")) );
-    // shader_map.insert ( std::pair<const std::string,GLuint>("deff_1st_pass_heght",LoadshaderProgram("shaders/vert_norm_height.vs","shaders/frag_norm_height.fs")) );
-    // shader_map.insert ( std::pair<const std::string,GLuint>("deff_heght",LoadshaderProgram("shaders/norm_height.vs","shaders/normals.fs","shaders/norm_height.gs")) );
-	// shader_map.insert ( std::pair<const std::string,GLuint>("luminocity",LoadshaderProgram("shaders/dbg.vs","shaders/luminocity.fs")) );
-	// shader_map.insert ( std::pair<const std::string,GLuint>("simple_heightmap",LoadshaderProgram("shaders/vert_height_simple.vs","shaders/frag_height_simple.fs")) );
-}
+   }
 
 std::map<std::string,std::shared_ptr<glRenderTargetSimple>> m_render_target_map;
+
+irrklang::ISoundEngine      *SoundEngine = irrklang::createIrrKlangDevice();
 
 int main(int argc, char const *argv[])
 {
@@ -238,9 +219,11 @@ int main(int argc, char const *argv[])
 	hero->SetName("Hero");
 	//hero->model_matrix = glm::rotate(hero->model_matrix, glm::radians(-90.0f), glm::vec3(1.0f, 0.0f, 0.0f));
 	
-    GlGameStateDungeon game_state_dungeon(pmanager->m_shader_map,m_render_target_map,m_glmodels_map,resources_atlas,width,height);
+    GlGameStateDungeon game_state_dungeon(pmanager->m_shader_map,m_render_target_map,m_glmodels_map,resources_atlas,width,height,SoundEngine);
     IGlGameState * game_state = nullptr;
     game_state = &game_state_dungeon;
+
+	//SoundEngine->play2D("material/audio/breakout.mp3", GL_TRUE);
 
 	while(!glfwWindowShouldClose(window))
 	{

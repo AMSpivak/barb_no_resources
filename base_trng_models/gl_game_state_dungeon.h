@@ -15,6 +15,7 @@
 #include "gl2d_image.h"
 #include "map_heightmap.h"
 #include <list>
+#include <sound/irrKlang.h>
 
 class GlGameStateDungeon: public IGlGameState
 {
@@ -36,7 +37,8 @@ public:
         std::map<std::string,std::shared_ptr<GlCharacter>> &models_map,
         GLResourcesManager &resources_manager,
         size_t screen_width,
-        size_t screen_height);
+        size_t screen_height,
+        irrklang::ISoundEngine *sound_engine);
 
     ~GlGameStateDungeon()
     {
@@ -48,6 +50,7 @@ public:
     void SwitchOut(){}
 private:
 
+    irrklang::ISoundEngine  *m_sound_engine;
     unsigned char simple_screen;
 
     //std::shared_ptr<IGlTextureStruct> heightmap_texture;

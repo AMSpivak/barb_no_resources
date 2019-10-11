@@ -98,7 +98,8 @@ GlGameStateDungeon::GlGameStateDungeon(std::map<const std::string,GLuint> &shade
                                     std::map<std::string,std::shared_ptr<GlCharacter>> & models_map,
                                     GLResourcesManager &resources_manager,
                                     size_t screen_width,
-                                    size_t screen_height):
+                                    size_t screen_height,
+                                    irrklang::ISoundEngine *sound_engine):
                                                         IGlGameState(shader_map,resources_manager,screen_width,screen_height)
                                                         ,m_render_target_map(render_target_map)
                                                         ,m_models_map(models_map)
@@ -118,7 +119,10 @@ GlGameStateDungeon::GlGameStateDungeon(std::map<const std::string,GLuint> &shade
                                                         ,m_info_message("")
                                                         ,unit_control_action(AnimationCommand::kNone,glm::mat4(1))
                                                         ,simple_screen(0)
+                                                        ,m_sound_engine(sound_engine)
 {
+    m_sound_engine->play2D("material/audio/breakout.mp3", GL_TRUE);
+
     hero->SetBrain(Character::CreateBrain(Character::BrainTypes::Hero,[this](GlCharacter & character){ControlUnit(character);}));
 
     glClearColor(0.0f,0.0f,0.0f,1.0f);
@@ -220,6 +224,7 @@ GlGameStateDungeon::GlGameStateDungeon(std::map<const std::string,GLuint> &shade
 
     m_message_processor.Add("strike",[this](std::stringstream &sstream)
     { 
+        m_sound_engine->play2D("material/audio/punch.wav", GL_FALSE);
         std::string name;
         float force = 0.0f;
         sstream >> name >> force;
