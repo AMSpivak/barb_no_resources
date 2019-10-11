@@ -1141,6 +1141,8 @@ bool GlGameStateDungeon::MobKilled(std::shared_ptr<GlCharacter> obj)
     {
         ReactObjectToEvent(obj,*event.get(),event_return_string);
     }
+
+    float mob_life = obj->GetLifeValue();
     
     if(obj->GetType() != CharacterTypes::hero)
     {
@@ -1149,6 +1151,14 @@ bool GlGameStateDungeon::MobKilled(std::shared_ptr<GlCharacter> obj)
             ReactObjectToEvent(obj,*event.get(),event_return_string);
         }
     }
+
+    mob_life -= obj->GetLifeValue();
+
+    if(mob_life > 0.01f)
+    {
+        obj->UseCommand(AnimationCommand::kDamaged);
+    }
+
 
     if (obj->GetLifeValue() < 0.0f)
         {
