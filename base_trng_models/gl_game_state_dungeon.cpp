@@ -229,8 +229,11 @@ GlGameStateDungeon::GlGameStateDungeon(std::map<const std::string,GLuint> &shade
         sstream >> name >> sound;   
         //m_sound_engine->play2D(sound.c_str(), GL_FALSE);
         auto obj = FindSharedCollectionByName(dungeon_objects.begin(), dungeon_objects.end(),name);
-        auto vec = sound_mul *obj->GetPosition();
-        m_sound_engine->play3D(sound.c_str(),irrklang::vec3df(vec[0],vec[1],vec[2]), false, false, false);
+        if(obj)
+        {    
+            auto vec = sound_mul *obj->GetPosition();
+            m_sound_engine->play3D(sound.c_str(),irrklang::vec3df(vec[0],vec[1],vec[2]), false, false, false);
+        }
     });
 
     m_message_processor.Add("strike",[this](std::stringstream &sstream)
