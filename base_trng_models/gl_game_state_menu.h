@@ -64,7 +64,7 @@ private:
 
     void PostMessage(const std::string & event_string);
     void ProcessMessages();
-    std::pair<AnimationCommand,const glm::mat4> ProcessInputs(std::map <int, bool> &inputs);  
+    void ProcessInputs(std::map <int, bool> &inputs);  
     
 };
 

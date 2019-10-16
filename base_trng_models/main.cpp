@@ -23,6 +23,7 @@
 #include "gl_model.h"
 #include "gl_character.h"
 #include "gl_game_state_dungeon.h"
+#include "gl_game_state_menu.h"
 #include "animation_sequence.h"
 #include "engine_settings.h"
 #include "game_status.h"
@@ -106,6 +107,8 @@ void FillShaders(std::map<const std::string,GLuint> &shader_map, const std::stri
 std::map<std::string,std::shared_ptr<glRenderTargetSimple>> m_render_target_map;
 
 irrklang::ISoundEngine      *SoundEngine = irrklang::createIrrKlangDevice();
+
+GlGameStateDungeon * p_main_game_state = nullptr;
 
 int main(int argc, char const *argv[])
 {
@@ -219,14 +222,25 @@ int main(int argc, char const *argv[])
 	hero->SetName("Hero");
 	//hero->model_matrix = glm::rotate(hero->model_matrix, glm::radians(-90.0f), glm::vec3(1.0f, 0.0f, 0.0f));
 	
-    GlGameStateDungeon game_state_dungeon(pmanager->m_shader_map,m_render_target_map,m_glmodels_map,resources_atlas,width,height,SoundEngine);
+    //GlGameStateDungeon game_state_dungeon(pmanager->m_shader_map,m_render_target_map,m_glmodels_map,resources_atlas,width,height,SoundEngine);
+    GlGameStateMenu game_state_menu(pmanager->m_shader_map,m_render_target_map,m_glmodels_map,resources_atlas,width,height,SoundEngine);
     IGlGameState * game_state = nullptr;
-    game_state = &game_state_dungeon;
+    //game_state = &game_state_dungeon;
+    game_state = &game_state_menu;
 
 	//SoundEngine->play2D("material/audio/breakout.mp3", GL_TRUE);
 
 	while(!glfwWindowShouldClose(window))
 	{
+		if(inputs[GLFW_KEY_F1] && (game_state != p_main_game_state))
+		{
+			if(!p_main_game_state)
+			{
+				p_main_game_state = new GlGameStateDungeon (pmanager->m_shader_map,m_render_target_map,m_glmodels_map,resources_atlas,width,height,SoundEngine);
+			}
+			game_state = p_main_game_state;
+			continue;
+		}
 		GLuint current_shader;
 		double xpos, ypos;
 
@@ -254,6 +268,11 @@ int main(int argc, char const *argv[])
 		glfwSwapBuffers(window);
 		glfwPollEvents();
 		
+	}
+
+	if(p_main_game_state)
+	{
+		delete(p_main_game_state);
 	}
 
 	std::cout << "exit";
