@@ -209,21 +209,40 @@ void GlCharacter::RefreshMatrixes(float approximation)
     bool first_base = true;
     int models_count = Models.size();
     glm::mat4 target_matrix;
-    for(int i = 0; i < models_count; i++)
+    
+    //     //approximation = 1.0f;
+
+    //     // if(approximation > 0.9f)
+    //     // {
+            
+    //     Models[i]-> model = target_matrix;
+    //     // }
+    //     // else
+    //     // {
+    //     //     std::cout<<"approx: "<<approximation<<"\n";
+    //     //     Models[i]-> model = SlerpMatrix(Models[i]-> model,target_matrix,approximation);
+    //     // }
+
+        
+    // }
+    for(auto model : Models)
     {
 
-        if(Models[i]->parent_idx != -1)
+        if(model->parent_idx != -1)
         {
-            auto bone_ptr = Models[Models[i]->parent_idx]->jub_bones;
-            target_matrix = Models[Models[i]->parent_idx]->model *
-                Models[Models[i]->parent_idx]->GetBoneMatrix(now_frame,Models[i]->parent_bone) *
-                bone_ptr->bones[Models[i]->parent_bone].matrix * glm::inverse(Models[i]-> jub_bones->bones[0].matrix);
+            const auto & parent = Models[model->parent_idx];
+            //glm::mat4 tmp_matrix = glm::rotate(model_matrix, glm::radians(90.0f), glm::vec3(1.0f, 0.0f, 0.0f));
+    
+            target_matrix = parent->model *
+                parent->GetBoneMatrix(now_frame,model->parent_bone) *
+                (parent->jub_bones->bones[model->parent_bone].matrix) ;//* tmp_matrix ;
+            
         }
         else
         {
             if(first_base&&(now_frame!=0))
             {
-                glm::mat4 move_matrix = Models[i]->GetRotationMatrix(now_frame);
+                glm::mat4 move_matrix = model->GetRotationMatrix(now_frame);
                 glm::vec4 move_position = model_matrix * move_matrix[3];
                 m_position += glm::vec3(move_position[0],move_position[1],move_position[2]);
                 move_matrix[0].w = move_matrix[1].w = move_matrix[2].w = 0.0f;
@@ -233,29 +252,19 @@ void GlCharacter::RefreshMatrixes(float approximation)
             }        
             target_matrix = model_matrix;
         }
-
-        //approximation = 1.0f;
-
-        // if(approximation > 0.9f)
-        // {
-            
-        Models[i]-> model = target_matrix;
-        // }
-        // else
-        // {
-        //     std::cout<<"approx: "<<approximation<<"\n";
-        //     Models[i]-> model = SlerpMatrix(Models[i]-> model,target_matrix,approximation);
-        // }
-
-        
+           
+        model-> model = target_matrix;       
     }
 
     if(m_is_armed)
     {
         const auto & mul = Models[m_weapon_model]->GetBoneMatrix(now_frame,m_weapon_bone);
+        auto mul_full(glm::inverse(model_matrix) * Models[m_weapon_model]-> model * mul);
+        
+
         m_weapon_old =  m_weapon_now;
-        m_weapon_now.first = glm::vec3(mul * glm::vec4(m_weapon_base.first,1.0f));
-        m_weapon_now.second = glm::vec3(mul * glm::vec4(m_weapon_base.second,1.0f));
+        m_weapon_now.first = glm::vec3(mul_full * glm::vec4(m_weapon_base.first,1.0f));
+        m_weapon_now.second = glm::vec3(mul_full * glm::vec4(m_weapon_base.second,1.0f));
     }
 }
 
