@@ -231,11 +231,9 @@ void GlCharacter::RefreshMatrixes(float approximation)
         if(model->parent_idx != -1)
         {
             const auto & parent = Models[model->parent_idx];
-            //glm::mat4 tmp_matrix = glm::rotate(model_matrix, glm::radians(90.0f), glm::vec3(1.0f, 0.0f, 0.0f));
-    
             target_matrix = parent->model *
                 parent->GetBoneMatrix(now_frame,model->parent_bone) *
-                (parent->jub_bones->bones[model->parent_bone].matrix) ;//* tmp_matrix ;
+                (parent->jub_bones->bones[model->parent_bone].matrix);
             
         }
         else

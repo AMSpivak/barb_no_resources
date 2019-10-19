@@ -142,13 +142,13 @@ float GGX_Distribution(float cosThetaNH, float alpha) {
 
 vec3 fresnelSchlick(float cosTheta, vec3 F0)
 {
-    return F0 + (vec3(1.0,1.0,1.0) - F0) * pow(1.0 - cosTheta, 5.0);
+    return F0 + (vec3(1.0) - F0) * pow(1.0 - cosTheta, 5.0);
 }
 
 float DistributionGGX(vec3 N, vec3 H, float roughness)
 {
-    float a2      = roughness*roughness;
-    //float a2     = a*a;
+    float a      = roughness*roughness;
+    float a2     = a*a;
     float NdotH  = max(dot(N, H), 0.0);
     float NdotH2 = NdotH*NdotH;
 
@@ -192,8 +192,6 @@ void main()
 	vec4 texColor = texture(DiffuseMap, TexCoords);
     if(texColor.a < 0.05)
         discard;
-
-    float metallness = (texColor.a -0.06) * 1.064;
     vec4 normal_map = texture(NormalMap, TexCoords);
 	vec3 texNormal= normal_map.xyz;
 
@@ -213,15 +211,14 @@ void main()
         float dotNV = max(dot(texNormal, viewDir), 0.10);
 
         vec3 F0 = vec3(0.04);
-        F0 = mix(F0, texColor.rgb, metallness);
+        F0      = mix(F0, texColor.rgb, texColor.a);
 
         vec3 shlick =fresnelSchlick(dotNV,F0);
 
         float roug_sqr = (normal_map.w)*(normal_map.w);
-        float roughness = normal_map.w;
-        roughness = max(roughness,0.1);
+    
 
-        float D =  DistributionGGX(texNormal, halfwayDir, roughness);       
+        float D =  DistributionGGX(texNormal, halfwayDir, roug_sqr);       
         float G   = GeometrySmith(texNormal, viewDir, LightDir, roug_sqr); 
 
 
@@ -236,15 +233,14 @@ void main()
         vec3 kD = vec3(1.0) - kS;
 
         vec3 diffuse =kD/M_PI;
-        vec3 ShadowLightColor =  shadow_res* LightColor.xyz;
-        gAlbedoSpec =vec4(ShadowLightColor *norm_l* diffuse + LightColor.xyz *0.03,1.0);
+        vec3 ShadowLightColor = shadow_res* LightColor.xyz;
+        gAlbedoSpec =vec4(ShadowLightColor *norm_l* diffuse,1.0);
         gNormal =vec4(ShadowLightColor * specular,1.0);
 
-        //gNormal =vec4(0.0,0.0,0.0,1.0);
     }
     else
     {
-        gAlbedoSpec =vec4(LightColor.xyz *0.03,1.0);
+        gAlbedoSpec =vec4(0.0,0.0,0.0,1.0);
         gNormal =vec4(0.0,0.0,0.0,1.0);
     }
     //gNormal =vec4(0.0);

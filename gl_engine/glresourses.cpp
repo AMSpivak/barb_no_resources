@@ -223,9 +223,16 @@ void RenderSingleTriangle(GLuint current_shader, GLuint depthmap,
 	glUniformMatrix4fv(camera_u, 1, GL_FALSE, glm::value_ptr(camera.CameraMatrix()));
 
     glBindVertexArray(trisVAO);
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	glDisable(GL_CULL_FACE);
+	glDisable(GL_DEPTH_TEST);
+
     glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+	glDisable(GL_BLEND);
+	glEnable(GL_DEPTH_TEST);
 	glEnable(GL_CULL_FACE);
+
     glBindVertexArray(0);
 	
     glDeleteVertexArrays(1, &trisVAO);
