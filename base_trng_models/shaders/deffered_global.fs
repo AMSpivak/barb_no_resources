@@ -142,16 +142,16 @@ float GGX_Distribution(float cosThetaNH, float alpha) {
 
 vec3 fresnelSchlick(float cosTheta, vec3 F0)
 {
-    return F0 + (vec3(1.0,1.0,1.0) - F0) * pow(1.0 - cosTheta, 5.0);
+    //return F0 + (vec3(1.0,1.0,1.0) - F0) * pow(1.0 - cosTheta, 5.0);
+    return F0 + (1.0 - F0) * pow(1.0 - cosTheta, 5.0);
 }
 
 float DistributionGGX(vec3 N, vec3 H, float roughness)
 {
-    float a2      = roughness*roughness;
-    //float a2     = a*a;
+    float a      = roughness*roughness;
+    float a2     = a*a;
     float NdotH  = max(dot(N, H), 0.0);
     float NdotH2 = NdotH*NdotH;
-
 	
     float num   = a2;
     float denom = (NdotH2 * (a2 - 1.0) + 1.0);
@@ -172,7 +172,7 @@ float GeometrySchlickGGX(float NdotV, float roughness)
 }
 float GeometrySmith(vec3 N, vec3 V, vec3 L, float roughness)
 {
-    float NdotV = max(dot(N, V), 0.10);
+    float NdotV = max(dot(N, V), 0.0);
     float NdotL = max(dot(N, L), 0.0);
     float ggx2  = GeometrySchlickGGX(NdotV, roughness);
     float ggx1  = GeometrySchlickGGX(NdotL, roughness);
@@ -203,7 +203,7 @@ void main()
      
     if(norm_l > 0.01)
     {
-	    norm_l = max(norm_l,0.01);
+	    norm_l = max(norm_l,0.0);
         
         vec3 viewDir = normalize(viewPos - FragPos);
 
@@ -222,7 +222,7 @@ void main()
         roughness = max(roughness,0.1);
 
         float D =  DistributionGGX(texNormal, halfwayDir, roughness);       
-        float G   = GeometrySmith(texNormal, viewDir, LightDir, roug_sqr); 
+        float G   = GeometrySmith(texNormal, viewDir, LightDir, roughness); 
 
 
 
@@ -230,21 +230,25 @@ void main()
         shadow_res = mix(1.0,shadow_res,LightColor.w );
 
         vec3 numerator    = D * G * shlick;
-        float denominator = 4.0 * max(dotNV, 0.0);
-        vec3 specular     = numerator / max(denominator, 0.001);
+        //float denominator = 4.0 * max(dotNV, 0.0);
+        
+        float denominator = 4.0 * max(dotNV, 0.0) * norm_l + 0.001;
+        vec3 specular     = numerator / denominator;
         vec3 kS = shlick;
         vec3 kD = vec3(1.0) - kS;
+        kD *= 1.0 - metallness;
 
         vec3 diffuse =kD/M_PI;
         vec3 ShadowLightColor =  shadow_res* LightColor.xyz;
-        gAlbedoSpec =vec4(ShadowLightColor *norm_l* diffuse + LightColor.xyz *0.03,1.0);
-        gNormal =vec4(ShadowLightColor * specular,1.0);
+        gAlbedoSpec =vec4(ShadowLightColor *norm_l* diffuse,1.0);
+        //gNormal =vec4(ShadowLightColor * specular,1.0);
+        gNormal =vec4(shadow_res*specular* norm_l,1.0);
 
         //gNormal =vec4(0.0,0.0,0.0,1.0);
     }
     else
     {
-        gAlbedoSpec =vec4(LightColor.xyz *0.03,1.0);
+        gAlbedoSpec =vec4(0.0,0.0,0.0,1.0);
         gNormal =vec4(0.0,0.0,0.0,1.0);
     }
     //gNormal =vec4(0.0);
