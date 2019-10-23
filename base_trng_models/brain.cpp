@@ -70,7 +70,6 @@ namespace Character
                                                     [&](std::pair<std::weak_ptr<GlCharacter>,float> a,std::pair<std::weak_ptr<GlCharacter>,float> b)->bool
                                                     {
                                                         return HatesLess(a,b,character);
-                                                        //return a.second < b.second;
                                                     });
                 
                 if((enemy_it->second > 0.0f) && !enemy_it->first.expired() && (enemy_it->first.lock()->GetLifeValue() > 0.0f))
@@ -89,34 +88,31 @@ namespace Character
 
             std::uniform_int_distribution<int> distribution(1,random_maximum);
             int dice_roll = distribution(random_generator);
-            if(dice_roll>random_maximum - 1)
-            {
-                dice_roll = distribution(random_generator);
-                if(dice_roll > (random_maximum/2))
-                {
-                    if(dice_roll > (5*random_maximum/8))
-                    {
-                        character.UseSequence("walk");
-                    }
-                    else
-                    {
-                        character.UseSequence("run");
-                    } 
-                }
-                else
-                {
-                    if(dice_roll > (random_maximum/4))
-                    {
-                        character.UseSequence("stance");
-                    }
-                    else
-                    {
-                        //character.UseSequence("strike");
-                    }
-                }  
-            }
+            
             if(arch_enemy.expired())
             {
+                if(dice_roll>random_maximum - 1)
+                {
+                    dice_roll = distribution(random_generator);
+                    if(dice_roll > (random_maximum/2))
+                    {
+                        if(dice_roll > (5*random_maximum/8))
+                        {
+                            character.UseSequence("walk");
+                        }
+                        else
+                        {
+                            character.UseSequence("run");
+                        } 
+                    }
+                    else
+                    {
+                        if(dice_roll > (random_maximum/4))
+                        {
+                            character.UseSequence("stance");
+                        }
+                    }  
+                }
                 if(rotator == 0)
                 {
                     dice_roll = distribution(random_generator);
@@ -167,9 +163,14 @@ namespace Character
                 }
                 else
                 {
-                    if(enemy_distance > 3.2f)
+                    if(enemy_distance > 3.3f)
                     {
                         character.UseSequence("walk");   /* code */
+                    }
+                    else
+                    if(enemy_distance < 2.0f)
+                    {
+                        character.UseCommand(AnimationCommand::kStepBack);   /* code */
                     }
                     else
                     {

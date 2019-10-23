@@ -42,7 +42,7 @@ public:
 
     ~GlGameStateDungeon()
     {
-        
+        glDisable(GL_FRAMEBUFFER_SRGB);
     }
     void Draw();
     IGlGameState * Process(std::map <int, bool> &inputs, float joy_x, float joy_y);
