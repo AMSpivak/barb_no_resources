@@ -146,7 +146,9 @@ namespace Character
                 glm::vec3 y_basis = glm::vec3(0.0f,1.0f,0.0f);
                 glm::vec3 z_basis = glm::vec3(0.0f,0.0f,0.0f);
 
-                glm::vec3 enemy_vector = arch_enemy.lock()->GetPosition() - character.GetPosition();
+                auto enemy = arch_enemy.lock();
+
+                glm::vec3 enemy_vector = enemy->GetPosition() - character.GetPosition();
                 float enemy_distance = glm::length(enemy_vector);
                 z_basis = -glm::normalize(enemy_vector);
                 
@@ -165,7 +167,7 @@ namespace Character
                 }
                 else
                 {
-                    if(enemy_distance > 2.0f)
+                    if(enemy_distance > 3.2f)
                     {
                         character.UseSequence("walk");   /* code */
                     }

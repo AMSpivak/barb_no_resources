@@ -963,6 +963,9 @@ void Animation::LoadAnimation(const std::string & file_name)
 
 GLfloat * Animation::GetDrawValues(size_t frame,const std::vector <Bone> &bones)
 {
+	size_t size = frames.size();
+	frame = frame < size ? frame : size - 1; 
+
 	if(m_precalculated) 
 	{
 		return glm::value_ptr(frames[frame].bones[0]);
@@ -974,6 +977,9 @@ GLfloat * Animation::GetDrawValues(size_t frame,const std::vector <Bone> &bones)
 
 const glm::mat4 & Animation::GetBoneMatrix(size_t frame,size_t bone,const std::vector <Bone> &bones)
 {
+	size_t size = frames.size();
+	frame = frame < size ? frame : size - 1; 
+
 	if(m_precalculated) 
 	{
 		return frames[frame].bones[bone];
@@ -986,6 +992,9 @@ const glm::mat4 & Animation::GetBoneMatrix(size_t frame,size_t bone,const std::v
 
 void Animation::CalculateCache(const std::vector <Bone> &bones,size_t frame)
 {
+	size_t size = frames.size();
+	frame = frame < size ? frame : size - 1; 
+
 	float approx = 1.0f;
 	if(m_cache_frame == frame) 
 		return;
