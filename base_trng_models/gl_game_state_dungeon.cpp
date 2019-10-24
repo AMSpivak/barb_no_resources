@@ -1353,13 +1353,14 @@ std::pair<AnimationCommand,const glm::mat4>  GlGameStateDungeon::ProcessInputs(s
     bool action_use = inputs[GLFW_KEY_LEFT_ALT];
     bool attack = inputs[GLFW_MOUSE_BUTTON_LEFT]|inputs[GLFW_KEY_SPACE];  
     bool fast_move = inputs[GLFW_KEY_LEFT_SHIFT];
-
+    bool guard = inputs[GLFW_KEY_LEFT_CONTROL];
     GLFWgamepadstate state;
     if (glfwJoystickIsGamepad(GLFW_JOYSTICK_1)&&glfwGetGamepadState(GLFW_JOYSTICK_1, &state))
     {
         attack |=state.buttons[GLFW_GAMEPAD_BUTTON_A];
         action_use |=state.buttons[GLFW_GAMEPAD_BUTTON_X];
         fast_move |=state.buttons[GLFW_GAMEPAD_BUTTON_LEFT_BUMPER];
+        guard |=state.buttons[GLFW_GAMEPAD_BUTTON_RIGHT_BUMPER];
 
         if(move_square > 0.36f)
         {
@@ -1373,6 +1374,8 @@ std::pair<AnimationCommand,const glm::mat4>  GlGameStateDungeon::ProcessInputs(s
         return std::make_pair(AnimationCommand::kUse,rm);
     if(moving)
         return std::make_pair(fast_move ? AnimationCommand::kFastMove:AnimationCommand::kMove,rm);
+    if(guard)
+        return std::make_pair(AnimationCommand::kGuard,rm);
 
     return std::make_pair(AnimationCommand::kNone,rm);    
 }

@@ -125,6 +125,7 @@ int main(int argc, char const *argv[])
     inputs[GLFW_KEY_F9] = false;
     inputs[GLFW_KEY_F10] = false;
     inputs[GLFW_KEY_LEFT_ALT] = false;
+    inputs[GLFW_KEY_LEFT_CONTROL] = false;
 
 
 	//Инициализация GLFW
