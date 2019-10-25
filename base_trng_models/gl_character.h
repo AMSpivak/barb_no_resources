@@ -24,7 +24,7 @@ public:
     void AddModel(const std::string & name);
     void AddSequence(const std::string & name, const AnimationSequence & in_sequence);
     void UseSequence(const std::string & name);
-    void UseCommand(AnimationCommand command);
+    bool UseCommand(AnimationCommand command);
     void Damage(float damage);
     void RefreshMatrixes(float approximation);
     void RefreshMatrixes(){RefreshMatrixes(1.0f);};

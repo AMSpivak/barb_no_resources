@@ -171,7 +171,7 @@ void GlCharacter::Draw(GlScene::Scene &scene) const
     for(auto model : Models) model->Draw(scene,now_frame);
 }
 
-void GlCharacter::UseCommand(AnimationCommand command)
+bool GlCharacter::UseCommand(AnimationCommand command)
 {
     try
     {
@@ -180,8 +180,10 @@ void GlCharacter::UseCommand(AnimationCommand command)
     }
     catch(const std::out_of_range& exp)
     {
+        return false;
         // std::cout<<"Unknown command\n";
-    }   
+    }  
+    return true; 
 }
 
 
@@ -336,8 +338,16 @@ int GlCharacter::Process(std::list<std::string> &m_messages)
 
 void GlCharacter::Damage(float damage)
 {
-    UseCommand(AnimationCommand::kDamaged);
-    IGlModel::Damage(damage);
+    
+    if(damage > 0.01f)
+    {
+        if(UseCommand(AnimationCommand::kDamaged))
+        {
+            IGlModel::Damage(damage);
+        }
+    }
+
+    
 }
 
 void GlCharacter::AddModel(const std::string & name)

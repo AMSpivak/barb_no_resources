@@ -1171,14 +1171,7 @@ bool GlGameStateDungeon::MobKilled(std::shared_ptr<GlCharacter> obj)
         }
     }
 
-    mob_life -= obj->GetLifeValue();
-
-    if(mob_life > 0.01f)
-    {
-        obj->UseCommand(AnimationCommand::kDamaged);
-    }
-
-
+    
     if (obj->GetLifeValue() < 0.0f)
         {
             GameEvents::GeneralEventStruct info = {&(*obj),m_shader_map["sprite2d"],render_target.depthMap,&(fx_texture->m_texture)};
@@ -1353,7 +1346,7 @@ std::pair<AnimationCommand,const glm::mat4>  GlGameStateDungeon::ProcessInputs(s
     bool action_use = inputs[GLFW_KEY_LEFT_ALT];
     bool attack = inputs[GLFW_MOUSE_BUTTON_LEFT]|inputs[GLFW_KEY_SPACE];  
     bool fast_move = inputs[GLFW_KEY_LEFT_SHIFT];
-    bool guard = inputs[GLFW_KEY_LEFT_CONTROL];
+    bool guard = inputs[GLFW_MOUSE_BUTTON_RIGHT]|inputs[GLFW_KEY_LEFT_CONTROL];
     GLFWgamepadstate state;
     if (glfwJoystickIsGamepad(GLFW_JOYSTICK_1)&&glfwGetGamepadState(GLFW_JOYSTICK_1, &state))
     {

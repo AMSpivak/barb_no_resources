@@ -98,18 +98,19 @@ namespace Character
                     {
                         if(dice_roll > (5*random_maximum/8))
                         {
-                            character.UseSequence("walk");
+                            character.UseCommand(AnimationCommand::kMove);
                         }
                         else
                         {
-                            character.UseSequence("run");
+                            character.UseCommand(AnimationCommand::kFastMove);
                         } 
                     }
                     else
                     {
                         if(dice_roll > (random_maximum/4))
                         {
-                            character.UseSequence("stance");
+                            character.UseCommand(AnimationCommand::kStance);
+                            //character.UseSequence("stance");
                         }
                     }  
                 }
@@ -159,13 +160,13 @@ namespace Character
 
                 if(enemy_distance > 7.0f)
                 {
-                    character.UseSequence("run");
+                    character.UseCommand(AnimationCommand::kFastMove);
                 }
                 else
                 {
                     if(enemy_distance > 3.3f)
                     {
-                        character.UseSequence("walk");   /* code */
+                        character.UseCommand(AnimationCommand::kMove);   /* code */
                     }
                     else
                     if(enemy_distance < 2.0f)

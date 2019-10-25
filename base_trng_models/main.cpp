@@ -237,7 +237,8 @@ int main(int argc, char const *argv[])
 		ypos = (ypos * 2.0f - height)/height;
 		int state = glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT);
         inputs[GLFW_MOUSE_BUTTON_LEFT] = (state != GLFW_RELEASE) ?  true : false;
-
+		state = glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_RIGHT);
+        inputs[GLFW_MOUSE_BUTTON_RIGHT] = (state != GLFW_RELEASE) ?  true : false;
 		
         static size_t counter = 0;
         static double time_r  = 0;
@@ -272,7 +273,7 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 	/*if (action == GLFW_RELEASE)
 		return;*/
 	if (key == GLFW_KEY_LEFT_CONTROL)
-        inputs[GLFW_KEY_LEFT_CONTROL] = (action != GLFW_KEY_LEFT_CONTROL) ?  true : false;
+        inputs[GLFW_KEY_LEFT_CONTROL] = (action != GLFW_RELEASE) ?  true : false;
 
 	if (key == GLFW_KEY_LEFT || key == GLFW_KEY_A )
         inputs[GLFW_KEY_LEFT] = (action != GLFW_RELEASE) ?  true : false;
