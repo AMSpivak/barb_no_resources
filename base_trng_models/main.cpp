@@ -34,8 +34,8 @@ extern "C" {
 
 void key_callback(GLFWwindow* window, int key, int scancode, int action, int mode);
 
-//GLuint SCR_WIDTH = 800, SCR_HEIGHT = 600;
-GLuint SCR_WIDTH = 1200, SCR_HEIGHT =1000;
+GLuint SCR_WIDTH = 800, SCR_HEIGHT = 600;
+//GLuint SCR_WIDTH = 1200, SCR_HEIGHT =1000;
 
 float key_angle = 0.0f;
 

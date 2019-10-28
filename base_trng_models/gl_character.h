@@ -25,7 +25,7 @@ public:
     void AddSequence(const std::string & name, const AnimationSequence & in_sequence);
     void UseSequence(const std::string & name);
     bool UseCommand(AnimationCommand command);
-    void Damage(float damage);
+    void Damage(float damage, const glm::vec3 & from);
     void RefreshMatrixes(float approximation);
     void RefreshMatrixes(){RefreshMatrixes(1.0f);};
 

@@ -336,15 +336,21 @@ int GlCharacter::Process(std::list<std::string> &m_messages)
     return 0;
 }
 
-void GlCharacter::Damage(float damage)
+void GlCharacter::Damage(float damage, const glm::vec3 & from)
 {
     
-    if(damage > 0.01f)
+    //if(damage > 0.01f)
     {
         if(UseCommand(AnimationCommand::kDamaged))
         {
             IGlModel::Damage(damage);
         }
+        else
+        {
+            IGlModel::Damage(damage *0.05f);
+            
+        }
+        
     }
 
     

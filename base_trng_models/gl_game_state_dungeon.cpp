@@ -10,6 +10,7 @@
 #include <utility>
 #include <algorithm>
 #include <math.h>  
+#include "math3d.h"  
 //#define GLM_SWIZZLE_XYZW
 
 #include "glm/glm.hpp"
@@ -1306,6 +1307,7 @@ std::pair<AnimationCommand,const glm::mat4>  GlGameStateDungeon::ProcessInputs(s
     
     glm::mat4 rm(hero->model_matrix);      
     
+    float disorientation = 0;
     
     if(moving)
     {
@@ -1322,6 +1324,7 @@ std::pair<AnimationCommand,const glm::mat4>  GlGameStateDungeon::ProcessInputs(s
         glm::vec4 x_basis4 = m *glm::vec4(x_basis[0],x_basis[1],x_basis[2],0.0f);
         x_basis = glm::vec3(x_basis4[0],x_basis4[1],x_basis4[2]);
         x_basis = glm::normalize(x_basis);
+        glm::vec3 new_x(x_basis);
         
         glm::vec4 move_h = hero->model_matrix * glm::vec4(1.0f,0.0f,0.0f,1.0f);
         glm::vec3 old_dir = glm::vec3(move_h);
@@ -1331,6 +1334,11 @@ std::pair<AnimationCommand,const glm::mat4>  GlGameStateDungeon::ProcessInputs(s
         x_basis = glm::normalize(x_basis);
 
         glm::vec3 z_basis = glm::cross(x_basis, y_basis);
+        
+        glm::vec3 z_new = glm::cross(new_x, y_basis);
+
+        disorientation = Math3D::Disorientation(new_x,old_dir, z_new);
+        std::cout << "\n disorient "<<disorientation<<"\n";
 
         rm = glm::mat4(
             glm::vec4(x_basis[0],x_basis[1],x_basis[2],0.0f),
@@ -1347,6 +1355,7 @@ std::pair<AnimationCommand,const glm::mat4>  GlGameStateDungeon::ProcessInputs(s
     bool attack = inputs[GLFW_MOUSE_BUTTON_LEFT]|inputs[GLFW_KEY_SPACE];  
     bool fast_move = inputs[GLFW_KEY_LEFT_SHIFT];
     bool guard = inputs[GLFW_MOUSE_BUTTON_RIGHT]|inputs[GLFW_KEY_LEFT_CONTROL];
+
     GLFWgamepadstate state;
     if (glfwJoystickIsGamepad(GLFW_JOYSTICK_1)&&glfwGetGamepadState(GLFW_JOYSTICK_1, &state))
     {
@@ -1361,12 +1370,20 @@ std::pair<AnimationCommand,const glm::mat4>  GlGameStateDungeon::ProcessInputs(s
         }
     }
 
+    bool step_back = fast_move&&guard&&((disorientation > 1.4)||(disorientation < -1.4));
+    if(step_back)
+    {
+        moving = false;
+    }
+
     if(attack) 
         return std::make_pair(AnimationCommand::kStrike,rm);
     if(action_use) 
         return std::make_pair(AnimationCommand::kUse,rm);
     if(moving)
         return std::make_pair(fast_move ? AnimationCommand::kFastMove:AnimationCommand::kMove,rm);
+    if(step_back)
+        return std::make_pair(AnimationCommand::kStepBack,(hero->model_matrix));
     if(guard)
         return std::make_pair(AnimationCommand::kGuard,rm);
 
