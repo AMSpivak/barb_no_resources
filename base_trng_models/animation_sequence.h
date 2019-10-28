@@ -20,6 +20,8 @@ struct AnimationSequence
     AnimationSequence(const  std::string &name,size_t start = 0,size_t stop = 0):
                                 start_frame(start)
                                 ,end_frame(stop)
+                                ,m_block(false)
+                                ,m_no_rotation(false)
                                 ,m_loop(true)
                                 ,m_start_message(AnimationCommand::kNone,"")
                                 ,m_end_message(AnimationCommand::kNone,"")
@@ -28,6 +30,8 @@ struct AnimationSequence
     {}
     size_t start_frame;
     size_t end_frame;
+    bool m_block;
+    bool m_no_rotation;
     bool m_loop;
     bool m_jump;
     std::string m_target_sequence;

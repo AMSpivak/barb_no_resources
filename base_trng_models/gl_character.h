@@ -6,6 +6,7 @@
 #include <vector>
 #include <map>
 #include <algorithm>
+#include <tuple>
 #include "loader.h"
 #include "gl_model.h"
 #include "brain.h"
@@ -38,6 +39,8 @@ public:
     void SetBrain(std::shared_ptr<Character::IBrain> brain);
     void AddEnemy(std::weak_ptr<GlCharacter> enemy);
     std::list<std::pair<std::weak_ptr<GlCharacter>,float>> enemies_list;
+    std::tuple<glm::vec3, glm::vec3> Get2DBasis();
+    bool IsNoRotateable();
 
     const std::pair<glm::vec3, glm::vec3> GetWeaponPosition();
     const std::pair<glm::vec3, glm::vec3> GetWeaponPositionOld();

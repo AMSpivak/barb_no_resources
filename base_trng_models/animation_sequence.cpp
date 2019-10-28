@@ -82,7 +82,7 @@ std::string CommandToStream(std::pair<AnimationCommand,std::string> value)
 std::istream& operator>> ( std::istream& is, AnimationSequence & value)
 {
     std::string skip; 
-	is>>value.start_frame>>value.end_frame>>value.m_loop>>value.m_jump;
+	is>>value.start_frame>>value.end_frame>>value.m_block>>value.m_no_rotation>>value.m_loop>>value.m_jump;
     if(value.m_jump)
         is>>value.m_target_sequence;
     std::string tmp;
@@ -125,7 +125,7 @@ std::istream& operator>> ( std::istream& is, AnimationSequence & value)
 
 std::ostream& operator << ( std::ostream& os, const AnimationSequence & value)
 {
-    os<<value.start_frame<<" "<<value.end_frame<<" "<<value.m_loop<<" "<<value.m_jump;
+    os<<value.start_frame<<" "<<value.end_frame<<" "<<value.m_block<<value.m_no_rotation<<value.m_loop<<" "<<value.m_jump;
     if(value.m_jump) 
         os<<" "<<value.m_target_sequence;
         os<<" "<<std::quoted(CommandToStream(value.m_start_message))<<" "

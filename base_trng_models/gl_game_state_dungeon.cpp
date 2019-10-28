@@ -8,6 +8,7 @@
 #include <fstream>
 #include <functional>
 #include <utility>
+#include <tuple>
 #include <algorithm>
 #include <math.h>  
 #include "math3d.h"  
@@ -1326,30 +1327,32 @@ std::pair<AnimationCommand,const glm::mat4>  GlGameStateDungeon::ProcessInputs(s
         x_basis = glm::normalize(x_basis);
         glm::vec3 new_x(x_basis);
         
-        glm::vec4 move_h = hero->model_matrix * glm::vec4(1.0f,0.0f,0.0f,1.0f);
-        glm::vec3 old_dir = glm::vec3(move_h);
-
-        float l = 0.2f * glm::length(old_dir - x_basis);
-        x_basis =(1.0f - l) * old_dir + l * x_basis;
-        x_basis = glm::normalize(x_basis);
-
-        glm::vec3 z_basis = glm::cross(x_basis, y_basis);
-        
-        glm::vec3 z_new = glm::cross(new_x, y_basis);
-
-        disorientation = Math3D::Disorientation(new_x,old_dir, z_new);
+        glm::vec3 hero_direction;
+        glm::vec3 hero_side;
+        std::tie(hero_direction, hero_side) = hero->Get2DBasis();
+        disorientation = Math3D::Disorientation(hero_side,new_x, hero_direction);
         std::cout << "\n disorient "<<disorientation<<"\n";
+        
+        if(!hero->IsNoRotateable())
+        {
+            glm::vec4 move_h = hero->model_matrix * glm::vec4(1.0f,0.0f,0.0f,1.0f);
+            glm::vec3 old_dir = glm::vec3(move_h);
 
-        rm = glm::mat4(
-            glm::vec4(x_basis[0],x_basis[1],x_basis[2],0.0f),
-            glm::vec4(y_basis[0],y_basis[1],y_basis[2],0.0f),
-            glm::vec4(z_basis[0],z_basis[1],z_basis[2],0.0f),
-            glm::vec4(0.0,0.0,0.0,1.0f)
-            );
-              
+            float l = 0.2f * glm::length(old_dir - x_basis);
+            x_basis =(1.0f - l) * old_dir + l * x_basis;
+            x_basis = glm::normalize(x_basis);
+
+            glm::vec3 z_basis = glm::cross(x_basis, y_basis);
+            glm::vec3 z_new = glm::cross(new_x, y_basis);
+
+            rm = glm::mat4(
+                glm::vec4(x_basis[0],x_basis[1],x_basis[2],0.0f),
+                glm::vec4(y_basis[0],y_basis[1],y_basis[2],0.0f),
+                glm::vec4(z_basis[0],z_basis[1],z_basis[2],0.0f),
+                glm::vec4(0.0,0.0,0.0,1.0f)
+                );
+        }
     }
-
-    //hero->model_matrix = rm;  
 
     bool action_use = inputs[GLFW_KEY_LEFT_ALT];
     bool attack = inputs[GLFW_MOUSE_BUTTON_LEFT]|inputs[GLFW_KEY_SPACE];  
@@ -1374,6 +1377,7 @@ std::pair<AnimationCommand,const glm::mat4>  GlGameStateDungeon::ProcessInputs(s
     if(step_back)
     {
         moving = false;
+        std::cout << "\n step_back "<<disorientation<<"\n";
     }
 
     if(attack) 

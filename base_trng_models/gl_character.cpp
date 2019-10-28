@@ -2,6 +2,7 @@
 #include <sstream>
 #include "engine_settings.h"
 #include "collision.h"
+#include "math3d.h"
 std::ostream& operator << ( std::ostream& os, const GlCharacter & character)
 {
     os<<"<object>\n";
@@ -339,16 +340,21 @@ int GlCharacter::Process(std::list<std::string> &m_messages)
 void GlCharacter::Damage(float damage, const glm::vec3 & from)
 {
     
-    //if(damage > 0.01f)
+    glm::vec3 direction;
+    glm::vec3 side;
+    std::tie(direction, side) = Get2DBasis();
+    glm::vec3 event_direction = glm::normalize(from - GetPosition());
+    float disorientation = Math3D::Disorientation(direction, event_direction,side);
+    const float block_range = 0.5f;
+    bool blocked = current_animation->m_block && (disorientation < block_range) && (disorientation > -block_range);
     {
-        if(UseCommand(AnimationCommand::kDamaged))
+        if((!blocked) && UseCommand(AnimationCommand::kDamaged))
         {
             IGlModel::Damage(damage);
         }
         else
         {
             IGlModel::Damage(damage *0.05f);
-            
         }
         
     }
@@ -384,6 +390,21 @@ std::pair<float, float> GlCharacter::ProjectOnAxe(const glm::vec3 &axe) const
         return Collision::ProjectEdgesOnAxe(model_matrix,m_edges,m_position,axe);
     }
 }
+
+std::tuple<glm::vec3, glm::vec3> GlCharacter::Get2DBasis()
+{
+    glm::vec4 move_dir =  model_matrix * glm::vec4(0.0f,0.0f,-1.0f,1.0f);
+    glm::vec4 move_side = model_matrix * glm::vec4(1.0f,0.0f,0.0f,1.0f);
+
+    return std::make_tuple(move_dir,move_side);
+}
+
+bool GlCharacter::IsNoRotateable()
+{
+    return current_animation->m_no_rotation;
+}
+
+
 
 void GlCharacter::AddEnemy(std::weak_ptr<GlCharacter> enemy)
 {
