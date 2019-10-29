@@ -1,6 +1,7 @@
 #include "brain.h"
 #include "gl_character.h"
 #include <random>
+#include <tuple>
 
 namespace Character
 {
@@ -8,21 +9,7 @@ namespace Character
     {
         
     };
-    
-    class BrainHero: public IBrain
-    {
-        public:
-        BrainHero(std::function<void(GlCharacter & character)> world_reaction)
-        {
-            m_world_reaction = world_reaction;
-        }
-        virtual void Think(GlCharacter & character) 
-        {
-            m_world_reaction(character);
-        }
-    };
 
-    
     bool HatesLess(const std::pair<std::weak_ptr<GlCharacter>,float> a,const std::pair<std::weak_ptr<GlCharacter>,float> b, const GlCharacter & character)
     {
         auto a_ptr = a.first.lock();
@@ -50,6 +37,73 @@ namespace Character
         return a.second/d_a < b.second/d_b;
     }
 
+
+    bool HeroChoiseLess(std::pair<std::weak_ptr<GlCharacter>,float> &a, std::pair<std::weak_ptr<GlCharacter>,float> &b, const GlCharacter & character)
+    {
+        auto a_ptr = a.first.lock();
+        if(!a_ptr)
+        {
+            return false;
+        }
+        auto b_ptr = b.first.lock();
+        if(!b_ptr)
+        {
+            return false;
+        }
+
+        auto l_a = character.GetPosition() - a_ptr->GetPosition();
+        auto l_b = character.GetPosition() - b_ptr->GetPosition();
+
+        glm::vec3 hero_direction;
+        glm::vec3 hero_side;
+        std::tie(hero_direction, hero_side) = character.Get2DBasis();
+        
+        float d_a = glm::dot(l_a,l_a);
+        a.second = d_a;
+        float d_ac = glm::dot(l_a,hero_direction);
+
+        float d_b = glm::dot(l_b,l_b);
+        b.second = d_b;
+        float d_bc = glm::dot(l_b,hero_direction);
+    
+        return (d_a * d_ac) > (d_b * d_bc);
+    }
+    
+    class BrainHero: public IBrain
+    {
+        public:
+        BrainHero(std::function<void(GlCharacter & character)> world_reaction)
+        {
+            m_world_reaction = world_reaction;
+        }
+        virtual void Think(GlCharacter & character) 
+        {
+            m_world_reaction(character);
+            if(!character.enemies_list.empty())
+            {
+                auto enemy_it = std::max_element(   character.enemies_list.begin(),
+                                                    character.enemies_list.end(),
+                                                    [&](std::pair<std::weak_ptr<GlCharacter>,float> a,std::pair<std::weak_ptr<GlCharacter>,float> b)->bool
+                                                    {
+                                                        return HeroChoiseLess(a,b,character);
+                                                    });
+                
+                constexpr float enemy_keep_range = 8.0f * 8.0f;
+                if((enemy_it->second < enemy_keep_range)&&!enemy_it->first.expired() && (enemy_it->first.lock()->GetLifeValue() > 0.0f))
+                {
+                    character.arch_enemy = enemy_it->first;
+                }
+                else
+                {
+                    character.enemies_list.erase(enemy_it);
+                }  
+            }
+        }
+    };
+
+    
+
+
     class BrainMob: public IBrain
     {
         public:
@@ -60,8 +114,6 @@ namespace Character
         virtual void Think(GlCharacter & character) 
         {
             m_world_reaction(character);
-
-            std::weak_ptr<GlCharacter> arch_enemy;
 
             if(!character.enemies_list.empty())
             {
@@ -74,7 +126,7 @@ namespace Character
                 
                 if((enemy_it->second > 0.0f) && !enemy_it->first.expired() && (enemy_it->first.lock()->GetLifeValue() > 0.0f))
                 {
-                    arch_enemy = enemy_it->first;
+                    character.arch_enemy = enemy_it->first;
                 }
                 else
                 {
@@ -89,7 +141,7 @@ namespace Character
             std::uniform_int_distribution<int> distribution(1,random_maximum);
             int dice_roll = distribution(random_generator);
             
-            if(arch_enemy.expired())
+            if(character.arch_enemy.expired())
             {
                 if(dice_roll>random_maximum - 1)
                 {
@@ -143,7 +195,7 @@ namespace Character
                 glm::vec3 y_basis = glm::vec3(0.0f,1.0f,0.0f);
                 glm::vec3 z_basis = glm::vec3(0.0f,0.0f,0.0f);
 
-                auto enemy = arch_enemy.lock();
+                auto enemy = character.arch_enemy.lock();
 
                 glm::vec3 enemy_vector = enemy->GetPosition() - character.GetPosition();
                 float enemy_distance = glm::length(enemy_vector);

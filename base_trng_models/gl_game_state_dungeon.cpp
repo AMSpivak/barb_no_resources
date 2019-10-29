@@ -1310,6 +1310,38 @@ std::pair<AnimationCommand,const glm::mat4>  GlGameStateDungeon::ProcessInputs(s
     
     float disorientation = 0;
     
+    glm::vec3 hero_direction;
+    glm::vec3 hero_side;
+    std::tie(hero_direction, hero_side) = hero->Get2DBasis();
+
+    auto enemy = hero->arch_enemy.lock();
+    if(hero->IsFocused())
+    {
+        std::cout<<"focused \n";
+    }
+    if((enemy)&&hero->IsFocused())
+    {
+        glm::vec3 y_basis = glm::vec3(0.0f,1.0f,0.0f);
+        glm::vec3 z_basis = glm::vec3(0.0f,0.0f,0.0f);
+
+        glm::vec3 enemy_vector = enemy->GetPosition() - hero->GetPosition();
+        float enemy_distance = glm::length(enemy_vector);
+        z_basis = -glm::normalize(enemy_vector);
+        /*constexpr float fit = 0.2f;
+        float l = fit * glm::length(-hero_direction - z_basis);
+        z_basis =(1.0f - l) * hero_direction + l * z_basis;
+        z_basis = glm::normalize(z_basis);*/
+        glm::vec3 x_basis = glm::cross(y_basis, z_basis);
+
+        rm = glm::mat4(
+            glm::vec4(x_basis[0],x_basis[1],x_basis[2],0.0f),
+            glm::vec4(y_basis[0],y_basis[1],y_basis[2],0.0f),
+            glm::vec4(z_basis[0],z_basis[1],z_basis[2],0.0f),
+            glm::vec4(0.0,0.0,0.0,1.0f)
+            );
+        std::cout<<"focused! \n";  
+    }
+
     if(moving)
     {
         glm::vec3 y_basis = glm::vec3(0.0f,1.0f,0.0f);
@@ -1327,13 +1359,12 @@ std::pair<AnimationCommand,const glm::mat4>  GlGameStateDungeon::ProcessInputs(s
         x_basis = glm::normalize(x_basis);
         glm::vec3 new_x(x_basis);
         
-        glm::vec3 hero_direction;
-        glm::vec3 hero_side;
-        std::tie(hero_direction, hero_side) = hero->Get2DBasis();
+        
         disorientation = Math3D::Disorientation(hero_side,new_x, hero_direction);
         //std::cout << "\n disorient "<<disorientation<<"\n";
         
-        if(!hero->IsNoRotateable())
+        
+        if(!(hero->IsNoRotateable()&&hero->IsFocused()))
         {
             glm::vec4 move_h = hero->model_matrix * glm::vec4(1.0f,0.0f,0.0f,1.0f);
             glm::vec3 old_dir = glm::vec3(move_h);
@@ -1353,6 +1384,8 @@ std::pair<AnimationCommand,const glm::mat4>  GlGameStateDungeon::ProcessInputs(s
                 );
         }
     }
+
+    
 
     bool action_use = inputs[GLFW_KEY_LEFT_ALT];
     bool attack = inputs[GLFW_MOUSE_BUTTON_LEFT]|inputs[GLFW_KEY_SPACE];  
@@ -1381,11 +1414,13 @@ std::pair<AnimationCommand,const glm::mat4>  GlGameStateDungeon::ProcessInputs(s
         std::cout << "\n step_back "<<disorientation<<"\n";
     }
 
+    
+
     if(attack)
     { 
         return std::make_pair(AnimationCommand::kStrike,rm);
     }
-    
+
     if(action_use) 
         return std::make_pair(AnimationCommand::kUse,rm);
     if(moving)

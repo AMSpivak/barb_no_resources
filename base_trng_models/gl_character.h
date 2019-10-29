@@ -39,8 +39,10 @@ public:
     void SetBrain(std::shared_ptr<Character::IBrain> brain);
     void AddEnemy(std::weak_ptr<GlCharacter> enemy);
     std::list<std::pair<std::weak_ptr<GlCharacter>,float>> enemies_list;
-    std::tuple<glm::vec3, glm::vec3> Get2DBasis();
-    bool IsNoRotateable();
+    std::weak_ptr<GlCharacter> arch_enemy;
+    std::tuple<glm::vec3, glm::vec3> Get2DBasis() const;
+    bool IsNoRotateable() const;
+    bool IsFocused() const;
 
     const std::pair<glm::vec3, glm::vec3> GetWeaponPosition();
     const std::pair<glm::vec3, glm::vec3> GetWeaponPositionOld();
@@ -55,6 +57,7 @@ private:
     // static bool comand_proc_ready;
 
     size_t now_frame;
+    size_t refresh_frame;
     std::vector <std::shared_ptr<glModel> > Models;
     std::list<std::string> model_list;
     std::vector<std::pair<glm::vec3, glm::vec3>> m_edges; 

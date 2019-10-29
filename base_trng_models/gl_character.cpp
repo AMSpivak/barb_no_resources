@@ -15,6 +15,7 @@ std::ostream& operator << ( std::ostream& os, const GlCharacter & character)
 GlCharacter::GlCharacter(CharacterTypes type):
                             engine_frame(0)
                             ,now_frame(0)
+                            ,refresh_frame(0)
                             ,current_animation(nullptr)
                             ,m_type(type)
                             ,m_is_armed(false)
@@ -177,7 +178,7 @@ bool GlCharacter::UseCommand(AnimationCommand command)
     try
     {
         std::string jumper = current_animation->jumps.at(command);
-        current_animation = &sequence.at(jumper);                          
+        current_animation = &sequence.at(jumper);                        
     }
     catch(const std::out_of_range& exp)
     {
@@ -241,7 +242,7 @@ void GlCharacter::RefreshMatrixes(float approximation)
         }
         else
         {
-            if(first_base&&(now_frame!=0))
+            if(first_base&&(refresh_frame != now_frame)&&(now_frame!=0))
             {
                 glm::mat4 move_matrix = model->GetRotationMatrix(now_frame);
                 glm::vec4 move_position = model_matrix * move_matrix[3];
@@ -253,6 +254,7 @@ void GlCharacter::RefreshMatrixes(float approximation)
             }        
             target_matrix = model_matrix;
         }
+    
            
         model-> model = target_matrix;       
     }
@@ -267,6 +269,7 @@ void GlCharacter::RefreshMatrixes(float approximation)
         m_weapon_now.first = glm::vec3(mul_full * glm::vec4(m_weapon_base.first,1.0f));
         m_weapon_now.second = glm::vec3(mul_full * glm::vec4(m_weapon_base.second,1.0f));
     }
+    refresh_frame = now_frame;
 }
 
 void GlCharacter::ExecuteCommand(const std::pair<AnimationCommand,std::string> &command,std::list<std::string> &m_messages)
@@ -332,7 +335,7 @@ int GlCharacter::Process(std::list<std::string> &m_messages)
 
     float approx = diff_frame > 3 ? 1.0f : 0.1f + 0.2f * diff_frame;
 
-    if(control != now_frame)
+    if(control != now_frame || IsFocused())
         RefreshMatrixes(approx);
     return 0;
 }
@@ -392,7 +395,7 @@ std::pair<float, float> GlCharacter::ProjectOnAxe(const glm::vec3 &axe) const
     }
 }
 
-std::tuple<glm::vec3, glm::vec3> GlCharacter::Get2DBasis()
+std::tuple<glm::vec3, glm::vec3> GlCharacter::Get2DBasis() const
 {
     glm::vec4 move_dir =  model_matrix * glm::vec4(0.0f,0.0f,-1.0f,1.0f);
     glm::vec4 move_side = model_matrix * glm::vec4(1.0f,0.0f,0.0f,1.0f);
@@ -400,9 +403,14 @@ std::tuple<glm::vec3, glm::vec3> GlCharacter::Get2DBasis()
     return std::make_tuple(move_dir,move_side);
 }
 
-bool GlCharacter::IsNoRotateable()
+bool GlCharacter::IsNoRotateable() const
 {
     return current_animation->m_no_rotation;
+}
+
+bool GlCharacter::IsFocused() const
+{
+    return current_animation->m_focus;
 }
 
 
