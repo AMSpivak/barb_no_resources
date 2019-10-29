@@ -1313,7 +1313,7 @@ std::pair<AnimationCommand,const glm::mat4>  GlGameStateDungeon::ProcessInputs(s
     glm::vec3 hero_direction;
     glm::vec3 hero_side;
     std::tie(hero_direction, hero_side) = hero->Get2DBasis();
-
+    hero_direction[1]= 0;
     auto enemy = hero->arch_enemy.lock();
     if(hero->IsFocused())
     {
@@ -1326,11 +1326,13 @@ std::pair<AnimationCommand,const glm::mat4>  GlGameStateDungeon::ProcessInputs(s
 
         glm::vec3 enemy_vector = enemy->GetPosition() - hero->GetPosition();
         float enemy_distance = glm::length(enemy_vector);
-        z_basis = -glm::normalize(enemy_vector);
-        /*constexpr float fit = 0.2f;
-        float l = fit * glm::length(-hero_direction - z_basis);
-        z_basis =(1.0f - l) * hero_direction + l * z_basis;
-        z_basis = glm::normalize(z_basis);*/
+        z_basis = glm::normalize(enemy_vector);
+        constexpr float fit = 0.5f;
+        
+        //float l = fit * glm::length(hero_direction - z_basis);
+        z_basis =(1.0f - fit) * hero_direction + fit * z_basis;
+        z_basis = glm::normalize(z_basis);
+        z_basis = -z_basis;
         glm::vec3 x_basis = glm::cross(y_basis, z_basis);
 
         rm = glm::mat4(
