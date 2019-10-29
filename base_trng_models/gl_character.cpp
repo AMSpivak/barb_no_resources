@@ -355,6 +355,7 @@ void GlCharacter::Damage(float damage, const glm::vec3 & from)
         else
         {
             IGlModel::Damage(damage *0.05f);
+            UseCommand(AnimationCommand::kUse);
         }
         
     }

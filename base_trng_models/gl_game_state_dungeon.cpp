@@ -565,7 +565,7 @@ void GlGameStateDungeon::LoadMap(const std::string &filename,const std::string &
     for(int i = 0; i <50; i++)
     {
         mob = std::make_shared<GlCharacter>(CharacterTypes::mob);
-        UpdateCharacterFromFile("material/hero.chr",*mob);
+        UpdateCharacterFromFile("material/hero_orc.chr",*mob);
         mob->SetName("Mob"+std::to_string(i));
         float mob_x = std::rand();
         float mob_z = std::rand();
@@ -1331,7 +1331,7 @@ std::pair<AnimationCommand,const glm::mat4>  GlGameStateDungeon::ProcessInputs(s
         glm::vec3 hero_side;
         std::tie(hero_direction, hero_side) = hero->Get2DBasis();
         disorientation = Math3D::Disorientation(hero_side,new_x, hero_direction);
-        std::cout << "\n disorient "<<disorientation<<"\n";
+        //std::cout << "\n disorient "<<disorientation<<"\n";
         
         if(!hero->IsNoRotateable())
         {
@@ -1374,20 +1374,26 @@ std::pair<AnimationCommand,const glm::mat4>  GlGameStateDungeon::ProcessInputs(s
     }
 
     bool step_back = fast_move&&guard&&((disorientation > 1.4)||(disorientation < -1.4));
-    if(step_back)
+    bool step_right = fast_move&&guard&&((disorientation > -1.4)&&(disorientation < -0.5));
+    if(step_back||step_right)
     {
         moving = false;
         std::cout << "\n step_back "<<disorientation<<"\n";
     }
 
-    if(attack) 
+    if(attack)
+    { 
         return std::make_pair(AnimationCommand::kStrike,rm);
+    }
+    
     if(action_use) 
         return std::make_pair(AnimationCommand::kUse,rm);
     if(moving)
         return std::make_pair(fast_move ? AnimationCommand::kFastMove:AnimationCommand::kMove,rm);
     if(step_back)
         return std::make_pair(AnimationCommand::kStepBack,(hero->model_matrix));
+    if(step_right)
+        return std::make_pair(AnimationCommand::kStepRight,(hero->model_matrix));
     if(guard)
         return std::make_pair(AnimationCommand::kGuard,rm);
 

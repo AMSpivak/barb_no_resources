@@ -4,7 +4,7 @@
 #include <cstdio>
 #include <map>
 
-enum class AnimationCommand {kNone,kStance,kMessage,kStrike,kMove,kFastMove,kTurnLeft,kTurnRight,kRotate,kStepLeft,kStepRight,kStepBack,kGuard,kUse,kExecuted,kDamaged,kSound};
+enum class AnimationCommand {kNone,kStance,kMessage,kService,kStrike,kMove,kFastMove,kTurnLeft,kTurnRight,kRotate,kStepLeft,kStepRight,kStepBack,kGuard,kUse,kExecuted,kDamaged,kSound};
 struct AnimationSequence
 {
     AnimationSequence(size_t start = 0,size_t stop = 0):
