@@ -13,15 +13,51 @@ namespace Math3D
         return disorientation;
     }
 
-        bool IsCounterClockwiseTriangle(    const glm::vec3 & a1, 
-                                    const glm::vec3 & a2,
-                                    const glm::vec3 & a3,
-                                    const glm::vec3 & normal
-                                    )
-        {
-            const glm::vec3 a12(a2- a1);
-            const glm::vec3 a13(a3- a1);
-            return  glm::dot(normal,(glm::cross(a13,a12))) > 0.0f;
-        }
+    SimpleDirections SimplifyDirection(float disorientation)
+    {
+        constexpr float cos45 = 1.0f - 0.707f;
+        constexpr float cos135 = -1.0f - 0.707f;
+
+        if((disorientation > -cos135)||(disorientation < cos135))
+            return SimpleDirections::Back;
+        if((disorientation > cos135)&&(disorientation < -cos45))
+            return SimpleDirections::Right;
+        if((disorientation < -cos135)&&(disorientation > cos45))
+            return SimpleDirections::Left;
+        return SimpleDirections::Forward;
+    }
+
+
+    bool IsCounterClockwiseTriangle(    const glm::vec3 & a1, 
+                                const glm::vec3 & a2,
+                                const glm::vec3 & a3,
+                                const glm::vec3 & normal
+                                )
+    {
+        const glm::vec3 a12(a2- a1);
+        const glm::vec3 a13(a3- a1);
+        return  glm::dot(normal,(glm::cross(a13,a12))) > 0.0f;
+    }
     
+    std::ostream& operator << ( std::ostream& os, const SimpleDirections & value)
+    {
+        switch (value)
+        {
+        case SimpleDirections::Left:
+            os<<"Left";
+            break;
+        case SimpleDirections::Right:
+            os<<"Right";
+            break;
+        case SimpleDirections::Forward:
+            os<<"Forward";
+            break;
+        case SimpleDirections::Back:
+            os<<"Back";
+            break;
+        default:
+            os<<"None";
+            break;
+        }
+    }
 }
