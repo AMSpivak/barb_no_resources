@@ -19,15 +19,9 @@ GlCharacter::GlCharacter(CharacterTypes type):
                             ,current_animation(nullptr)
                             ,m_type(type)
                             ,m_is_armed(false)
+                            ,breed(0)
 {
     m_brain = Character::CreateBrain(Character::BrainTypes::Empty,[](GlCharacter & character) { return; });
-    // if(!comand_proc_ready)
-    // {
-    //     comand_proc.Add()
-    //     comand_proc_ready = true;
-
-    // }
-
 }
 
 GlCharacter::~GlCharacter()
@@ -81,7 +75,6 @@ void GlCharacter::ToStream(std::ostream& os) const
     {
         os<<"edge "<<edge<<"\n";
     }
-    
 }
 
 
@@ -214,21 +207,6 @@ void GlCharacter::RefreshMatrixes(float approximation)
     int models_count = Models.size();
     glm::mat4 target_matrix;
     
-    //     //approximation = 1.0f;
-
-    //     // if(approximation > 0.9f)
-    //     // {
-            
-    //     Models[i]-> model = target_matrix;
-    //     // }
-    //     // else
-    //     // {
-    //     //     std::cout<<"approx: "<<approximation<<"\n";
-    //     //     Models[i]-> model = SlerpMatrix(Models[i]-> model,target_matrix,approximation);
-    //     // }
-
-        
-    // }
     for(auto model : Models)
     {
 
@@ -340,7 +318,7 @@ int GlCharacter::Process(std::list<std::string> &m_messages)
     return 0;
 }
 
-void GlCharacter::Damage(float damage, const glm::vec3 & from)
+DamageReaction GlCharacter::Damage(float damage, const glm::vec3 & from)
 {
     
     glm::vec3 direction;
@@ -354,15 +332,17 @@ void GlCharacter::Damage(float damage, const glm::vec3 & from)
         if((!blocked) && UseCommand(AnimationCommand::kDamaged))
         {
             IGlModel::Damage(damage);
+            return DamageReaction::Damage;
         }
         else
         {
             IGlModel::Damage(damage *0.05f);
             UseCommand(AnimationCommand::kUse);
+            return DamageReaction::Block;
         }
         
     }
-
+    Return DamageReaction::NoReaction;
     
 }
 
@@ -457,6 +437,10 @@ const glm::vec3 & MoveObjectAttempt(IGlModel &object,const glm::vec3 &desired_di
     return object.GetPosition();
 }
 
+const unsigned int GetBreed() const
+{
+    return breed;
+}
 
 
 

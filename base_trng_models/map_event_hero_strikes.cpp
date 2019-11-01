@@ -90,6 +90,7 @@ InteractionResult IMapEventHeroStrike::Interact(GlCharacter &model,std::string &
 {
     model.Damage(m_damage,GetPosition());
     model.AddEnemy(m_owner);
+
     //std::cout<<model.GetName()<<" life "<<model.GetLifeValue()<<"\n";
     if((model.GetLifeValue()< 0)&&(model.GetType() != CharacterTypes::hero))
     {

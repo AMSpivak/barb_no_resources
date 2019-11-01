@@ -14,6 +14,9 @@
 enum class CharacterTypes {hero,tile,map_object,mob};
 enum class AffectionCharacters {enemy,ally,map_object};
 
+enum class DamageReaction {NoReaction, Damage, Block};
+
+
 class GlCharacter: public IGlModel
 {
 public:
@@ -26,7 +29,7 @@ public:
     void AddSequence(const std::string & name, const AnimationSequence & in_sequence);
     void UseSequence(const std::string & name);
     bool UseCommand(AnimationCommand command);
-    void Damage(float damage, const glm::vec3 & from);
+    DamageReaction Damage(float damage, const glm::vec3 & from);
     void RefreshMatrixes(float approximation);
     void RefreshMatrixes(){RefreshMatrixes(1.0f);};
 
@@ -46,7 +49,7 @@ public:
 
     const std::pair<glm::vec3, glm::vec3> GetWeaponPosition();
     const std::pair<glm::vec3, glm::vec3> GetWeaponPositionOld();
-
+    const unsigned int GetBreed() const;
 
 private:
     std::shared_ptr<Character::IBrain> m_brain;
@@ -70,6 +73,8 @@ private:
 
     int m_weapon_model;
     int m_weapon_bone;
+
+    unsigned int breed;
 
 
     std::pair<glm::vec3, glm::vec3>  m_weapon_now;
