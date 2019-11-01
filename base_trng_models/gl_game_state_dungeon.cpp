@@ -970,7 +970,7 @@ void GlGameStateDungeon::Draw()
             //glUniform3fv(light_color, 1, glm::value_ptr(light_color_vector));
 
             glActiveTexture(GL_TEXTURE0);
-            glBindTexture(GL_TEXTURE_CUBE_MAP, skybox.get()->m_texture);
+            //glBindTexture(GL_TEXTURE_CUBE_MAP, skybox.get()->m_texture);
             renderQuad();
             
 

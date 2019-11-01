@@ -78,6 +78,8 @@ namespace Character
         }
         virtual void Think(GlCharacter & character) 
         {
+            constexpr float enemy_keep_range = 10.0f;
+            constexpr float enemy_keep_range_2 = enemy_keep_range * enemy_keep_range;
             m_world_reaction(character);
             if(!character.enemies_list.empty())
             {
@@ -88,8 +90,8 @@ namespace Character
                                                         return HeroChoiseLess(a,b,character);
                                                     });
                 
-                constexpr float enemy_keep_range = 8.0f * 8.0f;
-                if((enemy_it->second < enemy_keep_range)&&!enemy_it->first.expired() && (enemy_it->first.lock()->GetLifeValue() > 0.0f))
+                
+                if((enemy_it->second < enemy_keep_range_2)&&!enemy_it->first.expired() && (enemy_it->first.lock()->GetLifeValue() > 0.0f))
                 {
                     character.arch_enemy = enemy_it->first;
                 }
@@ -97,6 +99,17 @@ namespace Character
                 {
                     character.enemies_list.erase(enemy_it);
                 }  
+            }
+
+            if(!character.arch_enemy.expired())
+            {
+
+                auto arch_distance_vec = character.GetPosition() - character.arch_enemy.lock()->GetPosition();
+                float arch_distance = glm::dot(arch_distance_vec,arch_distance_vec);
+                if(arch_distance > enemy_keep_range_2)
+                {
+                    character.arch_enemy.reset();
+                }
             }
         }
     };

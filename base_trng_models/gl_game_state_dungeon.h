@@ -51,6 +51,7 @@ public:
 private:
 
     irrklang::ISoundEngine  *m_sound_engine;
+    float raged_mode = 0.0f;
     unsigned char simple_screen;
 
     //std::shared_ptr<IGlTextureStruct> heightmap_texture;
