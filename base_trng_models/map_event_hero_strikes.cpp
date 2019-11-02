@@ -86,13 +86,18 @@ EventProcessResult IMapEventHeroStrike::Process()
     return EventProcessResult::Kill;
 }
 
-InteractionResult IMapEventHeroStrike::Interact(GlCharacter &model,std::string &return_value)
+InteractionResult IMapEventHeroStrike::Interact(std::weak_ptr<GlCharacter> model,std::string &return_value)
 {
-    model.Damage(m_damage,GetPosition());
-    model.AddEnemy(m_owner);
-
+    auto pmodel = model.lock();
+    auto powner = m_owner.lock();
+    if(!pmodel)
+        return InteractionResult::Nothing;
+    pmodel->Damage(m_damage,GetPosition());
+    pmodel->AddEnemy(m_owner);
+    if(powner)
+        powner->AddEnemy(pmodel);
     //std::cout<<model.GetName()<<" life "<<model.GetLifeValue()<<"\n";
-    if((model.GetLifeValue()< 0)&&(model.GetType() != CharacterTypes::hero))
+    if((pmodel->GetLifeValue()< 0)&&(pmodel->GetType() != CharacterTypes::hero))
     {
         return InteractionResult::Kill;
     }

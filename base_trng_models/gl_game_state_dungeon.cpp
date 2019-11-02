@@ -1109,7 +1109,7 @@ InteractionResult GlGameStateDungeon::ReactObjectToEvent(std::weak_ptr<GlCharact
     {
         auto ptr = object.lock();
         auto intersection = Physics::Intersection(*ptr,event);
-        return intersection.first < std::numeric_limits<float>::min() ? InteractionResult::Nothing : event.Interact(*ptr,return_value);
+        return intersection.first < std::numeric_limits<float>::min() ? InteractionResult::Nothing : event.Interact(object,return_value);
     }
     return InteractionResult::Nothing;
 }

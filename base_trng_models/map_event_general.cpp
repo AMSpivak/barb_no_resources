@@ -49,7 +49,7 @@ EventProcessResult MapEventGeneral::Process()
     return EventProcessResult::Nothing;
 }
 
-InteractionResult MapEventGeneral::Interact(GlCharacter &model,std::string &return_value)
+InteractionResult MapEventGeneral::Interact(std::weak_ptr<GlCharacter> model,std::string &return_value)
 {
     //std::cout<<m_message<<"\n";
     return_value = m_message;

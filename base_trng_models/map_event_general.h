@@ -33,7 +33,7 @@ public:
 
     ~MapEventGeneral(){}
     void SetMessage(std::string message);
-    InteractionResult Interact(GlCharacter &model,std::string &return_value);
+    InteractionResult Interact(std::weak_ptr<GlCharacter> model,std::string &return_value);
     EventProcessResult Process();
     void Show(const glm::vec3 & offset, GlScene::glCamera & camera);
     bool IsLight(glm::vec4 &light_position,glm::vec3 &color);

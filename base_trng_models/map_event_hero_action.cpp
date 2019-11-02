@@ -43,11 +43,11 @@ EventProcessResult IMapEventHeroAction::Process()
     return EventProcessResult::Kill;
 }
 
-InteractionResult IMapEventHeroAction::Interact(GlCharacter &model,std::string &return_value)
+InteractionResult IMapEventHeroAction::Interact(std::weak_ptr<GlCharacter> model,std::string &return_value)
 {
     //model.Damage(0.1f);
     //std::cout<<"life "<<model.GetLifeValue()<<"\n";
-    model.UseCommand(m_command);
+    model.lock()->UseCommand(m_command);
     //if(model.GetLifeValue()< 0)
     //    return InteractionResult::Kill;
     return InteractionResult::Use;

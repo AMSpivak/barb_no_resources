@@ -342,7 +342,7 @@ DamageReaction GlCharacter::Damage(float damage, const glm::vec3 & from)
         }
         
     }
-    Return DamageReaction::NoReaction;
+    return DamageReaction::NoReaction;
     
 }
 
@@ -437,7 +437,7 @@ const glm::vec3 & MoveObjectAttempt(IGlModel &object,const glm::vec3 &desired_di
     return object.GetPosition();
 }
 
-const unsigned int GetBreed() const
+const unsigned int GlCharacter::GetBreed() const
 {
     return breed;
 }
