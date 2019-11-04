@@ -19,7 +19,8 @@ GlCharacter::GlCharacter(CharacterTypes type):
                             ,current_animation(nullptr)
                             ,m_type(type)
                             ,m_is_armed(false)
-                            ,breed(0)
+                            ,m_breed(0)
+                            ,m_breed_friendly(false)
 {
     m_brain = Character::CreateBrain(Character::BrainTypes::Empty,[](GlCharacter & character) { return; });
 }
@@ -71,6 +72,11 @@ void GlCharacter::ToStream(std::ostream& os) const
         os<< "ghost\n";
     }
 
+    if(m_breed_friendly)
+    {
+        os<< "breed "<<m_breed<<"\n";
+    }
+
     for(auto edge : m_edges)
     {
         os<<"edge "<<edge<<"\n";
@@ -109,6 +115,7 @@ void GlCharacter::UpdateFromLines(std::vector<std::string> &lines)
     proc.Add("edge",[this](std::stringstream &sstream){AddEdge(LoaderUtility::GetFromStream<std::pair<glm::vec3,glm::vec3>>(sstream));});
     proc.Add("position",[this](std::stringstream &sstream){SetPosition(LoaderUtility::GetFromStream<glm::vec3>(sstream));}); 
     proc.Add("weapon",[this](std::stringstream &sstream){sstream >> m_weapon_model >> m_weapon_bone >> m_weapon_base.first >> m_weapon_base.second; m_is_armed = true;}); 
+    proc.Add("breed",[this](std::stringstream &sstream){sstream >> m_breed; m_breed_friendly = true;}); 
 
     proc.Add("light",[this](std::stringstream &sstream)
                                         {
@@ -320,7 +327,6 @@ int GlCharacter::Process(std::list<std::string> &m_messages)
 
 DamageReaction GlCharacter::Damage(float damage, const glm::vec3 & from)
 {
-    
     glm::vec3 direction;
     glm::vec3 side;
     std::tie(direction, side) = Get2DBasis();
@@ -398,9 +404,12 @@ bool GlCharacter::IsFocused() const
 
 void GlCharacter::AddEnemy(std::weak_ptr<GlCharacter> enemy)
 {
-    if(!enemy.expired())
+    if(auto finder = enemy.lock())
     {
-        auto finder = enemy.lock();
+        if((m_breed) && (finder->GetBreed() == m_breed))
+        {
+            return;
+        }
         auto result = std::find_if(enemies_list.begin(),enemies_list.end(),[&](std::pair<std::weak_ptr<GlCharacter>,float> obj){
                     auto candidate = obj.first.lock();
                     return finder == candidate;
@@ -440,7 +449,7 @@ const glm::vec3 & MoveObjectAttempt(IGlModel &object,const glm::vec3 &desired_di
 
 const unsigned int GlCharacter::GetBreed() const
 {
-    return breed;
+    return m_breed;
 }
 
 

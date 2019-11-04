@@ -87,28 +87,43 @@ EventProcessResult IMapEventHeroStrike::Process()
 }
 
 InteractionResult IMapEventHeroStrike::Interact(std::weak_ptr<GlCharacter> model,std::string &return_value)
-{
-    auto pmodel = model.lock();
-    auto powner = m_owner.lock();
-    if(!pmodel)
-        return InteractionResult::Nothing;
-    auto damage_reaction = pmodel->Damage(m_damage,GetPosition());
-    pmodel->AddEnemy(m_owner);
-    if(powner)
+{   
+    if(auto pmodel = model.lock())
     {
-        powner->AddEnemy(pmodel);
-        if(damage_reaction == DamageReaction::Block)
+        auto damage_reaction = pmodel->Damage(m_damage,GetPosition());
+
+        if(pmodel->GetType() == CharacterTypes::mob)
         {
-            powner->UseCommand(AnimationCommand::kStrikeBlocked);
-            std::cout<<powner->GetName()<<" blocked!\n";
+            pmodel->AddEnemy(m_owner);
         }
+        
+        if(auto powner = m_owner.lock())
+        {
+            if( (powner->GetType() == CharacterTypes::hero)&&
+                (pmodel->GetType() == CharacterTypes::mob)
+            )
+            {
+                powner->AddEnemy(model);
+            }
+
+            if(damage_reaction == DamageReaction::Block)
+            {
+                powner->UseCommand(AnimationCommand::kStrikeBlocked);
+                std::cout<<powner->GetName()<<" blocked!\n";
+            }
+        }
+        //std::cout<<model.GetName()<<" life "<<model.GetLifeValue()<<"\n";
+        if((pmodel->GetLifeValue()< 0)&&(pmodel->GetType() != CharacterTypes::hero))
+        {
+            return InteractionResult::Kill;
+        }
+        return InteractionResult::Damage;
     }
-    //std::cout<<model.GetName()<<" life "<<model.GetLifeValue()<<"\n";
-    if((pmodel->GetLifeValue()< 0)&&(pmodel->GetType() != CharacterTypes::hero))
+    else
     {
-        return InteractionResult::Kill;
+        return InteractionResult::Nothing;
     }
-    return InteractionResult::Damage;
+    
 }
 
 bool IMapEventHeroStrike::IsInteractable(std::weak_ptr<GlCharacter> obj)

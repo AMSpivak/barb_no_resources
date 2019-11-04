@@ -51,6 +51,7 @@ public:
     const std::pair<glm::vec3, glm::vec3> GetWeaponPositionOld();
     const unsigned int GetBreed() const;
 
+
 private:
     std::shared_ptr<Character::IBrain> m_brain;
     CharacterTypes m_type;
@@ -74,7 +75,8 @@ private:
     int m_weapon_model;
     int m_weapon_bone;
 
-    unsigned int breed;
+    unsigned int m_breed;
+    bool m_breed_friendly;
 
 
     std::pair<glm::vec3, glm::vec3>  m_weapon_now;
