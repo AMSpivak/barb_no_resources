@@ -329,8 +329,9 @@ DamageReaction GlCharacter::Damage(float damage, const glm::vec3 & from)
     const float block_range = 0.5f;
     bool blocked = current_animation->m_block && (disorientation < block_range) && (disorientation > -block_range);
     {
-        if((!blocked) && UseCommand(AnimationCommand::kDamaged))
+        if(!blocked)
         {
+            UseCommand(AnimationCommand::kDamaged);
             IGlModel::Damage(damage);
             return DamageReaction::Damage;
         }

@@ -92,10 +92,17 @@ InteractionResult IMapEventHeroStrike::Interact(std::weak_ptr<GlCharacter> model
     auto powner = m_owner.lock();
     if(!pmodel)
         return InteractionResult::Nothing;
-    pmodel->Damage(m_damage,GetPosition());
+    auto damage_reaction = pmodel->Damage(m_damage,GetPosition());
     pmodel->AddEnemy(m_owner);
     if(powner)
+    {
         powner->AddEnemy(pmodel);
+        if(damage_reaction == DamageReaction::Block)
+        {
+            powner->UseCommand(AnimationCommand::kStrikeBlocked);
+            std::cout<<powner->GetName()<<" blocked!\n";
+        }
+    }
     //std::cout<<model.GetName()<<" life "<<model.GetLifeValue()<<"\n";
     if((pmodel->GetLifeValue()< 0)&&(pmodel->GetType() != CharacterTypes::hero))
     {

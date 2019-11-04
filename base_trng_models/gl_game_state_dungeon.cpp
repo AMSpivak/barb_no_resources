@@ -565,7 +565,7 @@ void GlGameStateDungeon::LoadMap(const std::string &filename,const std::string &
     for(int i = 0; i <50; i++)
     {
         mob = std::make_shared<GlCharacter>(CharacterTypes::mob);
-        UpdateCharacterFromFile("material/hero_orc.chr",*mob);
+        UpdateCharacterFromFile("heroes/hero_orc.chr",*mob);
         mob->SetName("Mob"+std::to_string(i));
         float mob_x = std::rand();
         float mob_z = std::rand();

@@ -22,7 +22,8 @@ std::map<std::string,AnimationCommand> commands = {
                                                         {"step_back", AnimationCommand::kStepBack},
                                                         {"step_right", AnimationCommand::kStepRight},
                                                         {"step_left", AnimationCommand::kStepLeft},
-                                                        {"guard", AnimationCommand::kGuard}
+                                                        {"guard", AnimationCommand::kGuard},
+                                                        {"strike_block", AnimationCommand::kStrikeBlocked}
 
                                                     };
 
@@ -41,7 +42,8 @@ std::map<AnimationCommand,std::string> command_names = {
                                                         { AnimationCommand::kStepBack,"step_back"},
                                                         { AnimationCommand::kStepRight, "step_right"},
                                                         { AnimationCommand::kStepLeft, "step_left"},
-                                                        { AnimationCommand::kGuard, "guard"}
+                                                        { AnimationCommand::kGuard, "guard"},
+                                                        { AnimationCommand::kStrikeBlocked, "strike_block"}
                                                     };
 
 std::pair<AnimationCommand,std::string> ParseCommand(const std::string &command)
