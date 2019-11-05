@@ -17,7 +17,7 @@ sequence guard_main 117 117 1 1 0 1 0 "" "" "" "use guard_use" "guard guard_main
 sequence guard_use 117 117 1 1 0 0 1 guard_main "sound material/audio/sword_clash.wav" "" ""
 sequence damage 106 112 0 0 0 0 1 damage_main "" "" "sound material/audio/pain1.wav"
 sequence damage_main 113 113 0 0 0 0 1 stance "" "" "" "damage damage_main" "guard guard" "stance stance"
-sequence strike_block 106 113 0 0 0 0 1 stance "sound material/audio/sword_clash.wav" "" "" "damage damage"
+sequence strike_block 133 148 0 0 0 0 1 stance "sound material/audio/sword_clash.wav" "" "" "damage damage"
 sequence walk 66 79 0 0 0 1 0 "" "" "" "strike start_strike" "guard guard" "stance stance" "step_back step_back" "move walk" "move_fast run" "damage damage"
 sequence run 82 94 0 0 0 1 0 "" "" "" "strike start_strike" "guard guard" "stance stance" "move walk" "move_fast run" "damage damage"
 sequence step_back 96 102 0 0 0 0 1 stance "" "" "" "stance stance" "move walk" "damage damage"
