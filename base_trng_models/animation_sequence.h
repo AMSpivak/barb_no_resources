@@ -9,7 +9,7 @@ enum class AnimationCommand {kNone,kMessage,kService,
                             kRestStance,kRestMove,kRestFastMove,kRestTurnLeft,kRestTurnRight,kRestRotate,
                             kStepLeft,kStepRight,kStepBack, kGuard,
                             kUse, kSound,kExecuted,
-                            kStrike, kStrikeBlocked, kDamaged};
+                            kStrike, kStrikeForward, kStrikeBlocked, kDamaged};
 struct AnimationSequence
 {
     AnimationSequence(size_t start = 0,size_t stop = 0):

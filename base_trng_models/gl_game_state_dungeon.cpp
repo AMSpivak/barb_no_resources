@@ -1402,7 +1402,7 @@ std::pair<AnimationCommand,const glm::mat4>  GlGameStateDungeon::ProcessInputs(s
 
     bool action_use = inputs[GLFW_KEY_LEFT_ALT];
     bool attack = inputs[GLFW_MOUSE_BUTTON_LEFT]|inputs[GLFW_KEY_SPACE];  
-    bool fast_move = inputs[GLFW_KEY_LEFT_SHIFT];
+    bool fast_move = false;//inputs[GLFW_KEY_LEFT_SHIFT];
     bool guard = inputs[GLFW_MOUSE_BUTTON_RIGHT]|inputs[GLFW_KEY_LEFT_CONTROL];
 
     GLFWgamepadstate state;
@@ -1418,6 +1418,14 @@ std::pair<AnimationCommand,const glm::mat4>  GlGameStateDungeon::ProcessInputs(s
             fast_move = true;
         }
     }
+    else
+    {
+        if(moving)
+        {
+            fast_move = !inputs[GLFW_KEY_LEFT_SHIFT];
+        }
+    }
+    
 
     auto direction = Math3D::SimplifyDirection(disorientation);
 
@@ -1434,6 +1442,11 @@ std::pair<AnimationCommand,const glm::mat4>  GlGameStateDungeon::ProcessInputs(s
 
     if(attack)
     { 
+        if(moving&&fast_move&&(direction == Math3D::SimpleDirections::Forward))
+        {
+            return std::make_pair(AnimationCommand::kStrikeForward,rm); 
+        }
+
         return std::make_pair(AnimationCommand::kStrike,rm);
     }
 

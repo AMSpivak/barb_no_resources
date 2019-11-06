@@ -11,6 +11,7 @@
 std::map<std::string,AnimationCommand> commands = {
                                                         {"message", AnimationCommand::kMessage},
                                                         {"strike", AnimationCommand::kStrike},
+                                                        {"strike_forward", AnimationCommand::kStrikeForward},
                                                         {"move", AnimationCommand::kMove},
                                                         {"move_fast", AnimationCommand::kFastMove},
                                                         {"rotate", AnimationCommand::kRotate},
@@ -31,6 +32,7 @@ std::map<AnimationCommand,std::string> command_names = {
                                                         { AnimationCommand::kMessage,"message"},
                                                         { AnimationCommand::kNone,""},
                                                         { AnimationCommand::kStrike,"strike"},
+                                                        { AnimationCommand::kStrikeForward,"strike_forward"},
                                                         { AnimationCommand::kMove,"move"},
                                                         { AnimationCommand::kFastMove,"move_fast"},
                                                         { AnimationCommand::kRotate,"rotate",},
