@@ -1322,12 +1322,12 @@ std::pair<AnimationCommand,const glm::mat4>  GlGameStateDungeon::ProcessInputs(s
     glm::vec3 hero_side;
     std::tie(hero_direction, hero_side) = hero->Get2DBasis();
     hero_direction[1]= 0;
-    auto enemy = hero->arch_enemy.lock();
+
     if(hero->IsFocused())
     {
         std::cout<<"focused \n";
     }
-    if((enemy)&&hero->IsFocused())
+    if((auto enemy = hero->arch_enemy.lock())&&hero->IsFocused())
     {
         //glm::vec3 y_basis = glm::vec3(0.0f,1.0f,0.0f);
         glm::vec3 z_basis = glm::vec3(0.0f,0.0f,0.0f);
@@ -1452,8 +1452,16 @@ std::pair<AnimationCommand,const glm::mat4>  GlGameStateDungeon::ProcessInputs(s
 
     if(action_use) 
         return std::make_pair(AnimationCommand::kUse,rm);
+
     if(moving)
+    {
+        if(fast_move&&(direction == Math3D::SimpleDirections::Back))
+        {
+            return std::make_pair(AnimationCommand::kRotate,(hero->model_matrix));
+        }
         return std::make_pair(fast_move ? AnimationCommand::kFastMove:AnimationCommand::kMove,rm);
+    }
+
     if(step_back)
     {
         std::cout << "step_back\n";
