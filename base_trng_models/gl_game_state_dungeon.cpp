@@ -1310,6 +1310,7 @@ std::pair<AnimationCommand,const glm::mat4>  GlGameStateDungeon::ProcessInputs(s
     {
         m_daytime_in_hours += 0.1;
     }
+
     auto move_inputs = GameInputs::ProcessInputsMoveControl(inputs);
     float move_square = move_inputs.first * move_inputs.first + move_inputs.second * move_inputs.second;
     bool moving = move_square > 0.03f;//(std::abs(move_inputs.first)+std::abs(move_inputs.second)>0.2f);
@@ -1322,41 +1323,34 @@ std::pair<AnimationCommand,const glm::mat4>  GlGameStateDungeon::ProcessInputs(s
     glm::vec3 hero_side;
     std::tie(hero_direction, hero_side) = hero->Get2DBasis();
     hero_direction[1]= 0;
+    hero_side[1]= 0;
 
-    if(hero->IsFocused())
-    {
-        std::cout<<"focused \n";
-    }
-    if((auto enemy = hero->arch_enemy.lock())&&hero->IsFocused())
-    {
-        //glm::vec3 y_basis = glm::vec3(0.0f,1.0f,0.0f);
-        glm::vec3 z_basis = glm::vec3(0.0f,0.0f,0.0f);
+    
 
-        glm::vec3 enemy_vector = enemy->GetPosition() - hero->GetPosition();
-        float enemy_distance = glm::length(enemy_vector);
-        z_basis = glm::normalize(enemy_vector);
-        constexpr float fit = -45.0f;
+    if((!hero->IsNoRotateable()) && hero->IsFocused())
+    {
         
-        // //float l = fit * glm::length(hero_direction - z_basis);
-        // z_basis =(1.0f - fit) * hero_direction + fit * z_basis;
-        // z_basis = glm::normalize(z_basis);
-        // z_basis = -z_basis;
-        // glm::vec3 x_basis = glm::cross(y_basis, z_basis);
+        if(auto enemy = hero->arch_enemy.lock())
+        {
+            glm::vec3 z_basis = glm::vec3(0.0f,0.0f,0.0f);
 
-        /*rm = glm::mat4(
-            glm::vec4(x_basis[0],x_basis[1],x_basis[2],0.0f),
-            glm::vec4(y_basis[0],y_basis[1],y_basis[2],0.0f),
-            glm::vec4(z_basis[0],z_basis[1],z_basis[2],0.0f),
-            glm::vec4(0.0,0.0,0.0,1.0f)
-            );*/
-        float enemy_disorient = Math3D::Disorientation(hero_direction,z_basis,hero_side);
-        if((enemy_disorient >0.05f)||(enemy_disorient < -0.05f))
-            rm = glm::rotate(glm::radians(fit * enemy_disorient), glm::vec3(0.0f, 1.0f, 0.0f)) * hero->model_matrix;
-        std::cout<<"focused! \n";  
+            glm::vec3 enemy_vector = enemy->GetPosition() - hero->GetPosition();
+            float enemy_distance = glm::length(enemy_vector);
+            z_basis = glm::normalize(enemy_vector);
+            constexpr float fit = -45.0f;
+            
+            float enemy_disorient = Math3D::Disorientation(hero_direction,z_basis,hero_side);
+            if((enemy_disorient >0.005f)||(enemy_disorient < -0.005f))
+                rm = glm::rotate(glm::radians(fit * enemy_disorient), glm::vec3(0.0f, 1.0f, 0.0f)) * hero->model_matrix;
+            std::cout<<"focused! \n";  
+        }
     }
 
     if(moving)
     {
+        hero_side = glm::normalize(hero_side);
+        hero_direction = glm::normalize(hero_direction);
+
         glm::vec3 y_basis = glm::vec3(0.0f,1.0f,0.0f);
         glm::vec3 x_basis = glm::vec3(0.0f,0.0f,0.0f);
         
@@ -1374,12 +1368,15 @@ std::pair<AnimationCommand,const glm::mat4>  GlGameStateDungeon::ProcessInputs(s
         
         
         disorientation = Math3D::Disorientation(hero_side,new_x, hero_direction);
-        //std::cout << "\n disorient "<<disorientation<<"\n";
         
         
         if(!(hero->IsNoRotateable() && hero->IsFocused()))
         {
-            glm::vec4 move_h = hero->model_matrix * glm::vec4(1.0f,0.0f,0.0f,1.0f);
+            constexpr float fit = -30.0f;
+            if((disorientation >0.005f)||(disorientation < -0.005f))
+                rm = glm::rotate(glm::radians(-fit * disorientation), glm::vec3(0.0f, 1.0f, 0.0f)) * hero->model_matrix;
+            
+            /*glm::vec4 move_h = hero->model_matrix * glm::vec4(1.0f,0.0f,0.0f,1.0f);
             glm::vec3 old_dir = glm::vec3(move_h);
 
             float l = 0.2f * glm::length(old_dir - x_basis);
@@ -1395,6 +1392,7 @@ std::pair<AnimationCommand,const glm::mat4>  GlGameStateDungeon::ProcessInputs(s
                 glm::vec4(z_basis[0],z_basis[1],z_basis[2],0.0f),
                 glm::vec4(0.0,0.0,0.0,1.0f)
                 );
+                */
         }
     }
 
@@ -1402,7 +1400,7 @@ std::pair<AnimationCommand,const glm::mat4>  GlGameStateDungeon::ProcessInputs(s
 
     bool action_use = inputs[GLFW_KEY_LEFT_ALT];
     bool attack = inputs[GLFW_MOUSE_BUTTON_LEFT]|inputs[GLFW_KEY_SPACE];  
-    bool fast_move = false;//inputs[GLFW_KEY_LEFT_SHIFT];
+    bool fast_move = false;
     bool guard = inputs[GLFW_MOUSE_BUTTON_RIGHT]|inputs[GLFW_KEY_LEFT_CONTROL];
 
     GLFWgamepadstate state;
@@ -1411,7 +1409,7 @@ std::pair<AnimationCommand,const glm::mat4>  GlGameStateDungeon::ProcessInputs(s
         attack |=state.buttons[GLFW_GAMEPAD_BUTTON_A];
         action_use |=state.buttons[GLFW_GAMEPAD_BUTTON_X];
         fast_move |=state.buttons[GLFW_GAMEPAD_BUTTON_LEFT_BUMPER];
-        guard |=state.buttons[GLFW_GAMEPAD_BUTTON_RIGHT_BUMPER];
+        guard |=state.buttons[GLFW_GAMEPAD_BUTTON_B];
 
         if(move_square > 0.36f)
         {
@@ -1429,15 +1427,6 @@ std::pair<AnimationCommand,const glm::mat4>  GlGameStateDungeon::ProcessInputs(s
 
     auto direction = Math3D::SimplifyDirection(disorientation);
 
-    bool step_back = fast_move&&guard&&(direction == Math3D::SimpleDirections::Back);
-    bool step_right = fast_move&&guard&&(direction == Math3D::SimpleDirections::Right);
-    bool step_left = fast_move&&guard&&(direction == Math3D::SimpleDirections::Left);
-
-    if(step_back||step_right||step_left)
-    {
-        moving = false;
-    }
-
     std::cout << "\n disorientation "<<disorientation<<" "<<direction<<"\n";
 
     if(attack)
@@ -1453,6 +1442,29 @@ std::pair<AnimationCommand,const glm::mat4>  GlGameStateDungeon::ProcessInputs(s
     if(action_use) 
         return std::make_pair(AnimationCommand::kUse,rm);
 
+
+    if(guard)
+    {
+        if(fast_move)
+        {
+            switch(direction)
+            {
+                case Math3D::SimpleDirections::Back:
+                    return std::make_pair(AnimationCommand::kStepBack,(hero->model_matrix));
+                break;
+                case Math3D::SimpleDirections::Right:
+                    return std::make_pair(AnimationCommand::kStepRight,(hero->model_matrix));
+                break;
+                case Math3D::SimpleDirections::Left:
+                    return std::make_pair(AnimationCommand::kStepLeft,(hero->model_matrix));
+                break;
+                default:
+                break;
+            }
+        }
+        return std::make_pair(AnimationCommand::kGuard,rm);
+    }
+
     if(moving)
     {
         if(fast_move&&(direction == Math3D::SimpleDirections::Back))
@@ -1461,22 +1473,6 @@ std::pair<AnimationCommand,const glm::mat4>  GlGameStateDungeon::ProcessInputs(s
         }
         return std::make_pair(fast_move ? AnimationCommand::kFastMove:AnimationCommand::kMove,rm);
     }
-
-    if(step_back)
-    {
-        std::cout << "step_back\n";
-        return std::make_pair(AnimationCommand::kStepBack,(hero->model_matrix));
-    }
-    if(step_right)
-    {
-        return std::make_pair(AnimationCommand::kStepRight,(hero->model_matrix));
-    }
-    if(step_left)
-    {
-        return std::make_pair(AnimationCommand::kStepLeft,(hero->model_matrix));
-    }
-    if(guard)
-        return std::make_pair(AnimationCommand::kGuard,rm);
 
     return std::make_pair(AnimationCommand::kNone,rm);    
 }
