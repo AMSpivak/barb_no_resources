@@ -1468,10 +1468,12 @@ std::pair<AnimationCommand,const glm::mat4>  GlGameStateDungeon::ProcessInputs(s
     }
     if(step_right)
     {
+        std::cout << "step_right\n";
         return std::make_pair(AnimationCommand::kStepRight,(hero->model_matrix));
     }
     if(step_left)
     {
+        std::cout << "step_left\n";
         return std::make_pair(AnimationCommand::kStepLeft,(hero->model_matrix));
     }
     if(guard)
