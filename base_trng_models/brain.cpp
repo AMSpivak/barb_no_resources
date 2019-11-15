@@ -119,8 +119,10 @@ namespace Character
 
     class BrainMob: public IBrain
     {
+        private:
+        float distance;
         public:
-        BrainMob(std::function<void(GlCharacter & character)> world_reaction):rotator(0)
+        BrainMob(std::function<void(GlCharacter & character)> world_reaction):rotator(0), distance(0.0f)
         {
             m_world_reaction = world_reaction;
         }
@@ -212,6 +214,9 @@ namespace Character
 
                 glm::vec3 enemy_vector = enemy->GetPosition() - character.GetPosition();
                 float enemy_distance = glm::length(enemy_vector);
+                constexpr float distance_smooth = 0.1f;
+                distance = enemy_distance * distance_smooth + (1.0f - distance_smooth) * distance;
+                enemy_distance = distance; 
                 z_basis = -glm::normalize(enemy_vector);
                 
                 glm::vec3 x_basis = glm::cross(y_basis, z_basis);

@@ -1325,11 +1325,8 @@ std::pair<AnimationCommand,const glm::mat4>  GlGameStateDungeon::ProcessInputs(s
     hero_direction[1]= 0;
     hero_side[1]= 0;
 
-    
-
-    if((!hero->IsNoRotateable()) && hero->IsFocused())
+    if(hero->IsFocused())
     {
-        
         if(auto enemy = hero->arch_enemy.lock())
         {
             glm::vec3 z_basis = glm::vec3(0.0f,0.0f,0.0f);
@@ -1431,9 +1428,22 @@ std::pair<AnimationCommand,const glm::mat4>  GlGameStateDungeon::ProcessInputs(s
 
     if(attack)
     { 
-        if(moving&&fast_move&&(direction == Math3D::SimpleDirections::Forward))
+        if(fast_move)
         {
-            return std::make_pair(AnimationCommand::kStrikeForward,rm); 
+            switch(direction)
+            {  
+                case Math3D::SimpleDirections::Forward:
+                    return std::make_pair(AnimationCommand::kStrikeForward,rm); 
+                break;
+                case Math3D::SimpleDirections::Left:
+                    return std::make_pair(AnimationCommand::kStrikeLeft,rm); 
+                break;
+                case Math3D::SimpleDirections::Right:
+                    return std::make_pair(AnimationCommand::kStrikeRight,rm); 
+                break;
+                default:
+                break;
+            }
         }
 
         return std::make_pair(AnimationCommand::kStrike,rm);
@@ -1473,6 +1483,24 @@ std::pair<AnimationCommand,const glm::mat4>  GlGameStateDungeon::ProcessInputs(s
         }
         return std::make_pair(fast_move ? AnimationCommand::kFastMove:AnimationCommand::kMove,rm);
     }
+
+    if(step_back)
+    {
+        std::cout << "step_back\n";
+        return std::make_pair(AnimationCommand::kStepBack,(hero->model_matrix));
+    }
+    if(step_right)
+    {
+        std::cout << "step_right\n";
+        return std::make_pair(AnimationCommand::kStepRight,(hero->model_matrix));
+    }
+    if(step_left)
+    {
+        std::cout << "step_left\n";
+        return std::make_pair(AnimationCommand::kStepLeft,(hero->model_matrix));
+    }
+    if(guard)
+        return std::make_pair(AnimationCommand::kGuard,rm);
 
     return std::make_pair(AnimationCommand::kNone,rm);    
 }

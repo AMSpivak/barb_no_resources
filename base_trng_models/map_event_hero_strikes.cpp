@@ -90,15 +90,22 @@ InteractionResult IMapEventHeroStrike::Interact(std::weak_ptr<GlCharacter> model
 {   
     if(auto pmodel = model.lock())
     {
-        auto damage_reaction = pmodel->Damage(m_damage,GetPosition());
-
-        if(pmodel->GetType() == CharacterTypes::mob)
-        {
-            pmodel->AddEnemy(m_owner);
-        }
-        
         if(auto powner = m_owner.lock())
         {
+            auto m_breed = pmodel->GetBreed();
+            
+            if((m_breed) && (powner->GetBreed() == m_breed))
+            {
+                return InteractionResult::Nothing;
+            }
+
+            auto damage_reaction = pmodel->Damage(m_damage,GetPosition());
+
+            if(pmodel->GetType() == CharacterTypes::mob)
+            {
+                pmodel->AddEnemy(m_owner);
+            }
+
             if( (powner->GetType() == CharacterTypes::hero)&&
                 (pmodel->GetType() == CharacterTypes::mob)
             )

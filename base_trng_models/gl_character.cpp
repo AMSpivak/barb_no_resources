@@ -406,10 +406,10 @@ void GlCharacter::AddEnemy(std::weak_ptr<GlCharacter> enemy)
 {
     if(auto finder = enemy.lock())
     {
-        if((m_breed) && (finder->GetBreed() == m_breed))
-        {
-            return;
-        }
+        // if((m_breed) && (finder->GetBreed() == m_breed))
+        // {
+        //     return;
+        // }
         auto result = std::find_if(enemies_list.begin(),enemies_list.end(),[&](std::pair<std::weak_ptr<GlCharacter>,float> obj){
                     auto candidate = obj.first.lock();
                     return finder == candidate;
