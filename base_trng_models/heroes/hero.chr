@@ -2,11 +2,11 @@ mass_inv 1.0
 radius 0.5
 model material/barb01/barb.mdl
 model material/sword/sword.mdl
-sequence start_strike 7 12 0 0 0 0 1 strike "" "" "" "damage damage"
+sequence start_strike 7 12 0 0 1 0 1 strike "" "" "" "damage damage"
 sequence strike 13 17 0 0 1 0 1 strike_pre_end "" "strike 0.05" "sound material/audio/swing.wav" "strike_block strike_block"
 sequence strike_pre_end 17 20 0 0 1 0 1 strike_end "" "" "" "strike start_strike_2" "strike_right start_right_strike_2" "strike_left start_left_strike_2" "damage damage"
 sequence strike_end 20 21 0 0 1 0 1 stance "" "" "" "guard guard" "step_back step_back"
-sequence start_strike_2 47 52 1 0 0 0 1 strike_2 "" "" "" "damage damage"
+sequence start_strike_2 47 52 0 0 1 0 1 strike_2 "" "" "" "damage damage"
 sequence strike_2 53 59 0 0 1 0 1 strike_preend_2 "" "strike 0.07" "sound material/audio/swing.wav" "strike_block strike_block"
 sequence strike_preend_2 60 63 0 0 1 0 1 strike_end_2 "" "" "" "guard guard" "strike_right start_right_strike_2" "strike_left start_left_strike_2" "step_back step_back" "damage damage"
 sequence strike_end_2 64 65 0 0 1 0 1 stance "" "" "" "strike start_strike"  "guard guard" "step_back step_back" "damage damage"
@@ -43,7 +43,7 @@ sequence start_left_strike_2 276 282 0 0 1 0 1 strike_left_2 "" "" "" "damage da
 sequence strike_left_2 283 286 0 0 1 0 1 strike_left_preend_2 "" "strike 0.05" "sound material/audio/swing.wav" "strike_block strike_block"
 sequence strike_left_preend_2 287 290 0 0 1 0 1 strike_left_end_2 "" "" "" "guard guard" "step_back step_back_fast" "damage damage"
 sequence strike_left_end_2 291 291 0 0 1 0 1 stance "" "" "" "strike start_strike" "guard guard" "step_back step_back_fast" "damage damage"
-sequence start_right_strike_2 260 264 0 0 1 0 1 strike_right_2 "" "" "" "damage damage"
+sequence start_right_strike_2 261 264 0 0 1 0 1 strike_right_2 "" "" "" "damage damage"
 sequence strike_right_2 265 268 0 0 1 0 1 strike_right_preend_2 "" "strike 0.05" "sound material/audio/swing.wav" "strike_block strike_block"
 sequence strike_right_preend_2 269 273 0 0 1 0 1 strike_right_end_2 "" "" "" "guard guard" "step_back step_back_fast" "damage damage"
 sequence strike_right_end_2 274 274 0 0 1 0 1 stance "" "" "" "strike start_strike" "guard guard" "step_back step_back_fast" "damage damage"

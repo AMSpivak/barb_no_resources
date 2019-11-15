@@ -11,6 +11,7 @@ class Settings
     unsigned short frame_number = 0;
     float m_quality_factor = 1.0;
     float m_fps = 0;
+    int monitor = 0;
     public:
     Settings();
     ~Settings();
@@ -20,6 +21,7 @@ class Settings
     void SetQualityFactor(float value);
     float GetQualityFactor();
     float GetFPS();
+    int GetMonitorIndex();
     void SetFPS(float value);
     bool IsPbrON();
     void SetPbr(bool value);

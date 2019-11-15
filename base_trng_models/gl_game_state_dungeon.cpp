@@ -1324,8 +1324,10 @@ std::pair<AnimationCommand,const glm::mat4>  GlGameStateDungeon::ProcessInputs(s
     std::tie(hero_direction, hero_side) = hero->Get2DBasis();
     hero_direction[1]= 0;
     hero_side[1]= 0;
+    hero_side = glm::normalize(hero_side);
+    hero_direction = glm::normalize(hero_direction);
 
-    if(hero->IsFocused())
+    if(hero->IsFocused()&&(!hero->IsNoRotateable()))
     {
         if(auto enemy = hero->arch_enemy.lock())
         {
@@ -1345,8 +1347,7 @@ std::pair<AnimationCommand,const glm::mat4>  GlGameStateDungeon::ProcessInputs(s
 
     if(moving)
     {
-        hero_side = glm::normalize(hero_side);
-        hero_direction = glm::normalize(hero_direction);
+        
 
         glm::vec3 y_basis = glm::vec3(0.0f,1.0f,0.0f);
         glm::vec3 x_basis = glm::vec3(0.0f,0.0f,0.0f);
@@ -1483,25 +1484,6 @@ std::pair<AnimationCommand,const glm::mat4>  GlGameStateDungeon::ProcessInputs(s
         }
         return std::make_pair(fast_move ? AnimationCommand::kFastMove:AnimationCommand::kMove,rm);
     }
-
-    if(step_back)
-    {
-        std::cout << "step_back\n";
-        return std::make_pair(AnimationCommand::kStepBack,(hero->model_matrix));
-    }
-    if(step_right)
-    {
-        std::cout << "step_right\n";
-        return std::make_pair(AnimationCommand::kStepRight,(hero->model_matrix));
-    }
-    if(step_left)
-    {
-        std::cout << "step_left\n";
-        return std::make_pair(AnimationCommand::kStepLeft,(hero->model_matrix));
-    }
-    if(guard)
-        return std::make_pair(AnimationCommand::kGuard,rm);
-
     return std::make_pair(AnimationCommand::kNone,rm);    
 }
 

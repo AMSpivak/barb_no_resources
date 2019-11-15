@@ -115,6 +115,9 @@ int main(int argc, char const *argv[])
 
     if(argc > 1) is_fullscreen = false;
 
+	EngineSettings::Settings main_settings;
+	EngineSettings::SetEngineSettings(&main_settings);
+
     inputs[GLFW_KEY_LEFT] =  false;
 	inputs[GLFW_KEY_RIGHT] = false;
 	inputs[GLFW_KEY_UP] =  false;
@@ -152,7 +155,16 @@ int main(int argc, char const *argv[])
 
     if(is_fullscreen)
     {
+		int monitor_count = 0;
+		auto monitors = glfwGetMonitors(&monitor_count);
         GLFWmonitor* monitor = glfwGetPrimaryMonitor();
+
+		auto setted_monitor = EngineSettings::GetEngineSettings()->GetMonitorIndex();
+		if((setted_monitor > 0) && (setted_monitor < monitor_count))
+		{
+			monitor = monitors[setted_monitor];
+		}
+		
         const GLFWvidmode* mode = glfwGetVideoMode(monitor);
         glfwWindowHint(GLFW_RED_BITS, mode->redBits);
         glfwWindowHint(GLFW_GREEN_BITS, mode->greenBits);
@@ -197,8 +209,7 @@ int main(int argc, char const *argv[])
 	GLResourcesManager resources_atlas("material/textures/","material/meshes/","material/animations/","");
 	SetResourceManager(&resources_atlas);
 
-	EngineSettings::Settings main_settings;
-	EngineSettings::SetEngineSettings(&main_settings);
+	
 
 	
 
