@@ -1410,7 +1410,7 @@ std::pair<AnimationCommand,const glm::mat4>  GlGameStateDungeon::ProcessInputs(s
         attack |=state.buttons[GLFW_GAMEPAD_BUTTON_A];
         action_use |=state.buttons[GLFW_GAMEPAD_BUTTON_X];
         fast_move |=state.buttons[GLFW_GAMEPAD_BUTTON_LEFT_BUMPER];
-        guard |=state.buttons[GLFW_GAMEPAD_BUTTON_RIGHT_BUMPER];
+        guard |=state.buttons[GLFW_GAMEPAD_BUTTON_B];
 
         if(move_square > 0.36f)
         {
@@ -1441,9 +1441,22 @@ std::pair<AnimationCommand,const glm::mat4>  GlGameStateDungeon::ProcessInputs(s
 
     if(attack)
     { 
-        if(moving&&fast_move&&(direction == Math3D::SimpleDirections::Forward))
+        if(moving&&fast_move)
         {
-            return std::make_pair(AnimationCommand::kStrikeForward,rm); 
+            switch(direction)
+            {  
+                case Math3D::SimpleDirections::Forward:
+                    return std::make_pair(AnimationCommand::kStrikeForward,rm); 
+                break;
+                case Math3D::SimpleDirections::Left:
+                    return std::make_pair(AnimationCommand::kStrikeLeft,rm); 
+                break;
+                case Math3D::SimpleDirections::Right:
+                    return std::make_pair(AnimationCommand::kStrikeRight,rm); 
+                break;
+                default:
+                break;
+            }
         }
 
         return std::make_pair(AnimationCommand::kStrike,rm);

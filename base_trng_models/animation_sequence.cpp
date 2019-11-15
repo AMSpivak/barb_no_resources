@@ -4,14 +4,17 @@
 #include <string>
 #include <iomanip>
 #include <map>
+#include <algorithm>
 #include <sstream>
 
 #include "loader.h"
 
-std::map<std::string,AnimationCommand> commands = {
+std::vector<std::pair<std::string,AnimationCommand>> commands_list = {
                                                         {"message", AnimationCommand::kMessage},
                                                         {"strike", AnimationCommand::kStrike},
                                                         {"strike_forward", AnimationCommand::kStrikeForward},
+                                                        {"strike_left", AnimationCommand::kStrikeRight},
+                                                        {"strike_right", AnimationCommand::kStrikeLeft},
                                                         {"move", AnimationCommand::kMove},
                                                         {"move_fast", AnimationCommand::kFastMove},
                                                         {"rotate", AnimationCommand::kRotate},
@@ -29,26 +32,27 @@ std::map<std::string,AnimationCommand> commands = {
 
                                                     };
 
-std::map<AnimationCommand,std::string> command_names = {
-                                                        { AnimationCommand::kMessage,"message"},
-                                                        { AnimationCommand::kNone,""},
-                                                        { AnimationCommand::kStrike,"strike"},
-                                                        { AnimationCommand::kStrikeForward,"strike_forward"},
-                                                        { AnimationCommand::kMove,"move"},
-                                                        { AnimationCommand::kFastMove,"move_fast"},
-                                                        { AnimationCommand::kRotate,"rotate",},
-                                                        { AnimationCommand::kUse,"use" },
-                                                        { AnimationCommand::kExecuted,"executed"},
-                                                        { AnimationCommand::kDamaged,"damage"},
-                                                        { AnimationCommand::kStance,"stance"},
-                                                        { AnimationCommand::kSound,"sound"},
-                                                        { AnimationCommand::kStepBack,"step_back"},
-                                                        { AnimationCommand::kStepRight, "step_right"},
-                                                        { AnimationCommand::kStepLeft, "step_left"},
-                                                        { AnimationCommand::kGuard, "guard"},
-                                                        { AnimationCommand::kStrikeBlocked, "strike_block"},
-                                                        { AnimationCommand::kRotate, "rotate"}
-                                                    };
+
+
+AnimationCommand GetCommand(const std::string & name)
+{
+    auto find_from = commands_list.begin();
+    auto find_to = commands_list.end();
+    auto val = std::find_if(find_from,find_to,[name](std::pair<std::string,AnimationCommand> b){return b.first == name;});
+    if(val == find_to)
+        return AnimationCommand::kNone;
+    return val->second;
+}
+
+const std::string &GetCommandName(const AnimationCommand command)
+{
+    auto find_from = commands_list.begin();
+    auto find_to = commands_list.end();
+    auto val = std::find_if(find_from,find_to,[command](std::pair<std::string,AnimationCommand> b){return b.second == command;});
+    if(val == find_to)
+        return "";
+    return val->first;
+}
 
 std::pair<AnimationCommand,std::string> ParseCommand(const std::string &command)
 {
@@ -57,7 +61,7 @@ std::pair<AnimationCommand,std::string> ParseCommand(const std::string &command)
         return std::make_pair(AnimationCommand::kNone,"");
     }
     std::stringstream command_stream(command);
-    AnimationCommand cmd_id = commands[LoaderUtility::GetFromStream<std::string>(command_stream)];
+    AnimationCommand cmd_id = GetCommand(LoaderUtility::GetFromStream<std::string>(command_stream));
     std::string params;
     std::string dummy;
     
@@ -74,7 +78,7 @@ std::string CommandToStream(std::pair<AnimationCommand,std::string> value)
     std::stringstream command_stream;
     try
     {
-        command_stream << command_names.at(value.first);
+        command_stream << GetCommandName(value.first);
         if(value.second != "") command_stream<<" "<<value.second;
         return command_stream.str();
     }
