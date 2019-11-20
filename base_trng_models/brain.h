@@ -11,7 +11,7 @@ namespace Character
     class IBrain
     {
         public:
-        virtual void Think(GlCharacter * character) {}
+        virtual void Think(GlCharacter * character, std::weak_ptr<GlCharacter> this_weak) {}
         virtual ~IBrain(){}
         protected:
         std::function<void(GlCharacter & character)> m_world_reaction;

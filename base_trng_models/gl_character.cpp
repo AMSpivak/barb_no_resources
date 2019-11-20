@@ -207,6 +207,10 @@ void GlCharacter::Draw(GlScene::Scene &scene,const glm::mat4 &draw_matrix)
     
 }
 
+void GlCharacter::SetDungeonListReference(std::weak_ptr<GlCharacter> this_weak)
+{
+    m_dungeon_weak_reference = this_weak;
+}
 
 
 void GlCharacter::RefreshMatrixes(float approximation)

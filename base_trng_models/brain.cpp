@@ -77,7 +77,7 @@ namespace Character
         {
             m_world_reaction = world_reaction;
         }
-        virtual void Think(GlCharacter * character) 
+        virtual void Think(GlCharacter * character, std::weak_ptr<GlCharacter> this_weak) 
         {
             constexpr float enemy_keep_range = 10.0f;
             constexpr float enemy_keep_range_2 = enemy_keep_range * enemy_keep_range;
@@ -127,7 +127,7 @@ namespace Character
         {
             m_world_reaction = world_reaction;
         }
-        virtual void Think(GlCharacter * character) 
+        virtual void Think(GlCharacter * character, std::weak_ptr<GlCharacter> this_weak) 
         {
             m_world_reaction(*character);
 

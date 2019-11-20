@@ -30,6 +30,7 @@ class GlCharacter: public IGlModel
 public:
     GlCharacter(CharacterTypes type);
     ~GlCharacter();
+    void SetDungeonListReference(std::weak_ptr<GlCharacter> this_weak);
     void Draw(GlScene::Scene &scene) const override;
     void Draw(GlScene::Scene &scene,const glm::mat4 &draw_matrix) override;
     int Process(std::list<std::string> &m_messages);
@@ -63,6 +64,7 @@ public:
 private:
     DungeonHeroInfo * m_dungeon_hero_info;
     std::shared_ptr<Character::IBrain> m_brain;
+    std::weak_ptr<GlCharacter> m_dungeon_weak_reference;
     CharacterTypes m_type;
     //glm::mat4 m_draw_matrix;
     size_t engine_frame;
