@@ -1,8 +1,9 @@
 #include "brain.h"
+
 #include "gl_character.h"
 #include <random>
 #include <tuple>
-
+//#include <GLFW/glfw3.h>
 namespace Character
 {
     class BrainEmpty: public IBrain
@@ -76,39 +77,39 @@ namespace Character
         {
             m_world_reaction = world_reaction;
         }
-        virtual void Think(GlCharacter & character) 
+        virtual void Think(GlCharacter * character) 
         {
             constexpr float enemy_keep_range = 10.0f;
             constexpr float enemy_keep_range_2 = enemy_keep_range * enemy_keep_range;
-            m_world_reaction(character);
-            if(!character.enemies_list.empty())
+            m_world_reaction(*character);
+            if(!character->enemies_list.empty())
             {
-                auto enemy_it = std::max_element(   character.enemies_list.begin(),
-                                                    character.enemies_list.end(),
+                auto enemy_it = std::max_element(   character->enemies_list.begin(),
+                                                    character->enemies_list.end(),
                                                     [&](std::pair<std::weak_ptr<GlCharacter>,float> a,std::pair<std::weak_ptr<GlCharacter>,float> b)->bool
                                                     {
-                                                        return HeroChoiseLess(a,b,character);
+                                                        return HeroChoiseLess(a,b,*character);
                                                     });
                 
                 
                 if((enemy_it->second < enemy_keep_range_2)&&!enemy_it->first.expired() && (enemy_it->first.lock()->GetLifeValue() > 0.0f))
                 {
-                    character.arch_enemy = enemy_it->first;
+                    character->arch_enemy = enemy_it->first;
                 }
                 else
                 {
-                    character.enemies_list.erase(enemy_it);
+                    character->enemies_list.erase(enemy_it);
                 }  
             }
 
-            if(!character.arch_enemy.expired())
+            if(!character->arch_enemy.expired())
             {
 
-                auto arch_distance_vec = character.GetPosition() - character.arch_enemy.lock()->GetPosition();
+                auto arch_distance_vec = character->GetPosition() - character->arch_enemy.lock()->GetPosition();
                 float arch_distance = glm::dot(arch_distance_vec,arch_distance_vec);
                 if(arch_distance > enemy_keep_range_2)
                 {
-                    character.arch_enemy.reset();
+                    character->arch_enemy.reset();
                 }
             }
         }
@@ -126,26 +127,26 @@ namespace Character
         {
             m_world_reaction = world_reaction;
         }
-        virtual void Think(GlCharacter & character) 
+        virtual void Think(GlCharacter * character) 
         {
-            m_world_reaction(character);
+            m_world_reaction(*character);
 
-            if(!character.enemies_list.empty())
+            if(!character->enemies_list.empty())
             {
-                auto enemy_it = std::max_element(   character.enemies_list.begin(),
-                                                    character.enemies_list.end(),
+                auto enemy_it = std::max_element(   character->enemies_list.begin(),
+                                                    character->enemies_list.end(),
                                                     [&](std::pair<std::weak_ptr<GlCharacter>,float> a,std::pair<std::weak_ptr<GlCharacter>,float> b)->bool
                                                     {
-                                                        return HatesLess(a,b,character);
+                                                        return HatesLess(a,b,*character);
                                                     });
                 
                 if((enemy_it->second > 0.0f) && !enemy_it->first.expired() && (enemy_it->first.lock()->GetLifeValue() > 0.0f))
                 {
-                    character.arch_enemy = enemy_it->first;
+                    character->arch_enemy = enemy_it->first;
                 }
                 else
                 {
-                    character.enemies_list.erase(enemy_it);
+                    character->enemies_list.erase(enemy_it);
                 }
                 
 
@@ -156,7 +157,7 @@ namespace Character
             std::uniform_int_distribution<int> distribution(1,random_maximum);
             int dice_roll = distribution(random_generator);
             
-            if(character.arch_enemy.expired())
+            if(character->arch_enemy.expired())
             {
                 if(dice_roll>random_maximum - 1)
                 {
@@ -165,18 +166,18 @@ namespace Character
                     {
                         if(dice_roll > (5*random_maximum/8))
                         {
-                            character.UseCommand(AnimationCommand::kMove);
+                            character->UseCommand(AnimationCommand::kMove);
                         }
                         else
                         {
-                            character.UseCommand(AnimationCommand::kFastMove);
+                            character->UseCommand(AnimationCommand::kFastMove);
                         } 
                     }
                     else
                     {
                         if(dice_roll > (random_maximum/4))
                         {
-                            character.UseCommand(AnimationCommand::kStance);
+                            character->UseCommand(AnimationCommand::kStance);
                             //character.UseSequence("stance");
                         }
                     }  
@@ -202,7 +203,7 @@ namespace Character
                     ++rotator;
                     sign = -1;
                     }
-                    character.model_matrix = glm::rotate(character.model_matrix , glm::radians(sign * 0.1f), glm::vec3(0.0f, 1.0f, 0.0f));
+                    character->model_matrix = glm::rotate(character->model_matrix , glm::radians(sign * 0.1f), glm::vec3(0.0f, 1.0f, 0.0f));
                 }
             }
             else
@@ -210,9 +211,9 @@ namespace Character
                 glm::vec3 y_basis = glm::vec3(0.0f,1.0f,0.0f);
                 glm::vec3 z_basis = glm::vec3(0.0f,0.0f,0.0f);
 
-                auto enemy = character.arch_enemy.lock();
+                auto enemy = character->arch_enemy.lock();
 
-                glm::vec3 enemy_vector = enemy->GetPosition() - character.GetPosition();
+                glm::vec3 enemy_vector = enemy->GetPosition() - character->GetPosition();
                 float enemy_distance = glm::length(enemy_vector);
                 constexpr float distance_smooth = 0.1f;
                 distance = enemy_distance * distance_smooth + (1.0f - distance_smooth) * distance;
@@ -221,7 +222,7 @@ namespace Character
                 
                 glm::vec3 x_basis = glm::cross(y_basis, z_basis);
 
-                character.model_matrix = glm::mat4(
+                character->model_matrix = glm::mat4(
                     glm::vec4(x_basis[0],x_basis[1],x_basis[2],0.0f),
                     glm::vec4(y_basis[0],y_basis[1],y_basis[2],0.0f),
                     glm::vec4(z_basis[0],z_basis[1],z_basis[2],0.0f),
@@ -230,26 +231,44 @@ namespace Character
 
                 if(enemy_distance > 7.0f)
                 {
-                    character.UseCommand(AnimationCommand::kFastMove);
+                    character->UseCommand(AnimationCommand::kFastMove);
                 }
                 else
                 {
                     if(enemy_distance > 3.3f)
                     {
-                        character.UseCommand(AnimationCommand::kMove);   /* code */
+                        character->UseCommand(AnimationCommand::kMove);   /* code */
                     }
                     else
                     if(enemy_distance < 2.0f)
                     {
-                        character.UseCommand(AnimationCommand::kStepBack);   /* code */
+                        character->UseCommand(AnimationCommand::kStepBack);   /* code */
                     }
                     else
                     {
+                        auto p_d_info = character->GetDungeonHeroInfo();
+                        //double time = glfwGetTime();
+                        
                         dice_roll = distribution(random_generator);
                         if(dice_roll>(random_maximum - 50))
                         {
-                            character.UseCommand(AnimationCommand::kStrike);/* code */
+                            if((p_d_info->hero.lock() != character->arch_enemy.lock()) || ((p_d_info->now_time - p_d_info->attaker_time) > 1.5f))
+                            {
+                                if(character->UseCommand(AnimationCommand::kStrike))
+                                {
+                                    if(p_d_info->hero.lock() == character->arch_enemy.lock())
+                                    {
+                                        p_d_info->attaker_time = p_d_info->now_time;
+                                    }
+                                }
+                            }
+                            else
+                            {
+                                character->UseCommand(AnimationCommand::kStance);
+                            }
+
                         }
+                        
                     }
                     
                 }

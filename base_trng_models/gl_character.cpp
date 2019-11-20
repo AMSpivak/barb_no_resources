@@ -21,6 +21,7 @@ GlCharacter::GlCharacter(CharacterTypes type):
                             ,m_is_armed(false)
                             ,m_breed(0)
                             ,m_breed_friendly(false)
+                            ,m_dungeon_hero_info(nullptr)
 {
     m_brain = Character::CreateBrain(Character::BrainTypes::Empty,[](GlCharacter & character) { return; });
 }
@@ -280,11 +281,20 @@ void GlCharacter::SetBrain(std::shared_ptr<Character::IBrain> brain)
     m_brain = brain;
 }
 
+void GlCharacter::SetDungeonHeroInfo(DungeonHeroInfo * hero_info)
+{
+    m_dungeon_hero_info = hero_info;
+}
+
+DungeonHeroInfo * GlCharacter::GetDungeonHeroInfo()
+{
+    return m_dungeon_hero_info;
+}
 
 int GlCharacter::Process(std::list<std::string> &m_messages)
 {
     if(GetLifeValue() <=0.0f) return 1;
-    m_brain->Think(*this);
+    m_brain->Think(this);
 
     auto control = now_frame;
     if(current_animation == nullptr)

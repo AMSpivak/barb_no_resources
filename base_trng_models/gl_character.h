@@ -16,6 +16,14 @@ enum class AffectionCharacters {enemy,ally,map_object};
 
 enum class DamageReaction {NoReaction, Damage, Block};
 
+class GlCharacter;
+struct DungeonHeroInfo
+{
+    double attaker_time;
+    double now_time;
+    std::weak_ptr<GlCharacter> hero;
+};
+
 
 class GlCharacter: public IGlModel
 {
@@ -50,9 +58,10 @@ public:
     const std::pair<glm::vec3, glm::vec3> GetWeaponPosition();
     const std::pair<glm::vec3, glm::vec3> GetWeaponPositionOld();
     const unsigned int GetBreed() const;
-
-
+    void SetDungeonHeroInfo(DungeonHeroInfo * hero_info);
+    DungeonHeroInfo * GetDungeonHeroInfo();
 private:
+    DungeonHeroInfo * m_dungeon_hero_info;
     std::shared_ptr<Character::IBrain> m_brain;
     CharacterTypes m_type;
     //glm::mat4 m_draw_matrix;

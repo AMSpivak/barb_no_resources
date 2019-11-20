@@ -54,6 +54,8 @@ private:
     float raged_mode = 0.0f;
     unsigned char simple_screen;
 
+    DungeonHeroInfo m_dungeon_hero_info;
+
     //std::shared_ptr<IGlTextureStruct> heightmap_texture;
     GameMap::HeightMap m_heightmap;
     bool m_show_intro;

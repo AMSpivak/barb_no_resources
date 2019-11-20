@@ -480,6 +480,8 @@ void GlGameStateDungeon::SaveObjects(const std::string &filename)
 
 void GlGameStateDungeon::LoadMap(const std::string &filename,const std::string &start_place)
 {  
+    m_dungeon_hero_info.hero = hero;
+
     m_messages.clear();
     m_daytime_in_hours =12.0f;                                        
     
@@ -584,6 +586,7 @@ void GlGameStateDungeon::LoadMap(const std::string &filename,const std::string &
 
         mob->SetPosition(glm::vec3(mob_x,0.0f,mob_z));
         mob->model_matrix = glm::rotate(mob->model_matrix, angle_in_radians, glm::vec3(0.0f, 1.0f, 0.0f)); 
+        mob->SetDungeonHeroInfo(&m_dungeon_hero_info);
         mob->UseSequence("stance");
         mob->SetBrain(Character::CreateBrain(Character::BrainTypes::Npc,[this](GlCharacter & character){/*ControlUnit(character);*/}));
         dungeon_objects.push_back(mob);    
@@ -1253,6 +1256,7 @@ IGlGameState *  GlGameStateDungeon::Process(std::map <int, bool> &inputs, float 
 
     int models_count = Models.size();
     double time_now = glfwGetTime();
+    m_dungeon_hero_info.now_time = time_now;
 
     if(m_mode == GameStateMode::Intro)
     {
