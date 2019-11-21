@@ -298,7 +298,7 @@ DungeonHeroInfo * GlCharacter::GetDungeonHeroInfo()
 int GlCharacter::Process(std::list<std::string> &m_messages)
 {
     if(GetLifeValue() <=0.0f) return 1;
-    m_brain->Think(this);
+    m_brain->Think(this,m_dungeon_weak_reference);
 
     auto control = now_frame;
     if(current_animation == nullptr)

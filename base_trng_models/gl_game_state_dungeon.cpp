@@ -587,8 +587,10 @@ void GlGameStateDungeon::LoadMap(const std::string &filename,const std::string &
         mob->SetPosition(glm::vec3(mob_x,0.0f,mob_z));
         mob->model_matrix = glm::rotate(mob->model_matrix, angle_in_radians, glm::vec3(0.0f, 1.0f, 0.0f)); 
         mob->SetDungeonHeroInfo(&m_dungeon_hero_info);
+        mob->SetDungeonListReference(mob);
         mob->UseSequence("stance");
         mob->SetBrain(Character::CreateBrain(Character::BrainTypes::Npc,[this](GlCharacter & character){/*ControlUnit(character);*/}));
+        
         dungeon_objects.push_back(mob);    
     }
 
