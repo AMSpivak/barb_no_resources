@@ -22,6 +22,7 @@ struct DungeonHeroInfo
     double attaker_time;
     double now_time;
     std::weak_ptr<GlCharacter> hero;
+    std::list<std::pair<double,std::weak_ptr<GlCharacter>>> attackers;
 };
 
 
@@ -61,6 +62,8 @@ public:
     const unsigned int GetBreed() const;
     void SetDungeonHeroInfo(DungeonHeroInfo * hero_info);
     DungeonHeroInfo * GetDungeonHeroInfo();
+    std::weak_ptr<GlCharacter> GetDungeonListReference();
+
 private:
     DungeonHeroInfo * m_dungeon_hero_info;
     std::shared_ptr<Character::IBrain> m_brain;

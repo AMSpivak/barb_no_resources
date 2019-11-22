@@ -77,7 +77,7 @@ namespace Character
         {
             m_world_reaction = world_reaction;
         }
-        virtual void Think(GlCharacter * character, std::weak_ptr<GlCharacter> this_weak) 
+        virtual void Think(GlCharacter * character) 
         {
             constexpr float enemy_keep_range = 10.0f;
             constexpr float enemy_keep_range_2 = enemy_keep_range * enemy_keep_range;
@@ -127,7 +127,7 @@ namespace Character
         {
             m_world_reaction = world_reaction;
         }
-        virtual void Think(GlCharacter * character, std::weak_ptr<GlCharacter> this_weak) 
+        virtual void Think(GlCharacter * character) 
         {
             m_world_reaction(*character);
 
@@ -235,6 +235,22 @@ namespace Character
                 }
                 else
                 {
+                    auto p_d_info = character->GetDungeonHeroInfo();
+
+                    if(!p_d_info->attackers.empty())
+                    {
+                        auto pair_attacker = p_d_info->attackers.front();
+
+                        if(
+                            (pair_attacker.second.lock() == character->GetDungeonListReference().lock())&&
+                            ((p_d_info->now_time - p_d_info->attackers.back().first) > 1.5f)
+                            )
+                        {
+                            character->UseCommand(AnimationCommand::kStrike);
+                            p_d_info->attackers.pop_front();
+                        }
+                    }
+                    else
                     if(enemy_distance > 3.3f)
                     {
                         character->UseCommand(AnimationCommand::kMove);   /* code */
@@ -246,21 +262,38 @@ namespace Character
                     }
                     else
                     {
-                        auto p_d_info = character->GetDungeonHeroInfo();
+                        
                         //double time = glfwGetTime();
                         
                         dice_roll = distribution(random_generator);
                         if(dice_roll>(random_maximum - 50))
                         {
-                            if((p_d_info->hero.lock() != character->arch_enemy.lock()) || ((p_d_info->now_time - p_d_info->attaker_time) > 1.5f))
+                            bool can_attack = true;
+                            auto s = p_d_info->attackers.size();
+                            if((s > 0)&&(s < 3))
                             {
-                                if(character->UseCommand(AnimationCommand::kStrike))
+                                can_attack = (p_d_info->now_time - p_d_info->attackers.back().first) > 1.5f;
+                            }
+
+                            if((p_d_info->hero.lock() != character->arch_enemy.lock()) || can_attack )
+                            {
+                                if(p_d_info->hero.lock() == character->arch_enemy.lock())
                                 {
-                                    if(p_d_info->hero.lock() == character->arch_enemy.lock())
-                                    {
-                                        p_d_info->attaker_time = p_d_info->now_time;
-                                    }
+                                    //p_d_info->attaker_time = p_d_info->now_time;
+                                    p_d_info->attackers.push_back(std::make_pair(p_d_info->now_time,character->GetDungeonListReference()));
                                 }
+                                else
+                                {
+                                    character->UseCommand(AnimationCommand::kStrike);
+                                }
+                                
+                                // if(character->UseCommand(AnimationCommand::kStrike))
+                                // {
+                                //     if(p_d_info->hero.lock() == character->arch_enemy.lock())
+                                //     {
+                                //         p_d_info->attaker_time = p_d_info->now_time;
+                                //     }
+                                // }
                             }
                             else
                             {
