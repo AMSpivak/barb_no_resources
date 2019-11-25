@@ -6,6 +6,7 @@
 //#include <GLFW/glfw3.h>
 namespace Character
 {
+    constexpr float attacker_time = 0.9f;
     class BrainEmpty: public IBrain
     {
         
@@ -235,76 +236,68 @@ namespace Character
                 }
                 else
                 {
+                    bool no_strike = true;
                     auto p_d_info = character->GetDungeonHeroInfo();
 
-                    if(!p_d_info->attackers.empty())
+                    if(
+                        (!p_d_info->attackers.empty())
+                        &&(p_d_info->attackers.front().second.lock() == character->GetDungeonListReference().lock())
+                        )
                     {
-                        auto pair_attacker = p_d_info->attackers.front();
-
-                        if(
-                            (pair_attacker.second.lock() == character->GetDungeonListReference().lock())&&
-                            ((p_d_info->now_time - p_d_info->attackers.back().first) > 1.5f)
-                            )
+                        if((p_d_info->now_time - p_d_info->attackers.front().first) > attacker_time)
                         {
                             character->UseCommand(AnimationCommand::kStrike);
                             p_d_info->attackers.pop_front();
+                            no_strike = false;
                         }
-                    }
-                    else
-                    if(enemy_distance > 3.3f)
-                    {
-                        character->UseCommand(AnimationCommand::kMove);   /* code */
-                    }
-                    else
-                    if(enemy_distance < 2.0f)
-                    {
-                        character->UseCommand(AnimationCommand::kStepBack);   /* code */
-                    }
-                    else
-                    {
                         
-                        //double time = glfwGetTime();
-                        
-                        dice_roll = distribution(random_generator);
-                        if(dice_roll>(random_maximum - 50))
-                        {
-                            bool can_attack = true;
-                            auto s = p_d_info->attackers.size();
-                            if((s > 0)&&(s < 3))
-                            {
-                                can_attack = (p_d_info->now_time - p_d_info->attackers.back().first) > 1.5f;
-                            }
+                    }
 
-                            if((p_d_info->hero.lock() != character->arch_enemy.lock()) || can_attack )
+                    if(no_strike)
+                    {
+                        if(enemy_distance > 3.3f)
+                        {
+                            character->UseCommand(AnimationCommand::kMove);   /* code */
+                        }
+                        else
+                        if(enemy_distance < 2.0f)
+                        {
+                            character->UseCommand(AnimationCommand::kStepBack);   /* code */
+                        }
+                        else
+                        {                        
+                            dice_roll = distribution(random_generator);
+                            if(dice_roll>(random_maximum - 50))
                             {
-                                if(p_d_info->hero.lock() == character->arch_enemy.lock())
-                                {
-                                    //p_d_info->attaker_time = p_d_info->now_time;
-                                    p_d_info->attackers.push_back(std::make_pair(p_d_info->now_time,character->GetDungeonListReference()));
-                                }
-                                else
+                                if(p_d_info->hero.lock() != character->arch_enemy.lock()) 
                                 {
                                     character->UseCommand(AnimationCommand::kStrike);
                                 }
-                                
-                                // if(character->UseCommand(AnimationCommand::kStrike))
-                                // {
-                                //     if(p_d_info->hero.lock() == character->arch_enemy.lock())
-                                //     {
-                                //         p_d_info->attaker_time = p_d_info->now_time;
-                                //     }
-                                // }
+                                else
+                                {               
+                                    bool can_attack = true;
+                                    auto s = p_d_info->attackers.size();
+
+                                    if((s > 0)&&(s < 3))
+                                    {
+                                        can_attack = (p_d_info->now_time - p_d_info->attackers.back().first) > attacker_time * 0.8f;
+                                    }
+                                    if(can_attack)
+                                    {
+                                        p_d_info->attackers.push_back(std::make_pair(p_d_info->now_time,character->GetDungeonListReference()));
+                                    }
+                                }
+
                             }
                             else
                             {
                                 character->UseCommand(AnimationCommand::kStance);
-                            }
-
+                            } 
                         }
-                        
                     }
                     
                 }
+
                 
             }
 

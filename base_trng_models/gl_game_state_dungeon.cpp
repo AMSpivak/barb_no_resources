@@ -39,6 +39,7 @@
 constexpr float sound_mul = 0.1f;
 
 
+
 void ResetModels(std::vector <std::shared_ptr<glModel> > &Models)
 {
     for(auto tmpModel : Models)
@@ -599,6 +600,7 @@ void GlGameStateDungeon::LoadMap(const std::string &filename,const std::string &
     level_file.close(); 
 
     fx_texture = resources_manager->m_texture_atlas.Assign("valh.png");  
+    fx_attacker_texture = resources_manager->m_texture_atlas.Assign("attacker.png");  
     fx_texture_2 = resources_manager->m_texture_atlas.Assign("fireball.png");  
     GetResourceManager()->Clean();  
 
@@ -710,6 +712,30 @@ void GlGameStateDungeon::Draw2D(GLuint depth_map)
         event->Show(hero_position,Camera);
     }
 
+    {
+        float w =0.5f;
+        float h =0.5f;
+        auto sh = m_shader_map["sprite2d"];
+        glm::vec3 position = glm::vec3(0,4.0,0);
+        glm::vec4 color = glm::vec4(1.0f,1.0f,1.0f,1.0f);
+        glm::vec4 color1 = glm::vec4(1.0f,0.78f,0.055f,1.0f);
+        glm::vec4 color2 = glm::vec4(1.0f,0.0f,0.0f,1.0f);
+        float a = 1.0f;
+
+        for(auto p_attacker : m_dungeon_hero_info.attackers)
+        {
+            float mix = glm::clamp((m_dungeon_hero_info.now_time - p_attacker.first),0.0,1.0);
+            mix = mix * mix * mix;
+            color =(color2 * mix + color1 * (1.0f - mix));
+            color[3] = 1.0f;
+            if(auto attacker = p_attacker.second.lock())
+            {
+                renderBillBoardDepth(sh,depth_map,&fx_attacker_texture->m_texture,   
+                w,h,color * a,position + attacker->GetPosition(),hero_position,Camera);
+            }
+        }
+
+    }
     
     glClear( GL_DEPTH_BUFFER_BIT|GL_STENCIL_BUFFER_BIT);
 
