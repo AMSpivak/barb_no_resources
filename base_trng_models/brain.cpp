@@ -6,7 +6,7 @@
 //#include <GLFW/glfw3.h>
 namespace Character
 {
-    constexpr float attacker_time = 0.9f;
+    constexpr float attacker_time = 0.5f;
     class BrainEmpty: public IBrain
     {
         
@@ -246,9 +246,11 @@ namespace Character
                     {
                         if((p_d_info->now_time - p_d_info->attackers.front().first) > attacker_time)
                         {
-                            character->UseCommand(AnimationCommand::kStrike);
-                            p_d_info->attackers.pop_front();
-                            no_strike = false;
+                            if(character->UseCommand(AnimationCommand::kStrike))
+                            {
+                                p_d_info->attackers.pop_front();
+                                no_strike = false;
+                            }
                         }
                         
                     }

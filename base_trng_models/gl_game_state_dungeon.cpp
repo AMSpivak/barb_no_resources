@@ -714,7 +714,6 @@ void GlGameStateDungeon::Draw2D(GLuint depth_map)
 
     {
         float w =0.5f;
-        float h =0.5f;
         auto sh = m_shader_map["sprite2d"];
         glm::vec3 position = glm::vec3(0,4.0,0);
         glm::vec4 color = glm::vec4(1.0f,1.0f,1.0f,1.0f);
@@ -725,13 +724,14 @@ void GlGameStateDungeon::Draw2D(GLuint depth_map)
         for(auto p_attacker : m_dungeon_hero_info.attackers)
         {
             float mix = glm::clamp((m_dungeon_hero_info.now_time - p_attacker.first),0.0,1.0);
-            mix = mix * mix * mix;
+            mix = mix * mix;
             color =(color2 * mix + color1 * (1.0f - mix));
             color[3] = 1.0f;
+            auto w_t = w * (mix+ 0.1f);
             if(auto attacker = p_attacker.second.lock())
             {
                 renderBillBoardDepth(sh,depth_map,&fx_attacker_texture->m_texture,   
-                w,h,color * a,position + attacker->GetPosition(),hero_position,Camera);
+                w_t,w_t,color * a,position + attacker->GetPosition(),hero_position,Camera);
             }
         }
 

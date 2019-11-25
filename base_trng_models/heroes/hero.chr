@@ -11,7 +11,7 @@ sequence strike_2 53 59 0 0 1 0 1 strike_preend_2 "" "strike 0.07" "sound materi
 sequence strike_preend_2 60 63 0 0 1 0 1 strike_end_2 "" "" "" "guard guard" "strike_right start_right_strike_2" "strike_left start_left_strike_2" "step_back step_back" "damage damage"
 sequence strike_end_2 64 65 0 0 1 0 1 stance "" "" "" "strike start_strike"  "guard guard" "step_back step_back" "damage damage"
 sequence use 10 11 0 0 0 0 1 stance "" "" ""
-sequence guard 150 151 0 0 0 0 1 guard_main "" "" "" "damage damage"
+sequence guard 150 151 1 1 0 1 1 guard_main "" "" "" "damage damage"
 sequence guard_main 152 157 1 1 0 1 1 guard_end "" "" "" "use guard_use" "guard guard_main" "strike start_strike" "damage damage" "step_back step_back_fast" "step_left step_left_fast" "step_right step_right_fast"
 sequence guard_end 158 163 0 0 0 0 1 stance "" "" "" "damage damage"
 sequence guard_use 158 163 1 1 0 0 1 stance "" "" "" "strike start_strike" "strike_forward start_forward_strike_2"  "strike_right start_right_strike_2" "strike_left start_left_strike_2" "move_fast run" "damage damage" "step_back step_back_fast" "step_left step_left_fast" "step_right step_right_fast"
