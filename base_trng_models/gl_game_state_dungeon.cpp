@@ -721,18 +721,21 @@ void GlGameStateDungeon::Draw2D(GLuint depth_map)
         glm::vec4 color2 = glm::vec4(1.0f,0.0f,0.0f,1.0f);
         float a = 1.0f;
 
+
+        //for(auto p_attacker : m_dungeon_hero_info.attackers)
         for(auto p_attacker : m_dungeon_hero_info.attackers)
         {
-            float mix = glm::clamp((m_dungeon_hero_info.now_time - p_attacker.first),0.0,1.0);
-            mix = mix * mix;
-            color =(color2 * mix + color1 * (1.0f - mix));
-            color[3] = 1.0f;
-            auto w_t = w * (mix+ 0.1f);
-            if(auto attacker = p_attacker.second.lock())
-            {
-                renderBillBoardDepth(sh,depth_map,&fx_attacker_texture->m_texture,   
-                w_t,w_t,color * a,position + attacker->GetPosition(),hero_position,Camera);
-            }
+
+                float mix = glm::clamp((m_dungeon_hero_info.now_time - p_attacker.first),0.0,1.0);
+                mix = mix * mix;
+                color =(color2 * mix + color1 * (1.0f - mix));
+                color[3] = 1.0f;
+                auto w_t = w * (mix+ 0.1f);
+                if(auto attacker = p_attacker.second.lock())
+                {
+                    renderBillBoardDepth(sh,depth_map,&fx_attacker_texture->m_texture,   
+                    w_t,w_t,color * a,position + attacker->GetPosition(),hero_position,Camera);
+                }
         }
 
     }
@@ -1323,6 +1326,9 @@ IGlGameState *  GlGameStateDungeon::Process(std::map <int, bool> &inputs, float 
         {  
             object->Process(m_messages);
         }
+
+        m_dungeon_hero_info.attackers.remove_if([](decltype (m_dungeon_hero_info.attackers)::value_type val)
+                                                    {return val.second.expired();});
 
         FitObjects(10,0.01f);
         GameSettings::GetHeroStatus()->SetLife(hero->GetLifeValue());

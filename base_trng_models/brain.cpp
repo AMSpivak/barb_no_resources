@@ -246,6 +246,11 @@ namespace Character
                     {
                         if((p_d_info->now_time - p_d_info->attackers.front().first) > attacker_time)
                         {
+                            // if((p_d_info->now_time - p_d_info->attackers.front().first) > (attacker_time * 3))
+                            // {
+                            //     p_d_info->attackers.pop_front();
+                            // }
+                            // else
                             if(character->UseCommand(AnimationCommand::kStrike))
                             {
                                 p_d_info->attackers.pop_front();
@@ -286,7 +291,14 @@ namespace Character
                                     }
                                     if(can_attack)
                                     {
-                                        p_d_info->attackers.push_back(std::make_pair(p_d_info->now_time,character->GetDungeonListReference()));
+                                        auto element = std::make_pair(p_d_info->now_time,character->GetDungeonListReference());
+                                        auto res = std::find_if(p_d_info->attackers.begin(),
+                                                                p_d_info->attackers.end(),
+                                                                [&element](decltype(element) el){return el.second.lock()==element.second.lock();});
+                                        if(res == p_d_info->attackers.end())
+                                        {
+                                            p_d_info->attackers.push_back(std::make_pair(p_d_info->now_time,character->GetDungeonListReference()));
+                                        }
                                     }
                                 }
 
