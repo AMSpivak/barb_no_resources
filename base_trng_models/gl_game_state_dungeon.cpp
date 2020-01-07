@@ -1374,11 +1374,13 @@ std::pair<AnimationCommand,const glm::mat4>  GlGameStateDungeon::ProcessInputs(s
             glm::vec3 enemy_vector = enemy->GetPosition() - hero->GetPosition();
             float enemy_distance = glm::length(enemy_vector);
             z_basis = glm::normalize(enemy_vector);
+            //enemy_vector[1] = 0.0f;
             constexpr float fit = -45.0f;
             
             float enemy_disorient = Math3D::Disorientation(hero_direction,z_basis,hero_side);
-            if((enemy_disorient >0.005f)||(enemy_disorient < -0.005f))
-                rm = glm::rotate(glm::radians(fit * enemy_disorient), glm::vec3(0.0f, 1.0f, 0.0f)) * hero->model_matrix;
+            //if((enemy_disorient >0.005f)||(enemy_disorient < -0.005f))
+            
+            rm = glm::rotate(glm::radians(fit * enemy_disorient), glm::vec3(0.0f, 1.0f, 0.0f)) * hero->model_matrix;
             std::cout<<"focused! \n";  
         }
     }

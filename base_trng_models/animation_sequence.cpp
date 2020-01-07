@@ -6,10 +6,12 @@
 #include <map>
 #include <algorithm>
 #include <sstream>
+#include <array>
 
 #include "loader.h"
 
 std::vector<std::pair<std::string,AnimationCommand>> commands_list = {
+                                                        {"", AnimationCommand::kNone},
                                                         {"message", AnimationCommand::kMessage},
                                                         {"strike", AnimationCommand::kStrike},
                                                         {"strike_forward", AnimationCommand::kStrikeForward},
@@ -50,7 +52,7 @@ const std::string &GetCommandName(const AnimationCommand command)
     auto find_to = commands_list.end();
     auto val = std::find_if(find_from,find_to,[command](std::pair<std::string,AnimationCommand> b){return b.second == command;});
     if(val == find_to)
-        return "";
+        return commands_list.begin()->first;
     return val->first;
 }
 
@@ -91,8 +93,10 @@ std::string CommandToStream(std::pair<AnimationCommand,std::string> value)
 
 std::istream& operator>> ( std::istream& is, AnimationSequence & value)
 {
-    std::string skip; 
-	is>>value.start_frame>>value.end_frame>>value.m_focus>>value.m_block>>value.m_no_rotation>>value.m_loop>>value.m_jump;
+    std::string skip;
+    int tmp_block = 0;
+	is>>value.start_frame>>value.end_frame>>value.m_focus>>tmp_block>>value.m_no_rotation>>value.m_loop>>value.m_jump;
+    value.m_block = tmp_block == 0 ? DamageReaction::Damage : DamageReaction::Block;
     if(value.m_jump)
         is>>value.m_target_sequence;
     std::string tmp;
@@ -135,7 +139,8 @@ std::istream& operator>> ( std::istream& is, AnimationSequence & value)
 
 std::ostream& operator << ( std::ostream& os, const AnimationSequence & value)
 {
-    os<<value.start_frame<<" "<<value.end_frame<<" "<<value.m_focus<<value.m_block<<value.m_no_rotation<<value.m_loop<<" "<<value.m_jump;
+    int tmp_block = value.m_block == DamageReaction::Damage ? 0 : 1;
+    os<<value.start_frame<<" "<<value.end_frame<<" "<<value.m_focus<<tmp_block<<value.m_no_rotation<<value.m_loop<<" "<<value.m_jump;
     if(value.m_jump) 
         os<<" "<<value.m_target_sequence;
         os<<" "<<std::quoted(CommandToStream(value.m_start_message))<<" "

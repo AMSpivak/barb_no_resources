@@ -4,6 +4,8 @@
 #include <cstdio>
 #include <map>
 
+enum class DamageReaction {NoReaction, Damage, Block, StrikeBack};
+
 enum class AnimationCommand {kNone,kMessage,kService,
                             kStance,kMove,kFastMove,kTurnLeft,kTurnRight,kRotate,
                             kRestStance,kRestMove,kRestFastMove,kRestTurnLeft,kRestTurnRight,kRestRotate,
@@ -26,7 +28,7 @@ struct AnimationSequence
                                 start_frame(start)
                                 ,end_frame(stop)
                                 ,m_focus(false)
-                                ,m_block(false)
+                                ,m_block(DamageReaction::Damage)
                                 ,m_no_rotation(false)
                                 ,m_loop(true)
                                 ,m_start_message(AnimationCommand::kNone,"")
@@ -36,7 +38,7 @@ struct AnimationSequence
     {}
     size_t start_frame;
     size_t end_frame;
-    bool m_block;
+    DamageReaction m_block;
     bool m_focus;
     bool m_no_rotation;
     bool m_loop;

@@ -68,7 +68,7 @@ namespace Character
         b.second = d_b;
         float d_bc = glm::dot(l_b,hero_direction);
     
-        return (d_a * d_ac) > (d_b * d_bc);
+        return (d_ac) > (d_bc);
     }
     
     class BrainHero: public IBrain
@@ -83,6 +83,7 @@ namespace Character
             constexpr float enemy_keep_range = 10.0f;
             constexpr float enemy_keep_range_2 = enemy_keep_range * enemy_keep_range;
             m_world_reaction(*character);
+
             if(!character->enemies_list.empty())
             {
                 auto enemy_it = std::max_element(   character->enemies_list.begin(),
@@ -112,6 +113,31 @@ namespace Character
                 {
                     character->arch_enemy.reset();
                 }
+            }
+
+            
+            switch(character->GetDamageReaction())
+            {
+                case DamageReaction::Block:
+                case DamageReaction::StrikeBack:
+                {
+                    auto p_d_info = character->GetDungeonHeroInfo();
+                    if(p_d_info && !p_d_info->attackers.empty())
+                    {
+                        auto attacker = p_d_info->attackers.front().second;
+                        if(auto p_attacker = attacker.lock())
+                        {
+                            std::cout<<"attacker assign\n";
+                            auto arch_distance_vec = character->GetPosition() - p_attacker->GetPosition();
+                            float arch_distance = glm::dot(arch_distance_vec,arch_distance_vec);
+                            if(arch_distance > enemy_keep_range_2)
+                                character->arch_enemy = attacker;
+                        }
+                    }
+                }
+                break;
+                default:
+                break;
             }
         }
     };
@@ -241,7 +267,7 @@ namespace Character
 
                     if(
                         (!p_d_info->attackers.empty())
-                        &&(p_d_info->attackers.front().second.lock() == character->GetDungeonListReference().lock())
+                        &&(p_d_info->attackers.front().second.lock().get() == character)
                         )
                     {
                         if((p_d_info->now_time - p_d_info->attackers.front().first) > attacker_time)

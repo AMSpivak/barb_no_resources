@@ -241,8 +241,6 @@ int main(int argc, char const *argv[])
 	{
 		GLuint current_shader;
 		double xpos, ypos;
-
-		
 		glfwGetCursorPos(window, &xpos, &ypos);
 		xpos = (xpos * 2.0f - width)/width;
 		ypos = (ypos * 2.0f - height)/height;
@@ -257,7 +255,7 @@ int main(int argc, char const *argv[])
 		if(counter++ == 0) time_r = glfwGetTime();
 		if(counter > 30)
 		{
-			EngineSettings::GetEngineSettings() ->SetFPS((1.0f*counter/(glfwGetTime() - time_r)));
+			EngineSettings::GetEngineSettings()->SetFPS((1.0f*counter/(glfwGetTime() - time_r)));
 			counter = 0;
 		}
 		
@@ -266,11 +264,8 @@ int main(int argc, char const *argv[])
         game_state->Draw();
 		glfwSwapBuffers(window);
 		glfwPollEvents();
-		
 	}
-
 	std::cout << "exit";
-
 	glfwTerminate();
 	return 0;
 }
@@ -331,42 +326,39 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 
 	
 
-	switch (key)
-	{
+	// switch (key)
+	// {
+	// 	case GLFW_KEY_F3:	
+	// 		if(action == GLFW_RELEASE)
+	// 		{
+	// 			EngineSettings::Settings * settings = EngineSettings::GetEngineSettings();
+	// 			float qf = settings->GetQualityFactor();
+	// 			qf = glm::clamp(qf*1.25f,0.5f,1.0f);
+	// 			settings->SetQualityFactor(qf);
+	// 			SetRenderTargets(m_render_target_map,SCR_WIDTH, SCR_HEIGHT);
+	// 		}
+	// 	break;
+	// 	case GLFW_KEY_F4:	
+	// 		if(action == GLFW_RELEASE)
+	// 		{
+	// 			EngineSettings::Settings * settings = EngineSettings::GetEngineSettings();
+	// 			float qf = settings->GetQualityFactor();
+	// 			qf = glm::clamp(qf*0.8f,0.5f,1.0f);
+	// 			settings->SetQualityFactor(qf);
+	// 			SetRenderTargets(m_render_target_map,SCR_WIDTH, SCR_HEIGHT);
+	// 		}
+	// 	break;
+	// 	case GLFW_KEY_F2:	
+	// 		if(action == GLFW_RELEASE)
+	// 		{
+	// 			EngineSettings::Settings * settings = EngineSettings::GetEngineSettings();
+	// 			settings->SetQualityFactor(1.0);
+	// 			SetRenderTargets(m_render_target_map,SCR_WIDTH, SCR_HEIGHT);
+	// 		}
+	// 	break;
+	// 	default:
+	// 	break;
 
-		case GLFW_KEY_F3:	
-			if(action == GLFW_RELEASE)
-			{
-				EngineSettings::Settings * settings = EngineSettings::GetEngineSettings();
-				float qf = settings->GetQualityFactor();
-				qf = glm::clamp(qf*1.25f,0.5f,1.0f);
-				settings->SetQualityFactor(qf);
-				SetRenderTargets(m_render_target_map,SCR_WIDTH, SCR_HEIGHT);
-			}
-		break;
-		case GLFW_KEY_F4:	
-			if(action == GLFW_RELEASE)
-			{
-				EngineSettings::Settings * settings = EngineSettings::GetEngineSettings();
-				float qf = settings->GetQualityFactor();
-				qf = glm::clamp(qf*0.8f,0.5f,1.0f);
-				settings->SetQualityFactor(qf);
-				SetRenderTargets(m_render_target_map,SCR_WIDTH, SCR_HEIGHT);
-			}
-		break;
-
-		case GLFW_KEY_F2:	
-			if(action == GLFW_RELEASE)
-			{
-				EngineSettings::Settings * settings = EngineSettings::GetEngineSettings();
-				settings->SetQualityFactor(1.0);
-				SetRenderTargets(m_render_target_map,SCR_WIDTH, SCR_HEIGHT);
-			}
-		break;
-
-		default:
-		break;
-
-	}
+	// }
 	
 }

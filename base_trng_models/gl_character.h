@@ -14,8 +14,6 @@
 enum class CharacterTypes {hero,tile,map_object,mob};
 enum class AffectionCharacters {enemy,ally,map_object};
 
-enum class DamageReaction {NoReaction, Damage, Block};
-
 class GlCharacter;
 struct DungeonHeroInfo
 {
@@ -40,6 +38,7 @@ public:
     void UseSequence(const std::string & name);
     bool UseCommand(AnimationCommand command);
     DamageReaction Damage(float damage, const glm::vec3 & from);
+    DamageReaction GetDamageReaction();
     void RefreshMatrixes(float approximation);
     void RefreshMatrixes(){RefreshMatrixes(1.0f);};
 

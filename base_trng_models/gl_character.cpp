@@ -343,6 +343,12 @@ int GlCharacter::Process(std::list<std::string> &m_messages)
     return 0;
 }
 
+DamageReaction GlCharacter::GetDamageReaction()
+{
+    return current_animation->m_block;
+}
+
+
 DamageReaction GlCharacter::Damage(float damage, const glm::vec3 & from)
 {
     glm::vec3 direction;
@@ -351,7 +357,7 @@ DamageReaction GlCharacter::Damage(float damage, const glm::vec3 & from)
     glm::vec3 event_direction = glm::normalize(from - GetPosition());
     float disorientation = Math3D::Disorientation(direction, event_direction,side);
     const float block_range = 0.5f;
-    bool blocked = current_animation->m_block && (disorientation < block_range) && (disorientation > -block_range);
+    bool blocked = (current_animation->m_block == DamageReaction::Block) && (disorientation < block_range) && (disorientation > -block_range);
     {
         if(!blocked)
         {
