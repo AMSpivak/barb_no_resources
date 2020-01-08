@@ -30,3 +30,15 @@ pause_interface 2.0
 show_message Use Space to skip and left Alt to interact objects
 teleport levels/test3.lvl start_bottom
 <!script>
+<script> 
+loose_script
+show_intro logo.png
+show_message Use Space to skip
+pause_interface 2.0
+teleport levels/test.lvl base
+<!script>
+<script> 
+start_script
+show_intro logo.png
+pause_interface 2.0
+<!script>

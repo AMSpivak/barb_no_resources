@@ -201,12 +201,17 @@ GlGameStateDungeon::GlGameStateDungeon(std::map<const std::string,GLuint> &shade
                                     {
                                         std::string name;
                                         sstream >> name;
-                                        auto script = m_scripts.at(name);
-                                        for(auto message:script)
+                                        try
                                         {
-                                            PostMessage(message);
-                                            //std::cout<<message<<"\n";
+                                            auto script = m_scripts.at(name);
+                                            for(auto message:script)
+                                            {
+                                                PostMessage(message);
+                                            }
                                         }
+                                        catch(const std::out_of_range& oor)
+                                        {}
+                                        
                                     });
     
     m_message_processor.Add("play_ani",[this](std::stringstream &sstream)
@@ -491,14 +496,6 @@ void GlGameStateDungeon::LoadMap(const std::string &filename,const std::string &
     // std::cout<<"Level:"<<filename<<" "<<(level_file.is_open()?"-opened":"-failed")<<"\n";  
     if(!level_file.is_open()) return;
 
-
-    SaveObjects(m_level_file);
-    // std::cout<<"Level: old saves to"<< m_level_file<<"\n";
-    m_level_file = filename;
-
-    std::string tmp_filename(filename);
-    size_t ext_pos = tmp_filename.find_last_of(".") +1;
-    std::string extention = tmp_filename.replace(ext_pos,tmp_filename.length() - ext_pos,"sav");
     
     hero_position = glm::vec3(10.0f,0.0f,10.0f); 
     hero->SetPosition(hero_position); 
@@ -515,6 +512,26 @@ void GlGameStateDungeon::LoadMap(const std::string &filename,const std::string &
 
     
     std::map<std::string,const std::function<void(std::vector<std::string> &lines)>> execute_funcs;
+    
+    if(filename != m_level_file)
+    {
+        SaveObjects(m_level_file);
+        // std::cout<<"Level: old saves to"<< m_level_file<<"\n";
+        m_level_file = filename;
+
+        std::string tmp_filename(filename);
+        size_t ext_pos = tmp_filename.find_last_of(".") +1;
+        std::string extention = tmp_filename.replace(ext_pos,tmp_filename.length() - ext_pos,"sav");
+        if(!AddObjectsFromFile(extention))
+        {
+            execute_funcs.insert(std::make_pair("object",[this](std::vector<std::string> &lines){LoadObject(lines);}));
+        }
+    }
+    else
+    {
+            execute_funcs.insert(std::make_pair("object",[this](std::vector<std::string> &lines){LoadObject(lines);}));
+    }
+
     execute_funcs.insert(std::make_pair("sky",[this](std::vector<std::string> &lines){SetMapLight(lines);}));
     execute_funcs.insert(std::make_pair("heightmap",[this](std::vector<std::string> &lines){SetHeightmap(lines);}));
     execute_funcs.insert(std::make_pair("models",[this](std::vector<std::string> &lines)
@@ -533,13 +550,9 @@ void GlGameStateDungeon::LoadMap(const std::string &filename,const std::string &
     execute_funcs.insert(std::make_pair("script",[this](std::vector<std::string> &lines){LoadScript(lines);}));
     
 
-    if(!AddObjectsFromFile(extention))
-    {
-        execute_funcs.insert(std::make_pair("object",[this](std::vector<std::string> &lines){LoadObject(lines);}));
-    }
-
-
     
+
+
 
     Models.clear();
     
@@ -602,7 +615,8 @@ void GlGameStateDungeon::LoadMap(const std::string &filename,const std::string &
     fx_texture = resources_manager->m_texture_atlas.Assign("valh.png");  
     fx_attacker_texture = resources_manager->m_texture_atlas.Assign("attacker.png");  
     fx_texture_2 = resources_manager->m_texture_atlas.Assign("fireball.png");  
-    GetResourceManager()->Clean();  
+    GetResourceManager()->Clean(); 
+    m_info_message = "";
 
 }
 
@@ -1254,7 +1268,7 @@ bool GlGameStateDungeon::HeroEventsInteract(std::shared_ptr<GlCharacter> hero_pt
     std::string event_return_string;
     for(auto event : hero_events)
     {
-       if(ReactObjectToEvent(hero_ptr,*event.get(),event_return_string) == InteractionResult::PostMessage)
+       if(ReactObjectToEvent(hero_ptr,*event,event_return_string) == InteractionResult::PostMessage)
        {
            //std::cout<<"\n"<<event_return_string<<"\n"<< hero_ptr->GetPosition()<<"\n";
            
@@ -1332,6 +1346,11 @@ IGlGameState *  GlGameStateDungeon::Process(std::map <int, bool> &inputs, float 
 
         FitObjects(10,0.01f);
         GameSettings::GetHeroStatus()->SetLife(hero->GetLifeValue());
+        if(GameSettings::GetHeroStatus()->GetLife() < 0)
+        {
+            PostMessage("run_script loose_script");
+            hero->SetLifeValue(1.0f);
+        }
     }
 
     return this;
