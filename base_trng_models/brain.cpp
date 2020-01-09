@@ -3,6 +3,14 @@
 #include "gl_character.h"
 #include <random>
 #include <tuple>
+
+#include "glm/glm.hpp"
+
+#include "glm/trigonometric.hpp"
+#include "glm/gtc/matrix_transform.hpp"
+#include "glm/gtc/type_ptr.hpp"
+#include "glm/gtx/rotate_vector.hpp"
+#include "math3d.h"  
 //#include <GLFW/glfw3.h>
 namespace Character
 {
@@ -235,9 +243,6 @@ namespace Character
             }
             else
             {
-                glm::vec3 y_basis = glm::vec3(0.0f,1.0f,0.0f);
-                glm::vec3 z_basis = glm::vec3(0.0f,0.0f,0.0f);
-
                 auto enemy = character->arch_enemy.lock();
 
                 glm::vec3 enemy_vector = enemy->GetPosition() - character->GetPosition();
@@ -245,16 +250,30 @@ namespace Character
                 constexpr float distance_smooth = 0.1f;
                 distance = enemy_distance * distance_smooth + (1.0f - distance_smooth) * distance;
                 enemy_distance = distance; 
-                z_basis = -glm::normalize(enemy_vector);
                 
-                glm::vec3 x_basis = glm::cross(y_basis, z_basis);
+                if(enemy)
+                {
+                    float disorientation = 0;
+                    
+                    glm::vec3 hero_direction;
+                    glm::vec3 hero_side;
+                    std::tie(hero_direction, hero_side) = character->Get2DBasis();
+                    hero_direction[1]= 0;
+                    hero_side[1]= 0;
+                    hero_side = glm::normalize(hero_side);
+                    hero_direction = glm::normalize(hero_direction);
 
-                character->model_matrix = glm::mat4(
-                    glm::vec4(x_basis[0],x_basis[1],x_basis[2],0.0f),
-                    glm::vec4(y_basis[0],y_basis[1],y_basis[2],0.0f),
-                    glm::vec4(z_basis[0],z_basis[1],z_basis[2],0.0f),
-                    glm::vec4(0.0,0.0,0.0,1.0f)
-                    );
+                    //if(character->IsFocused()&&(!character->IsNoRotateable()))
+                    {
+                        glm::vec3 z_basis = glm::vec3(0.0f,0.0f,0.0f);
+                        z_basis = glm::normalize(enemy_vector);
+                        constexpr float fit = -45.0f;
+                        float enemy_disorient = Math3D::Disorientation(hero_direction,z_basis,hero_side);
+                        character->model_matrix = glm::rotate(glm::radians(fit * enemy_disorient), glm::vec3(0.0f, 1.0f, 0.0f)) * character->model_matrix;
+                        
+                    }
+                }
+
 
                 if(enemy_distance > 7.0f)
                 {
@@ -272,11 +291,6 @@ namespace Character
                     {
                         if((p_d_info->now_time - p_d_info->attackers.front().first) > attacker_time)
                         {
-                            // if((p_d_info->now_time - p_d_info->attackers.front().first) > (attacker_time * 3))
-                            // {
-                            //     p_d_info->attackers.pop_front();
-                            // }
-                            // else
                             if(character->UseCommand(AnimationCommand::kStrike))
                             {
                                 p_d_info->attackers.pop_front();

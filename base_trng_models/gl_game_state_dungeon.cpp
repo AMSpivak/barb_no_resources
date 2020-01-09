@@ -588,6 +588,8 @@ void GlGameStateDungeon::LoadMap(const std::string &filename,const std::string &
         else
         {
             UpdateCharacterFromFile("heroes/hero_orc_br2.chr",*mob);
+            constexpr float scale = 1.2f;
+            mob->model_matrix = glm::scale(mob->model_matrix,glm::vec3(scale, scale, scale));
         }
         
         mob->SetName("Mob"+std::to_string(i));
@@ -617,6 +619,7 @@ void GlGameStateDungeon::LoadMap(const std::string &filename,const std::string &
     fx_texture_2 = resources_manager->m_texture_atlas.Assign("fireball.png");  
     GetResourceManager()->Clean(); 
     m_info_message = "";
+    PostMessage("run_script start_script");
 
 }
 
@@ -1391,7 +1394,7 @@ std::pair<AnimationCommand,const glm::mat4>  GlGameStateDungeon::ProcessInputs(s
             glm::vec3 z_basis = glm::vec3(0.0f,0.0f,0.0f);
 
             glm::vec3 enemy_vector = enemy->GetPosition() - hero->GetPosition();
-            float enemy_distance = glm::length(enemy_vector);
+            //float enemy_distance = glm::length(enemy_vector);
             z_basis = glm::normalize(enemy_vector);
             //enemy_vector[1] = 0.0f;
             constexpr float fit = -45.0f;

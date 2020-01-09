@@ -32,13 +32,13 @@ teleport levels/test3.lvl start_bottom
 <!script>
 <script> 
 loose_script
-show_intro logo.png
-show_message Use Space to skip
+show_intro barbar_bg01a.png
+show_message You are dead. <Space to skip>
 pause_interface 2.0
 teleport levels/test.lvl base
 <!script>
 <script> 
 start_script
-show_intro logo.png
+show_intro b_bars.png
 pause_interface 2.0
 <!script>
