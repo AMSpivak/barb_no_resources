@@ -9,7 +9,7 @@ enum class DamageReaction {NoReaction, Damage, Block, StrikeBack};
 enum class AnimationCommand {kNone,kMessage,kService,
                             kStance,kMove,kFastMove,kTurnLeft,kTurnRight,kRotate,
                             kRestStance,kRestMove,kRestFastMove,kRestTurnLeft,kRestTurnRight,kRestRotate,
-                            kStepLeft,kStepRight,kStepBack, kGuard,
+                            kStepLeft,kStepRight,kStepForward,kStepBack, kGuard,
                             kUse, kSound,kExecuted,
                             kStrike, kStrikeForward, kStrikeRight, kStrikeLeft, kStrikeBlocked, kDamaged};
 struct AnimationSequence

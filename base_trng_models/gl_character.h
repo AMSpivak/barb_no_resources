@@ -102,6 +102,7 @@ private:
 
 };
 
+glm::mat4 RotateToDirection2d(const GlCharacter & character, const glm::vec3 & target_dir, float fit);
 
 const glm::vec3 & MoveObjectAttempt(IGlModel &object,const glm::vec3 &desired_direction, float length);
 

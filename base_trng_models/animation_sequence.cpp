@@ -25,6 +25,7 @@ std::vector<std::pair<std::string,AnimationCommand>> commands_list = {
                                                         {"damage", AnimationCommand::kDamaged},
                                                         {"stance", AnimationCommand::kStance},
                                                         {"sound", AnimationCommand::kSound},
+                                                        {"step_forward", AnimationCommand::kStepForward},
                                                         {"step_back", AnimationCommand::kStepBack},
                                                         {"step_right", AnimationCommand::kStepRight},
                                                         {"step_left", AnimationCommand::kStepLeft},

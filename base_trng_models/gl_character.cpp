@@ -2,7 +2,11 @@
 #include <sstream>
 #include "engine_settings.h"
 #include "collision.h"
-#include "math3d.h"
+#include "glm/trigonometric.hpp"
+#include "glm/gtc/matrix_transform.hpp"
+#include "glm/gtc/type_ptr.hpp"
+#include "glm/gtx/rotate_vector.hpp"
+#include "math3d.h"  
 std::ostream& operator << ( std::ostream& os, const GlCharacter & character)
 {
     os<<"<object>\n";
@@ -474,6 +478,24 @@ const glm::vec3 & MoveObjectAttempt(IGlModel &object,const glm::vec3 &desired_di
 const unsigned int GlCharacter::GetBreed() const
 {
     return m_breed;
+}
+
+
+glm::mat4 RotateToDirection2d(const GlCharacter &character, const glm::vec3 &target_dir, float fit)
+{
+    float disorientation = 0;               
+    glm::vec3 hero_direction;
+    glm::vec3 hero_side;
+    std::tie(hero_direction, hero_side) = character.Get2DBasis();
+    hero_direction[1]= 0;
+    hero_side[1]= 0;
+    hero_side = glm::normalize(hero_side);
+    hero_direction = glm::normalize(hero_direction);
+
+    auto target = glm::normalize(target_dir);
+    //constexpr float fit = -45.0f;
+    float enemy_disorient = Math3D::Disorientation(hero_direction,target,hero_side);
+    return glm::rotate(glm::radians(fit * enemy_disorient), glm::vec3(0.0f, 1.0f, 0.0f)) * character.model_matrix;              
 }
 
 

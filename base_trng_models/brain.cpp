@@ -88,7 +88,7 @@ namespace Character
         }
         virtual void Think(GlCharacter * character) 
         {
-            constexpr float enemy_keep_range = 10.0f;
+            constexpr float enemy_keep_range = 5.0f;
             constexpr float enemy_keep_range_2 = enemy_keep_range * enemy_keep_range;
             m_world_reaction(*character);
 
@@ -135,10 +135,9 @@ namespace Character
                         auto attacker = p_d_info->attackers.front().second;
                         if(auto p_attacker = attacker.lock())
                         {
-                            std::cout<<"attacker assign\n";
                             auto arch_distance_vec = character->GetPosition() - p_attacker->GetPosition();
                             float arch_distance = glm::dot(arch_distance_vec,arch_distance_vec);
-                            if(arch_distance > enemy_keep_range_2)
+                            if(arch_distance < enemy_keep_range_2)
                                 character->arch_enemy = attacker;
                         }
                     }
@@ -242,37 +241,17 @@ namespace Character
                 }
             }
             else
+            if(auto enemy = character->arch_enemy.lock())
             {
-                auto enemy = character->arch_enemy.lock();
-
                 glm::vec3 enemy_vector = enemy->GetPosition() - character->GetPosition();
                 float enemy_distance = glm::length(enemy_vector);
                 constexpr float distance_smooth = 0.1f;
                 distance = enemy_distance * distance_smooth + (1.0f - distance_smooth) * distance;
                 enemy_distance = distance; 
                 
-                if(enemy)
-                {
-                    float disorientation = 0;
-                    
-                    glm::vec3 hero_direction;
-                    glm::vec3 hero_side;
-                    std::tie(hero_direction, hero_side) = character->Get2DBasis();
-                    hero_direction[1]= 0;
-                    hero_side[1]= 0;
-                    hero_side = glm::normalize(hero_side);
-                    hero_direction = glm::normalize(hero_direction);
+                constexpr float fit = -45.0f;
+                character->model_matrix = RotateToDirection2d(*character, enemy_vector, fit);
 
-                    //if(character->IsFocused()&&(!character->IsNoRotateable()))
-                    {
-                        glm::vec3 z_basis = glm::vec3(0.0f,0.0f,0.0f);
-                        z_basis = glm::normalize(enemy_vector);
-                        constexpr float fit = -45.0f;
-                        float enemy_disorient = Math3D::Disorientation(hero_direction,z_basis,hero_side);
-                        character->model_matrix = glm::rotate(glm::radians(fit * enemy_disorient), glm::vec3(0.0f, 1.0f, 0.0f)) * character->model_matrix;
-                        
-                    }
-                }
 
 
                 if(enemy_distance > 7.0f)

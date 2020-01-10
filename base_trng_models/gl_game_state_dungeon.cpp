@@ -577,7 +577,7 @@ void GlGameStateDungeon::LoadMap(const std::string &filename,const std::string &
 
     dungeon_objects.push_back(hero);
     hero->UseSequence("stance");
-
+    hero->SetDungeonHeroInfo(&m_dungeon_hero_info);
     for(int i = 0; i <50; i++)
     {
         mob = std::make_shared<GlCharacter>(CharacterTypes::mob);
@@ -1379,80 +1379,35 @@ std::pair<AnimationCommand,const glm::mat4>  GlGameStateDungeon::ProcessInputs(s
     
     float disorientation = 0;
     
-    glm::vec3 hero_direction;
-    glm::vec3 hero_side;
-    std::tie(hero_direction, hero_side) = hero->Get2DBasis();
-    hero_direction[1]= 0;
-    hero_side[1]= 0;
-    hero_side = glm::normalize(hero_side);
-    hero_direction = glm::normalize(hero_direction);
-
-    if(hero->IsFocused()&&(!hero->IsNoRotateable()))
+    if(!hero->IsNoRotateable())
     {
-        if(auto enemy = hero->arch_enemy.lock())
-        {
-            glm::vec3 z_basis = glm::vec3(0.0f,0.0f,0.0f);
+        glm::vec3 hero_direction;
+        glm::vec3 hero_side;
+        std::tie(hero_direction, hero_side) = hero->Get2DBasis();
 
-            glm::vec3 enemy_vector = enemy->GetPosition() - hero->GetPosition();
-            //float enemy_distance = glm::length(enemy_vector);
-            z_basis = glm::normalize(enemy_vector);
-            //enemy_vector[1] = 0.0f;
-            constexpr float fit = -45.0f;
-            
-            float enemy_disorient = Math3D::Disorientation(hero_direction,z_basis,hero_side);
-            //if((enemy_disorient >0.005f)||(enemy_disorient < -0.005f))
-            
-            rm = glm::rotate(glm::radians(fit * enemy_disorient), glm::vec3(0.0f, 1.0f, 0.0f)) * hero->model_matrix;
-            std::cout<<"focused! \n";  
+        if(hero->IsFocused())
+        {
+            if(auto enemy = hero->arch_enemy.lock())
+            {
+                glm::vec3 enemy_vector = enemy->GetPosition() - hero->GetPosition();
+                auto target_dir = glm::normalize(enemy_vector);
+                constexpr float fit = -45.0f;
+                float enemy_disorient = Math3D::Disorientation(hero_direction,target_dir,hero_side);               
+                rm = glm::rotate(glm::radians(fit * enemy_disorient), glm::vec3(0.0f, 1.0f, 0.0f)) * hero->model_matrix;
+                std::cout<<"focused! \n";  
+            }
         }
-    }
 
-    if(moving)
-    {
-        
-
-        glm::vec3 y_basis = glm::vec3(0.0f,1.0f,0.0f);
-        glm::vec3 x_basis = glm::vec3(0.0f,0.0f,0.0f);
-        
-
-        x_basis[0]= move_inputs.first;
-        x_basis[2]= move_inputs.second;
-
-        x_basis = glm::normalize(x_basis);
-        
-        glm::mat4 m = glm::rotate(glm::radians(camera_rotation_angle), glm::vec3(0.0f, 1.0f, 0.0f));
-        glm::vec4 x_basis4 = m *glm::vec4(x_basis[0],x_basis[1],x_basis[2],0.0f);
-        x_basis = glm::vec3(x_basis4[0],x_basis4[1],x_basis4[2]);
-        x_basis = glm::normalize(x_basis);
-        glm::vec3 new_x(x_basis);
-        
-        
-        disorientation = Math3D::Disorientation(hero_side,new_x, hero_direction);
-        
-        
-        if(!(hero->IsNoRotateable() && hero->IsFocused()))
-        {
-            constexpr float fit = -30.0f;
-            if((disorientation >0.005f)||(disorientation < -0.005f))
+        if(moving)
+        {           
+            glm::mat3 m = glm::rotate(glm::radians(camera_rotation_angle), glm::vec3(0.0f, 1.0f, 0.0f));
+            glm::vec3 new_x = glm::normalize(m * glm::normalize(glm::vec3(move_inputs.first,0.0f,move_inputs.second)));
+            disorientation = Math3D::Disorientation(hero_side,new_x, hero_direction);
+            if(!hero->IsFocused())
+            {
+                constexpr float fit = -30.0f;
                 rm = glm::rotate(glm::radians(-fit * disorientation), glm::vec3(0.0f, 1.0f, 0.0f)) * hero->model_matrix;
-            
-            /*glm::vec4 move_h = hero->model_matrix * glm::vec4(1.0f,0.0f,0.0f,1.0f);
-            glm::vec3 old_dir = glm::vec3(move_h);
-
-            float l = 0.2f * glm::length(old_dir - x_basis);
-            x_basis =(1.0f - l) * old_dir + l * x_basis;
-            x_basis = glm::normalize(x_basis);
-
-            glm::vec3 z_basis = glm::cross(x_basis, y_basis);
-            glm::vec3 z_new = glm::cross(new_x, y_basis);
-
-            rm = glm::mat4(
-                glm::vec4(x_basis[0],x_basis[1],x_basis[2],0.0f),
-                glm::vec4(y_basis[0],y_basis[1],y_basis[2],0.0f),
-                glm::vec4(z_basis[0],z_basis[1],z_basis[2],0.0f),
-                glm::vec4(0.0,0.0,0.0,1.0f)
-                );
-                */
+            }
         }
     }
 
@@ -1487,7 +1442,7 @@ std::pair<AnimationCommand,const glm::mat4>  GlGameStateDungeon::ProcessInputs(s
 
     auto direction = Math3D::SimplifyDirection(disorientation);
 
-    std::cout << "\n disorientation "<<disorientation<<" "<<direction<<"\n";
+    //std::cout << "\n disorientation "<<disorientation<<" "<<direction<<"\n";
 
     if(attack)
     { 
