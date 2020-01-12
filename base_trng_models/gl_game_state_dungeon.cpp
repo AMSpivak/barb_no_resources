@@ -742,29 +742,29 @@ void GlGameStateDungeon::Draw2D(GLuint depth_map)
         glEnable(GL_BLEND);	
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
         glDisable(GL_CULL_FACE);
-        //for(auto p_attacker : m_dungeon_hero_info.attackers)
-        for(auto p_attacker : m_dungeon_hero_info.attackers)
-        {
+        
+        // for(auto p_attacker : m_dungeon_hero_info.attackers)
+        // {
 
-                float mix = glm::clamp((m_dungeon_hero_info.now_time - p_attacker.first),0.0,1.0);
-                mix = mix * mix;
-                color =(color2 * mix + color1 * (1.0f - mix));
-                color[3] = 1.0f;
-                auto w_t = w * (mix+ 0.1f);
-                if(auto attacker = p_attacker.second.lock())
-                {
-                    renderBillBoardDepth(sh,depth_map,&fx_attacker_texture->m_texture,   
-                    w_t,w_t,color * a,position + attacker->GetPosition(),hero_position,Camera);
-                }
-        }
-        if(auto arch = hero->arch_enemy.lock())
-        {
-            float w_t = 0.8f;
-            position = glm::vec3(0,5.0,0);
-            renderBillBoardDepth(sh,depth_map,&fx_attacker_texture->m_texture,   
-            w_t,w_t,color2 * a,position + arch->GetPosition(),hero_position,Camera);
-                
-        }
+        //         float mix = glm::clamp((m_dungeon_hero_info.now_time - p_attacker.first),0.0,1.0);
+        //         mix = mix * mix;
+        //         color =(color2 * mix + color1 * (1.0f - mix));
+        //         color[3] = 1.0f;
+        //         auto w_t = w * (mix+ 0.1f);
+        //         if(auto attacker = p_attacker.second.lock())
+        //         {
+        //             renderBillBoardDepth(sh,depth_map,&fx_attacker_texture->m_texture,   
+        //             w_t,w_t,color * a,position + attacker->GetPosition(),hero_position,Camera);
+        //         }
+        // }
+        // if(auto arch = hero->arch_enemy.lock())
+        // {
+        //     float w_t = 0.8f;
+        //     position = glm::vec3(0,5.0,0);
+        //     renderBillBoardDepth(sh,depth_map,&fx_attacker_texture->m_texture,   
+        //     w_t,w_t,color2 * a,position + arch->GetPosition(),hero_position,Camera);
+  
+        // }
 
     }
     
@@ -1319,8 +1319,14 @@ IGlGameState *  GlGameStateDungeon::Process(std::map <int, bool> &inputs, float 
 
     if(m_mode == GameStateMode::Intro)
     {
+        bool press = inputs[GLFW_KEY_SPACE];
+        GLFWgamepadstate state;
+        if (glfwJoystickIsGamepad(GLFW_JOYSTICK_1)&&glfwGetGamepadState(GLFW_JOYSTICK_1, &state))
+        {
+            press |=state.buttons[GLFW_GAMEPAD_BUTTON_A];
+        }
         
-        if((!pause_interface.IsPaused(time_now)) &&inputs[GLFW_KEY_SPACE])
+        if((!pause_interface.IsPaused(time_now)) &&press)
         {
             m_mode = GameStateMode::General;
         }
@@ -1417,7 +1423,7 @@ std::pair<AnimationCommand,const glm::mat4>  GlGameStateDungeon::ProcessInputs(s
         action_use |=state.buttons[GLFW_GAMEPAD_BUTTON_X];
         guard |=state.buttons[GLFW_GAMEPAD_BUTTON_B];
 
-        if(move_square > 0.36f)
+        if(move_square < 0.36f)
         {
             fast_move = false;
         }
@@ -1434,7 +1440,12 @@ std::pair<AnimationCommand,const glm::mat4>  GlGameStateDungeon::ProcessInputs(s
             glm::vec3 enemy_vector = enemy->GetPosition() - hero->GetPosition();
             enemy_distance = glm::length(enemy_vector);
             auto target_dir = glm::normalize(enemy_vector);
-            constexpr float fit = 45.0f;
+            float fit = 45.0f;
+            auto reaction = hero->GetDamageReaction();
+            if(reaction == DamageReaction::Block || reaction == DamageReaction::StrikeBack)
+            {
+                fit = 75.0f;
+            }
             float enemy_disorient = -Math3D::Disorientation(hero_direction,target_dir,hero_side);
             enemy_direction = Math3D::SimplifyDirection(enemy_disorient);
             rm = glm::rotate(glm::radians(fit * enemy_disorient), glm::vec3(0.0f, 1.0f, 0.0f)) * hero->model_matrix;
