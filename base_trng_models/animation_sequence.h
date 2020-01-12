@@ -52,6 +52,10 @@ struct AnimationSequence
     
 };
 
+std::istream& operator>> ( std::istream& is, DamageReaction & value);
+std::ostream& operator << ( std::ostream& os, const DamageReaction & value);
+
+
 std::istream& operator>> ( std::istream& is, AnimationSequence & value);
 
 std::ostream& operator << ( std::ostream& os, const AnimationSequence & value);

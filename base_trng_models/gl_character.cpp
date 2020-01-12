@@ -361,8 +361,8 @@ DamageReaction GlCharacter::Damage(float damage, const glm::vec3 & from)
     glm::vec3 event_direction = glm::normalize(from - GetPosition());
     float disorientation = Math3D::Disorientation(direction, event_direction,side);
     const float block_range = 0.5f;
-    bool blocked = (current_animation->m_block == DamageReaction::Block) && (disorientation < block_range) && (disorientation > -block_range);
-    {
+    bool blocked = (current_animation->m_block == DamageReaction::Block || current_animation->m_block == DamageReaction::StrikeBack) && (disorientation < block_range) && (disorientation > -block_range);
+
         if(!blocked)
         {
             UseCommand(AnimationCommand::kDamaged);
@@ -371,13 +371,13 @@ DamageReaction GlCharacter::Damage(float damage, const glm::vec3 & from)
         }
         else
         {
-            IGlModel::Damage(damage *0.05f);
-            UseCommand(AnimationCommand::kUse);
-            return DamageReaction::Block;
+            IGlModel::Damage(damage * 0.05f);
+            if(current_animation->m_block == DamageReaction::StrikeBack)
+            {
+                UseCommand(AnimationCommand::kUse);
+            }
+            return current_animation->m_block;
         }
-        
-    }
-    return DamageReaction::NoReaction;
     
 }
 

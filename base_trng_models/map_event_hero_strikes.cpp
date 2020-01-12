@@ -113,7 +113,7 @@ InteractionResult IMapEventHeroStrike::Interact(std::weak_ptr<GlCharacter> model
                 powner->AddEnemy(model);
             }
 
-            if(damage_reaction == DamageReaction::Block)
+            if(damage_reaction == DamageReaction::StrikeBack)
             {
                 powner->UseCommand(AnimationCommand::kStrikeBlocked);
                 std::cout<<powner->GetName()<<" blocked!\n";

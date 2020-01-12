@@ -92,12 +92,49 @@ std::string CommandToStream(std::pair<AnimationCommand,std::string> value)
     }
 }
 
+std::istream& operator>> ( std::istream& is, DamageReaction & value)
+{
+    int tmp_block = 0;
+    is>>tmp_block;
+    switch(tmp_block)
+    {
+        case 2:
+            value = DamageReaction::StrikeBack;
+        break;
+        case 1:
+            value = DamageReaction::Block;
+        break;
+        default:
+            value = DamageReaction::Damage;
+        break;
+    }
+    return is;
+}
+
+std::ostream& operator << ( std::ostream& os, const DamageReaction & value)
+{
+    int tmp_block = 0;
+    switch(value)
+    {
+        case DamageReaction::StrikeBack:
+            tmp_block = 2;
+        break;
+        case DamageReaction::Block:
+            tmp_block = 1;
+        break;
+        default:
+        break;
+    }
+    os<<tmp_block;
+    return os;
+}
+
 std::istream& operator>> ( std::istream& is, AnimationSequence & value)
 {
     std::string skip;
-    int tmp_block = 0;
-	is>>value.start_frame>>value.end_frame>>value.m_focus>>tmp_block>>value.m_no_rotation>>value.m_loop>>value.m_jump;
-    value.m_block = tmp_block == 0 ? DamageReaction::Damage : DamageReaction::Block;
+
+	is>>value.start_frame>>value.end_frame>>value.m_focus>>value.m_block>>value.m_no_rotation>>value.m_loop>>value.m_jump;
+
     if(value.m_jump)
         is>>value.m_target_sequence;
     std::string tmp;
@@ -140,8 +177,7 @@ std::istream& operator>> ( std::istream& is, AnimationSequence & value)
 
 std::ostream& operator << ( std::ostream& os, const AnimationSequence & value)
 {
-    int tmp_block = value.m_block == DamageReaction::Damage ? 0 : 1;
-    os<<value.start_frame<<" "<<value.end_frame<<" "<<value.m_focus<<tmp_block<<value.m_no_rotation<<value.m_loop<<" "<<value.m_jump;
+    os<<value.start_frame<<" "<<value.end_frame<<" "<<value.m_focus<<" "<<value.m_block<<" "<<value.m_no_rotation<<" "<<value.m_loop<<" "<<value.m_jump;
     if(value.m_jump) 
         os<<" "<<value.m_target_sequence;
         os<<" "<<std::quoted(CommandToStream(value.m_start_message))<<" "

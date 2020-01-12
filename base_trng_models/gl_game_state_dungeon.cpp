@@ -581,14 +581,14 @@ void GlGameStateDungeon::LoadMap(const std::string &filename,const std::string &
     for(int i = 0; i <50; i++)
     {
         mob = std::make_shared<GlCharacter>(CharacterTypes::mob);
-        if(i<25)
+        if(i<40)
         {
             UpdateCharacterFromFile("heroes/hero_orc.chr",*mob);
         }
         else
         {
             UpdateCharacterFromFile("heroes/hero_orc_br2.chr",*mob);
-            constexpr float scale = 1.2f;
+            constexpr float scale = 1.9f;
             mob->model_matrix = glm::scale(mob->model_matrix,glm::vec3(scale, scale, scale));
         }
         
@@ -738,7 +738,10 @@ void GlGameStateDungeon::Draw2D(GLuint depth_map)
         glm::vec4 color2 = glm::vec4(1.0f,0.0f,0.0f,1.0f);
         float a = 1.0f;
 
-
+        glEnable(GL_ALPHA_TEST);
+        glEnable(GL_BLEND);	
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+        glDisable(GL_CULL_FACE);
         //for(auto p_attacker : m_dungeon_hero_info.attackers)
         for(auto p_attacker : m_dungeon_hero_info.attackers)
         {
@@ -1373,46 +1376,27 @@ std::pair<AnimationCommand,const glm::mat4>  GlGameStateDungeon::ProcessInputs(s
 
     auto move_inputs = GameInputs::ProcessInputsMoveControl(inputs);
     float move_square = move_inputs.first * move_inputs.first + move_inputs.second * move_inputs.second;
-    bool moving = move_square > 0.03f;//(std::abs(move_inputs.first)+std::abs(move_inputs.second)>0.2f);
-    
+    bool moving = move_square > 0.03f;
+
     glm::mat4 rm(hero->model_matrix);      
     
     float disorientation = 0;
-    
-    if(!hero->IsNoRotateable())
-    {
-        glm::vec3 hero_direction;
-        glm::vec3 hero_side;
-        std::tie(hero_direction, hero_side) = hero->Get2DBasis();
 
-        if(hero->IsFocused())
-        {
-            if(auto enemy = hero->arch_enemy.lock())
-            {
-                glm::vec3 enemy_vector = enemy->GetPosition() - hero->GetPosition();
-                auto target_dir = glm::normalize(enemy_vector);
-                constexpr float fit = -45.0f;
-                float enemy_disorient = Math3D::Disorientation(hero_direction,target_dir,hero_side);               
-                rm = glm::rotate(glm::radians(fit * enemy_disorient), glm::vec3(0.0f, 1.0f, 0.0f)) * hero->model_matrix;
-                std::cout<<"focused! \n";  
-            }
-        }
+    glm::vec3 hero_direction;
+    glm::vec3 hero_side;
+    std::tie(hero_direction, hero_side) = hero->Get2DBasis();
 
-        if(moving)
-        {           
-            glm::mat3 m = glm::rotate(glm::radians(camera_rotation_angle), glm::vec3(0.0f, 1.0f, 0.0f));
-            glm::vec3 new_x = glm::normalize(m * glm::normalize(glm::vec3(move_inputs.first,0.0f,move_inputs.second)));
-            disorientation = Math3D::Disorientation(hero_side,new_x, hero_direction);
-            if(!hero->IsFocused())
-            {
-                constexpr float fit = -30.0f;
-                rm = glm::rotate(glm::radians(-fit * disorientation), glm::vec3(0.0f, 1.0f, 0.0f)) * hero->model_matrix;
-            }
-        }
+
+    if(moving)
+    {           
+        glm::mat3 m = glm::rotate(glm::radians(camera_rotation_angle), glm::vec3(0.0f, 1.0f, 0.0f));
+        glm::vec3 new_x = glm::normalize(m * glm::normalize(glm::vec3(move_inputs.first,0.0f,move_inputs.second)));
+        disorientation = Math3D::Disorientation(hero_side,new_x, hero_direction);
     }
 
-    
+    auto direction = Math3D::SimplifyDirection(disorientation);
 
+    std::cout << "\n disorientation "<<disorientation<<" "<<direction<<"\n";
     bool action_use = inputs[GLFW_KEY_LEFT_ALT];
     bool attack = inputs[GLFW_MOUSE_BUTTON_LEFT]|inputs[GLFW_KEY_SPACE];  
     bool fast_move = false;
@@ -1423,7 +1407,6 @@ std::pair<AnimationCommand,const glm::mat4>  GlGameStateDungeon::ProcessInputs(s
     {
         attack |=state.buttons[GLFW_GAMEPAD_BUTTON_A];
         action_use |=state.buttons[GLFW_GAMEPAD_BUTTON_X];
-        fast_move |=state.buttons[GLFW_GAMEPAD_BUTTON_LEFT_BUMPER];
         guard |=state.buttons[GLFW_GAMEPAD_BUTTON_B];
 
         if(move_square > 0.36f)
@@ -1431,40 +1414,56 @@ std::pair<AnimationCommand,const glm::mat4>  GlGameStateDungeon::ProcessInputs(s
             fast_move = true;
         }
     }
-    else
+
+    float enemy_distance = 0.f;
+    auto enemy_direction = Math3D::SimpleDirections::Forward;
+
+    //float enemy_disorient = 0.0f
+    if(!hero->IsNoRotateable())
     {
-        if(moving)
+        if(auto enemy = hero->arch_enemy.lock())
         {
-            fast_move = !inputs[GLFW_KEY_LEFT_SHIFT];
+            glm::vec3 enemy_vector = enemy->GetPosition() - hero->GetPosition();
+            enemy_distance = glm::length(enemy_vector);
+            auto target_dir = glm::normalize(enemy_vector);
+            constexpr float fit = 45.0f;
+            float enemy_disorient = -Math3D::Disorientation(hero_direction,target_dir,hero_side);
+            enemy_direction = Math3D::SimplifyDirection(enemy_disorient);
+            rm = glm::rotate(glm::radians(fit * enemy_disorient), glm::vec3(0.0f, 1.0f, 0.0f)) * hero->model_matrix;
+        }
+        if(moving)
+        {           
+                constexpr float fit = -30.0f;
+                rm = glm::rotate(glm::radians(-fit * disorientation), glm::vec3(0.0f, 1.0f, 0.0f)) * hero->model_matrix;
         }
     }
+
+ 
     
-
-    auto direction = Math3D::SimplifyDirection(disorientation);
-
-    //std::cout << "\n disorientation "<<disorientation<<" "<<direction<<"\n";
-
     if(attack)
-    { 
-        if(fast_move)
+    {
+        if(!fast_move)
         {
-            switch(direction)
-            {  
-                case Math3D::SimpleDirections::Forward:
-                    return std::make_pair(AnimationCommand::kStrikeForward,rm); 
-                break;
-                case Math3D::SimpleDirections::Left:
-                    return std::make_pair(AnimationCommand::kStrikeLeft,rm); 
-                break;
-                case Math3D::SimpleDirections::Right:
-                    return std::make_pair(AnimationCommand::kStrikeRight,rm); 
-                break;
-                default:
-                break;
-            }
+            direction = enemy_direction;
         }
 
-        return std::make_pair(AnimationCommand::kStrike,rm);
+        switch(direction)
+        {  
+            //case Math3D::SimpleDirections::Forward:
+                //return std::make_pair(AnimationCommand::kStrikeForward,rm); 
+            break;
+            case Math3D::SimpleDirections::Left:
+                return std::make_pair(AnimationCommand::kStrikeLeft,hero->model_matrix); 
+            break;
+            case Math3D::SimpleDirections::Right:
+                return std::make_pair(AnimationCommand::kStrikeRight,hero->model_matrix); 
+            break;
+            default:
+            break;
+        }
+      
+
+        return std::make_pair( enemy_distance > 3.0f ? AnimationCommand::kStrikeForward : AnimationCommand::kStrike,rm);
     }
 
     if(action_use) 
