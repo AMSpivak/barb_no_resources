@@ -88,7 +88,7 @@ namespace Character
         }
         virtual void Think(GlCharacter * character) 
         {
-            constexpr float enemy_keep_range = 5.0f;
+            constexpr float enemy_keep_range = 7.0f;
             constexpr float enemy_keep_range_2 = enemy_keep_range * enemy_keep_range;
             m_world_reaction(*character);
 
@@ -112,10 +112,12 @@ namespace Character
                 }  
             }
 
-            if(!character->arch_enemy.expired())
+
+
+            if(auto arch = character->arch_enemy.lock())
             {
 
-                auto arch_distance_vec = character->GetPosition() - character->arch_enemy.lock()->GetPosition();
+                auto arch_distance_vec = character->GetPosition() - arch->GetPosition();
                 float arch_distance = glm::dot(arch_distance_vec,arch_distance_vec);
                 if(arch_distance > enemy_keep_range_2)
                 {

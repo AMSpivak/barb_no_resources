@@ -757,6 +757,14 @@ void GlGameStateDungeon::Draw2D(GLuint depth_map)
                     w_t,w_t,color * a,position + attacker->GetPosition(),hero_position,Camera);
                 }
         }
+        if(auto arch = hero->arch_enemy.lock())
+        {
+            float w_t = 0.8f;
+            position = glm::vec3(0,5.0,0);
+            renderBillBoardDepth(sh,depth_map,&fx_attacker_texture->m_texture,   
+            w_t,w_t,color2 * a,position + arch->GetPosition(),hero_position,Camera);
+                
+        }
 
     }
     
@@ -1399,7 +1407,7 @@ std::pair<AnimationCommand,const glm::mat4>  GlGameStateDungeon::ProcessInputs(s
     std::cout << "\n disorientation "<<disorientation<<" "<<direction<<"\n";
     bool action_use = inputs[GLFW_KEY_LEFT_ALT];
     bool attack = inputs[GLFW_MOUSE_BUTTON_LEFT]|inputs[GLFW_KEY_SPACE];  
-    bool fast_move = false;
+    bool fast_move = true;
     bool guard = inputs[GLFW_MOUSE_BUTTON_RIGHT]|inputs[GLFW_KEY_LEFT_CONTROL];
 
     GLFWgamepadstate state;
@@ -1411,7 +1419,7 @@ std::pair<AnimationCommand,const glm::mat4>  GlGameStateDungeon::ProcessInputs(s
 
         if(move_square > 0.36f)
         {
-            fast_move = true;
+            fast_move = false;
         }
     }
 
