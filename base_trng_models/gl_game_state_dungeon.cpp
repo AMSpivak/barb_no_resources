@@ -1431,7 +1431,7 @@ std::pair<AnimationCommand,const glm::mat4>  GlGameStateDungeon::ProcessInputs(s
 
     float enemy_distance = 0.f;
     auto enemy_direction = Math3D::SimpleDirections::Forward;
-
+    auto reaction = hero->GetDamageReaction();
     //float enemy_disorient = 0.0f
     if(!hero->IsNoRotateable())
     {
@@ -1441,7 +1441,7 @@ std::pair<AnimationCommand,const glm::mat4>  GlGameStateDungeon::ProcessInputs(s
             enemy_distance = glm::length(enemy_vector);
             auto target_dir = glm::normalize(enemy_vector);
             float fit = 45.0f;
-            auto reaction = hero->GetDamageReaction();
+            
             if(reaction == DamageReaction::Block || reaction == DamageReaction::StrikeBack)
             {
                 fit = 75.0f;
@@ -1480,9 +1480,13 @@ std::pair<AnimationCommand,const glm::mat4>  GlGameStateDungeon::ProcessInputs(s
             default:
             break;
         }
-      
 
-        return std::make_pair( enemy_distance > 3.0f ? AnimationCommand::kStrikeForward : AnimationCommand::kStrike,rm);
+        if(reaction == DamageReaction::Block || reaction == DamageReaction::StrikeBack)
+        {
+            return std::make_pair(AnimationCommand::kStrike,rm);
+        }
+
+        return std::make_pair( enemy_distance > 5.0f ? AnimationCommand::kStrikeForward : AnimationCommand::kStrikeLong,rm);
     }
 
     if(action_use) 
