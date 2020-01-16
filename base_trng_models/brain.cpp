@@ -303,14 +303,8 @@ namespace Character
                                 }
                                 else
                                 {               
-                                    bool can_attack = true;
-                                    auto s = p_d_info->attackers.size();
-
-                                    if((s > 0)&&(s < 3))
-                                    {
-                                        can_attack = (p_d_info->now_time - p_d_info->attackers.back().first) > attacker_time * 0.8f;
-                                    }
-                                    if(can_attack)
+                                    const int attackers_max = 3;
+                                    if(p_d_info->attackers.size() < attackers_max)
                                     {
                                         auto element = std::make_pair(p_d_info->now_time,character->GetDungeonListReference());
                                         auto res = std::find_if(p_d_info->attackers.begin(),
