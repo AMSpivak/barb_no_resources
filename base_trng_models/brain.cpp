@@ -3,6 +3,7 @@
 #include "gl_character.h"
 #include <random>
 #include <tuple>
+#include <vector>
 
 #include "glm/glm.hpp"
 
@@ -10,14 +11,31 @@
 #include "glm/gtc/matrix_transform.hpp"
 #include "glm/gtc/type_ptr.hpp"
 #include "glm/gtx/rotate_vector.hpp"
-#include "math3d.h"  
+#include "math3d.h"
+#include "loader.h"
 //#include <GLFW/glfw3.h>
 namespace Character
 {
+
+    bool IBrain::LoadBrain(const std::string &filename)
+    {
+        std::ifstream brain_stream;
+        brain_stream.open(filename); 
+        // std::cout<<"Level:"<<filename<<" "<<(level_file.is_open()?"-opened":"-failed")<<"\n"
+        if(!brain_stream.is_open())
+        {
+            brain_stream.close();
+            return false;
+        }
+        auto res = LoadBrain(brain_stream);
+        brain_stream.close();
+        return res;
+    }
+
     constexpr float attacker_time = 0.5f;
     class BrainEmpty: public IBrain
     {
-        
+        virtual bool LoadBrain(std::istream &is) {return false;}
     };
 
     bool HatesLess(const std::pair<std::weak_ptr<GlCharacter>,float> a,const std::pair<std::weak_ptr<GlCharacter>,float> b, const GlCharacter & character)
@@ -149,6 +167,8 @@ namespace Character
                 break;
             }
         }
+
+        virtual bool LoadBrain(std::istream &is) {return false;}
     };
 
     
@@ -158,8 +178,17 @@ namespace Character
     {
         private:
         float distance;
+
+        float step_back_distance;
+        float walk_distance;
+        float attak_distance;
+
         public:
-        BrainMob(std::function<void(GlCharacter & character)> world_reaction):rotator(0), distance(0.0f)
+        BrainMob(std::function<void(GlCharacter & character)> world_reaction):  rotator(0), 
+                                                                                distance(0.0f),
+                                                                                step_back_distance(2.0f),
+                                                                                walk_distance(7.0f),
+                                                                                attak_distance(3.3f)
         {
             m_world_reaction = world_reaction;
         }
@@ -256,7 +285,7 @@ namespace Character
 
 
 
-                if(enemy_distance > 7.0f)
+                if(enemy_distance > walk_distance)
                 {
                     character->UseCommand(AnimationCommand::kFastMove);
                 }
@@ -283,12 +312,12 @@ namespace Character
 
                     if(no_strike)
                     {
-                        if(enemy_distance > 3.3f)
+                        if(enemy_distance > attak_distance)
                         {
                             character->UseCommand(AnimationCommand::kMove);   /* code */
                         }
                         else
-                        if(enemy_distance < 2.0f)
+                        if(enemy_distance < step_back_distance)
                         {
                             character->UseCommand(AnimationCommand::kStepBack);   /* code */
                         }
@@ -331,6 +360,26 @@ namespace Character
             }
 
         }
+
+        UpdateFromLines(std::vector<std::string> &lines)
+        {
+            LoaderUtility::LinesProcessor proc;
+            proc.Add("step_back_distance",[this](std::stringstream &sstream){ sstream >> step_back_distance;});
+            proc.Add("walk_distance",[this](std::stringstream &sstream){ sstream >> walk_distance;});
+            proc.Add("attak_distance",[this](std::stringstream &sstream){ sstream >> attak_distance;});
+            proc.Process(lines);
+        }
+
+        virtual bool LoadBrain(std::istream &is)
+        {
+            std::vector<std::string> lines;
+            LoaderUtility::LoadLineBlock(is,"never_exists",lines);
+            UpdateFromLines(lines);
+            return true;
+        }
+
+        
+
         private:
         const int random_maximum = 150;
         int rotator;

@@ -22,8 +22,8 @@ namespace LoaderUtility
     }
 
     std::string ReadQuoted(std::istream &source);
-    std::string FindPrefix(std::ifstream &file);
-    void LoadLineBlock(std::ifstream &file,const std::string &sufix,std::vector<std::string> &lines);
+    std::string FindPrefix(std::istream &file);
+    void LoadLineBlock(std::istream &file,const std::string &sufix,std::vector<std::string> &lines);
 
     class LinesProcessor
     {
