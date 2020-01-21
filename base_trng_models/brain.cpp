@@ -4,6 +4,7 @@
 #include <random>
 #include <tuple>
 #include <vector>
+#include <list>
 
 #include "glm/glm.hpp"
 
@@ -35,7 +36,9 @@ namespace Character
     constexpr float attacker_time = 0.5f;
     class BrainEmpty: public IBrain
     {
+        public:
         virtual bool LoadBrain(std::istream &is) {return false;}
+        virtual void UpdateFromLines(std::vector<std::string> &lines){}
     };
 
     bool HatesLess(const std::pair<std::weak_ptr<GlCharacter>,float> a,const std::pair<std::weak_ptr<GlCharacter>,float> b, const GlCharacter & character)
@@ -169,6 +172,7 @@ namespace Character
         }
 
         virtual bool LoadBrain(std::istream &is) {return false;}
+        virtual void UpdateFromLines(std::vector<std::string> &lines){}
     };
 
     
@@ -182,6 +186,8 @@ namespace Character
         float step_back_distance;
         float walk_distance;
         float attak_distance;
+
+        std::list<glm::vec3> m_track_points;
 
         public:
         BrainMob(std::function<void(GlCharacter & character)> world_reaction):  rotator(0), 
@@ -361,7 +367,7 @@ namespace Character
 
         }
 
-        UpdateFromLines(std::vector<std::string> &lines)
+        virtual void UpdateFromLines(std::vector<std::string> &lines)
         {
             LoaderUtility::LinesProcessor proc;
             proc.Add("step_back_distance",[this](std::stringstream &sstream){ sstream >> step_back_distance;});
