@@ -4,7 +4,7 @@
 #include <random>
 #include <tuple>
 #include <vector>
-#include <list>
+
 
 #include "glm/glm.hpp"
 
@@ -187,7 +187,7 @@ namespace Character
         float walk_distance;
         float attak_distance;
 
-        std::list<glm::vec3> m_track_points;
+        std::vector<glm::vec3> m_track_points;
 
         public:
         BrainMob(std::function<void(GlCharacter & character)> world_reaction):  rotator(0), 
@@ -373,6 +373,11 @@ namespace Character
             proc.Add("step_back_distance",[this](std::stringstream &sstream){ sstream >> step_back_distance;});
             proc.Add("walk_distance",[this](std::stringstream &sstream){ sstream >> walk_distance;});
             proc.Add("attak_distance",[this](std::stringstream &sstream){ sstream >> attak_distance;});
+            proc.Add("track_point",[this](std::stringstream &sstream){
+                    glm::vec3 point;
+                    sstream >> point;
+                    m_track_points.push_back(point);
+                });
             proc.Process(lines);
         }
 
