@@ -21,6 +21,7 @@ GlCharacter::GlCharacter(CharacterTypes type):
                             ,now_frame(0)
                             ,refresh_frame(0)
                             ,current_animation(nullptr)
+                            ,m_current_command(AnimationCommand::kNone)
                             ,m_type(type)
                             ,m_is_armed(false)
                             ,m_breed(0)
@@ -189,7 +190,8 @@ bool GlCharacter::UseCommand(AnimationCommand command)
     {
         return false;
         // std::cout<<"Unknown command\n";
-    }  
+    } 
+    m_current_command = command;
     return true; 
 }
 
@@ -498,6 +500,10 @@ glm::mat4 RotateToDirection2d(const GlCharacter &character, const glm::vec3 &tar
     return glm::rotate(glm::radians(fit * enemy_disorient), glm::vec3(0.0f, 1.0f, 0.0f)) * character.model_matrix;              
 }
 
+AnimationCommand GlCharacter::GetCurrentCommand()
+{
+    return m_current_command;
+}
 
 
 

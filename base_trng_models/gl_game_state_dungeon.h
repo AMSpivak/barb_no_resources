@@ -58,6 +58,9 @@ private:
 
     //std::shared_ptr<IGlTextureStruct> heightmap_texture;
     GameMap::HeightMap m_heightmap;
+    glm::vec3 map_max;
+    glm::vec3 map_min;
+
     bool m_show_intro;
 
     PauseStruct pause_interface;

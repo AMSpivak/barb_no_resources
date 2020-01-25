@@ -37,6 +37,7 @@ public:
     void AddSequence(const std::string & name, const AnimationSequence & in_sequence);
     void UseSequence(const std::string & name);
     bool UseCommand(AnimationCommand command);
+    AnimationCommand GetCurrentCommand();
     DamageReaction Damage(float damage, const glm::vec3 & from);
     DamageReaction GetDamageReaction();
     void RefreshMatrixes(float approximation);
@@ -72,9 +73,10 @@ private:
     size_t engine_frame;
     // static LoaderUtility::LinesProcessor command_proc;
     // static bool comand_proc_ready;
-
+    
     size_t now_frame;
     size_t refresh_frame;
+    AnimationCommand m_current_command;
     std::vector <std::shared_ptr<glModel> > Models;
     std::list<std::string> model_list;
     std::vector<std::pair<glm::vec3, glm::vec3>> m_edges; 

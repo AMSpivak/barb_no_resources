@@ -389,6 +389,8 @@ void GlGameStateDungeon::SetHeightmap(std::vector<std::string> &lines)
     proc.Add("height_scale",[this,&h_scale](std::stringstream &sstream){sstream >> h_scale;});
     proc.Add("map_scale",[this,&m_scale](std::stringstream &sstream){sstream >> m_scale;});
     proc.Add("map_size",[this,&map_size](std::stringstream &sstream){sstream >> map_size;});
+    proc.Add("walk_min",[this,&map_size](std::stringstream &sstream){sstream >> map_min;});
+    proc.Add("walk_max",[this,&map_size](std::stringstream &sstream){sstream >> map_max;});
     proc.Process(lines);
     std::cout<<"\n\n\nmap"<<map_size<<"\n\n\n";
 
@@ -575,6 +577,10 @@ void GlGameStateDungeon::LoadMap(const std::string &filename,const std::string &
         }
     }
 
+
+    //auto x_w = map_max - map_min;
+    //auto x_m = ((map_max + map_min)*0.5f);
+
     dungeon_objects.push_back(hero);
     hero->UseSequence("stance");
     hero->SetDungeonHeroInfo(&m_dungeon_hero_info);
@@ -595,8 +601,8 @@ void GlGameStateDungeon::LoadMap(const std::string &filename,const std::string &
         mob->SetName("Mob"+std::to_string(i));
         float mob_x = std::rand();
         float mob_z = std::rand();
-        mob_x = mob_x * 50.0f / RAND_MAX;
-        mob_z = mob_z * 50.0f / RAND_MAX;
+        mob_x = mob_x * 360.0f / RAND_MAX - 180.0f;
+        mob_z = mob_z * 360.0f / RAND_MAX - 180.0f;
         float angle_in_radians = std::rand();
         angle_in_radians = angle_in_radians * 6.0f / RAND_MAX;
 
@@ -605,7 +611,18 @@ void GlGameStateDungeon::LoadMap(const std::string &filename,const std::string &
         mob->SetDungeonHeroInfo(&m_dungeon_hero_info);
         mob->SetDungeonListReference(mob);
         mob->UseSequence("stance");
-        mob->SetBrain(Character::CreateBrain(Character::BrainTypes::Npc,[this](GlCharacter & character){/*ControlUnit(character);*/}));
+        auto brain = Character::CreateBrain(Character::BrainTypes::Npc,[this](GlCharacter & character){/*ControlUnit(character);*/});
+        std::vector<std::string> lines;
+        for(int ib = 0; ib <5; ib++)
+        {
+            mob_x = 80.0f * std::rand() / RAND_MAX - 40.0f;
+            mob_z = 80.0f * std::rand() / RAND_MAX - 40.0f;
+            std::ostringstream ss;
+            ss <<"track_point " <<glm::vec3(mob_x,0.0f,mob_z);
+            lines.push_back(ss.str());
+        }
+        brain->UpdateFromLines(lines);
+        mob->SetBrain(brain);
         
         dungeon_objects.push_back(mob);    
     }
@@ -1138,7 +1155,7 @@ std::pair<float,const glm::vec3> GlGameStateDungeon::FitObjectToMap(GlCharacter&
         return std::make_pair(0.0f,position);
         
     const glm::vec3 edge=glm::vec3(100.0f,100.0f,100.0f);
-    glm::vec3 new_position = glm::clamp(position,-edge,edge);
+    glm::vec3 new_position = glm::clamp(position,map_min,map_max);
     
     return std::make_pair(0.0f,new_position);
 }

@@ -187,6 +187,8 @@ namespace Character
         float walk_distance;
         float attak_distance;
 
+        std::vector<glm::vec3>::iterator m_current_point;
+
         std::vector<glm::vec3> m_track_points;
 
         public:
@@ -253,29 +255,73 @@ namespace Character
                         }
                     }  
                 }
-                if(rotator == 0)
+
+
+                if(m_track_points.empty())
                 {
-                    dice_roll = distribution(random_generator);
-                    
-                    if(dice_roll>(random_maximum - 50))
+                    if(rotator == 0)
                     {
-                        rotator = distribution(random_generator)-random_maximum/2;
+                        dice_roll = distribution(random_generator);
+                        
+                        if(dice_roll>(random_maximum - 50))
+                        {
+                            rotator = distribution(random_generator)-random_maximum/2;
+                        }
+                    }
+                    else
+                    {
+                        int sign = 1;
+                        if(rotator > 0)
+                        {
+                            --rotator;
+                        }
+                        else
+                        {
+                        ++rotator;
+                        sign = -1;
+                        }
+                        character->model_matrix = glm::rotate(character->model_matrix , glm::radians(sign * 0.1f), glm::vec3(0.0f, 1.0f, 0.0f));
                     }
                 }
                 else
                 {
-                    int sign = 1;
-                    if(rotator > 0)
+                    if(character->GetCurrentCommand() == AnimationCommand::kStance)
                     {
-                        --rotator;
+                        if(dice_roll>random_maximum - random_maximum/100)
+                        {
+                            character->UseCommand(AnimationCommand::kMove);
+                        }
                     }
                     else
                     {
-                    ++rotator;
-                    sign = -1;
+                        auto position = character->GetPosition();
+                        position[1] = 0.0f;
+                        position = *m_current_point - position;
+                        float enemy_distance = glm::length(position);
+
+                        constexpr float fit = -45.0f;
+                        character->model_matrix = RotateToDirection2d(*character, position, fit);
+
+                        if(enemy_distance > walk_distance)
+                        {
+                            character->UseCommand(AnimationCommand::kFastMove);
+                        }
+                        else if(enemy_distance < attak_distance)
+                        {
+                            if((++m_current_point) == m_track_points.end())
+                            {
+                                m_current_point = m_track_points.begin();
+                            }
+                            character->UseCommand(AnimationCommand::kStance); 
+                        }
+                        else
+                        {
+                            character->UseCommand(AnimationCommand::kMove); 
+                        }
                     }
-                    character->model_matrix = glm::rotate(character->model_matrix , glm::radians(sign * 0.1f), glm::vec3(0.0f, 1.0f, 0.0f));
+                    
                 }
+                
             }
             else
             if(auto enemy = character->arch_enemy.lock())
@@ -379,6 +425,11 @@ namespace Character
                     m_track_points.push_back(point);
                 });
             proc.Process(lines);
+
+            if(!m_track_points.empty())
+            {
+                m_current_point = m_track_points.begin();
+            }
         }
 
         virtual bool LoadBrain(std::istream &is)

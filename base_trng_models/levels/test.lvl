@@ -8,7 +8,9 @@ camera_lens 50.0 1.0 105.0
 map desert_map.png
 height_scale 30.0
 map_scale 0.001
-map_size 200.0 100.0 200.0
+map_size 300.0 100.0 300.0
+walk_min -200.0 0.0 -200.0
+walk_max 250.0 100.0 250.0
 <!heightmap>
 <models>
 material/tiles/tile_sand.mdl
