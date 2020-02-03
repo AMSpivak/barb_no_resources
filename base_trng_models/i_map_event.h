@@ -44,7 +44,7 @@ public:
 
     virtual ~IMapEvent(){}
 
-    virtual InteractionResult Interact(GlCharacter &model,std::string &return_value) = 0;
+    virtual InteractionResult Interact(std::weak_ptr<GlCharacter> model,std::string &return_value) = 0;
     virtual EventProcessResult Process() = 0;
     virtual bool IsLight(glm::vec4 &light_position,glm::vec3 &color) {return false;}
     virtual void Show(const glm::vec3 & offset, GlScene::glCamera & camera){};

@@ -86,16 +86,51 @@ EventProcessResult IMapEventHeroStrike::Process()
     return EventProcessResult::Kill;
 }
 
-InteractionResult IMapEventHeroStrike::Interact(GlCharacter &model,std::string &return_value)
-{
-    model.Damage(m_damage);
-    model.AddEnemy(m_owner);
-    //std::cout<<model.GetName()<<" life "<<model.GetLifeValue()<<"\n";
-    if((model.GetLifeValue()< 0)&&(model.GetType() != CharacterTypes::hero))
+InteractionResult IMapEventHeroStrike::Interact(std::weak_ptr<GlCharacter> model,std::string &return_value)
+{   
+    if(auto pmodel = model.lock())
     {
-        return InteractionResult::Kill;
+        if(auto powner = m_owner.lock())
+        {
+            auto m_breed = pmodel->GetBreed();
+            
+            if((m_breed) && (powner->GetBreed() == m_breed))
+            {
+                return InteractionResult::Nothing;
+            }
+
+            auto damage_reaction = pmodel->Damage(m_damage,GetPosition());
+
+            if(pmodel->GetType() == CharacterTypes::mob)
+            {
+                pmodel->AddEnemy(m_owner);
+            }
+
+            if( (powner->GetType() == CharacterTypes::hero)&&
+                (pmodel->GetType() == CharacterTypes::mob)
+            )
+            {
+                powner->AddEnemy(model);
+            }
+
+            if(damage_reaction == DamageReaction::StrikeBack)
+            {
+                powner->UseCommand(AnimationCommand::kStrikeBlocked);
+                std::cout<<powner->GetName()<<" blocked!\n";
+            }
+        }
+        //std::cout<<model.GetName()<<" life "<<model.GetLifeValue()<<"\n";
+        if((pmodel->GetLifeValue()< 0)&&(pmodel->GetType() != CharacterTypes::hero))
+        {
+            return InteractionResult::Kill;
+        }
+        return InteractionResult::Damage;
     }
-    return InteractionResult::Damage;
+    else
+    {
+        return InteractionResult::Nothing;
+    }
+    
 }
 
 bool IMapEventHeroStrike::IsInteractable(std::weak_ptr<GlCharacter> obj)

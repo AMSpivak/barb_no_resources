@@ -35,8 +35,8 @@ extern "C" {
 
 void key_callback(GLFWwindow* window, int key, int scancode, int action, int mode);
 
-//GLuint SCR_WIDTH = 800, SCR_HEIGHT = 600;
-GLuint SCR_WIDTH = 1200, SCR_HEIGHT =1000;
+GLuint SCR_WIDTH = 800, SCR_HEIGHT = 600;
+//GLuint SCR_WIDTH = 1200, SCR_HEIGHT =1000;
 
 float key_angle = 0.0f;
 
@@ -118,6 +118,9 @@ int main(int argc, char const *argv[])
 
     if(argc > 1) is_fullscreen = false;
 
+	EngineSettings::Settings main_settings;
+	EngineSettings::SetEngineSettings(&main_settings);
+
     inputs[GLFW_KEY_LEFT] =  false;
 	inputs[GLFW_KEY_RIGHT] = false;
 	inputs[GLFW_KEY_UP] =  false;
@@ -128,6 +131,7 @@ int main(int argc, char const *argv[])
     inputs[GLFW_KEY_F9] = false;
     inputs[GLFW_KEY_F10] = false;
     inputs[GLFW_KEY_LEFT_ALT] = false;
+    inputs[GLFW_KEY_LEFT_CONTROL] = false;
 
 
 	//Инициализация GLFW
@@ -154,7 +158,16 @@ int main(int argc, char const *argv[])
 
     if(is_fullscreen)
     {
+		int monitor_count = 0;
+		auto monitors = glfwGetMonitors(&monitor_count);
         GLFWmonitor* monitor = glfwGetPrimaryMonitor();
+
+		auto setted_monitor = EngineSettings::GetEngineSettings()->GetMonitorIndex();
+		if((setted_monitor > 0) && (setted_monitor < monitor_count))
+		{
+			monitor = monitors[setted_monitor];
+		}
+		
         const GLFWvidmode* mode = glfwGetVideoMode(monitor);
         glfwWindowHint(GLFW_RED_BITS, mode->redBits);
         glfwWindowHint(GLFW_GREEN_BITS, mode->greenBits);
@@ -199,8 +212,7 @@ int main(int argc, char const *argv[])
 	GLResourcesManager resources_atlas("material/textures/","material/meshes/","material/animations/","");
 	SetResourceManager(&resources_atlas);
 
-	EngineSettings::Settings main_settings;
-	EngineSettings::SetEngineSettings(&main_settings);
+	
 
 	
 
@@ -218,7 +230,7 @@ int main(int argc, char const *argv[])
 
     auto hero = std::make_shared<GlCharacter>(CharacterTypes::hero);
     m_glmodels_map.insert( std::pair<std::string,std::shared_ptr<GlCharacter>>("Hero",hero));
-	UpdateCharacterFromFile(argc > 2 ?  argv[2]:"material/hero.chr",*hero);
+	UpdateCharacterFromFile(argc > 2 ?  argv[2]:"heroes/hero.chr",*hero);
 	hero->SetName("Hero");
 	//hero->model_matrix = glm::rotate(hero->model_matrix, glm::radians(-90.0f), glm::vec3(1.0f, 0.0f, 0.0f));
 	
@@ -243,14 +255,13 @@ int main(int argc, char const *argv[])
 		}
 		GLuint current_shader;
 		double xpos, ypos;
-
-		
 		glfwGetCursorPos(window, &xpos, &ypos);
 		xpos = (xpos * 2.0f - width)/width;
 		ypos = (ypos * 2.0f - height)/height;
 		int state = glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT);
         inputs[GLFW_MOUSE_BUTTON_LEFT] = (state != GLFW_RELEASE) ?  true : false;
-
+		state = glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_RIGHT);
+        inputs[GLFW_MOUSE_BUTTON_RIGHT] = (state != GLFW_RELEASE) ?  true : false;
 		
         static size_t counter = 0;
         static double time_r  = 0;
@@ -258,7 +269,7 @@ int main(int argc, char const *argv[])
 		if(counter++ == 0) time_r = glfwGetTime();
 		if(counter > 30)
 		{
-			EngineSettings::GetEngineSettings() ->SetFPS((1.0f*counter/(glfwGetTime() - time_r)));
+			EngineSettings::GetEngineSettings()->SetFPS((1.0f*counter/(glfwGetTime() - time_r)));
 			counter = 0;
 		}
 		
@@ -267,7 +278,6 @@ int main(int argc, char const *argv[])
         game_state->Draw();
 		glfwSwapBuffers(window);
 		glfwPollEvents();
-		
 	}
 
 	if(p_main_game_state)
@@ -276,7 +286,6 @@ int main(int argc, char const *argv[])
 	}
 
 	std::cout << "exit";
-
 	glfwTerminate();
 	return 0;
 }
@@ -290,7 +299,7 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 	/*if (action == GLFW_RELEASE)
 		return;*/
 	if (key == GLFW_KEY_LEFT_CONTROL)
-        inputs[GLFW_KEY_LEFT_CONTROL] = (action != GLFW_KEY_LEFT_CONTROL) ?  true : false;
+        inputs[GLFW_KEY_LEFT_CONTROL] = (action != GLFW_RELEASE) ?  true : false;
 
 	if (key == GLFW_KEY_LEFT || key == GLFW_KEY_A )
         inputs[GLFW_KEY_LEFT] = (action != GLFW_RELEASE) ?  true : false;
@@ -337,42 +346,39 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 
 	
 
-	switch (key)
-	{
+	// switch (key)
+	// {
+	// 	case GLFW_KEY_F3:	
+	// 		if(action == GLFW_RELEASE)
+	// 		{
+	// 			EngineSettings::Settings * settings = EngineSettings::GetEngineSettings();
+	// 			float qf = settings->GetQualityFactor();
+	// 			qf = glm::clamp(qf*1.25f,0.5f,1.0f);
+	// 			settings->SetQualityFactor(qf);
+	// 			SetRenderTargets(m_render_target_map,SCR_WIDTH, SCR_HEIGHT);
+	// 		}
+	// 	break;
+	// 	case GLFW_KEY_F4:	
+	// 		if(action == GLFW_RELEASE)
+	// 		{
+	// 			EngineSettings::Settings * settings = EngineSettings::GetEngineSettings();
+	// 			float qf = settings->GetQualityFactor();
+	// 			qf = glm::clamp(qf*0.8f,0.5f,1.0f);
+	// 			settings->SetQualityFactor(qf);
+	// 			SetRenderTargets(m_render_target_map,SCR_WIDTH, SCR_HEIGHT);
+	// 		}
+	// 	break;
+	// 	case GLFW_KEY_F2:	
+	// 		if(action == GLFW_RELEASE)
+	// 		{
+	// 			EngineSettings::Settings * settings = EngineSettings::GetEngineSettings();
+	// 			settings->SetQualityFactor(1.0);
+	// 			SetRenderTargets(m_render_target_map,SCR_WIDTH, SCR_HEIGHT);
+	// 		}
+	// 	break;
+	// 	default:
+	// 	break;
 
-		case GLFW_KEY_F3:	
-			if(action == GLFW_RELEASE)
-			{
-				EngineSettings::Settings * settings = EngineSettings::GetEngineSettings();
-				float qf = settings->GetQualityFactor();
-				qf = glm::clamp(qf*1.25f,0.5f,1.0f);
-				settings->SetQualityFactor(qf);
-				SetRenderTargets(m_render_target_map,SCR_WIDTH, SCR_HEIGHT);
-			}
-		break;
-		case GLFW_KEY_F4:	
-			if(action == GLFW_RELEASE)
-			{
-				EngineSettings::Settings * settings = EngineSettings::GetEngineSettings();
-				float qf = settings->GetQualityFactor();
-				qf = glm::clamp(qf*0.8f,0.5f,1.0f);
-				settings->SetQualityFactor(qf);
-				SetRenderTargets(m_render_target_map,SCR_WIDTH, SCR_HEIGHT);
-			}
-		break;
-
-		case GLFW_KEY_F2:	
-			if(action == GLFW_RELEASE)
-			{
-				EngineSettings::Settings * settings = EngineSettings::GetEngineSettings();
-				settings->SetQualityFactor(1.0);
-				SetRenderTargets(m_render_target_map,SCR_WIDTH, SCR_HEIGHT);
-			}
-		break;
-
-		default:
-		break;
-
-	}
+	// }
 	
 }

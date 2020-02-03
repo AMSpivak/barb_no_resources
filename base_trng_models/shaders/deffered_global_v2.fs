@@ -142,8 +142,7 @@ float GGX_Distribution(float cosThetaNH, float alpha) {
 
 vec3 fresnelSchlick(float cosTheta, vec3 F0)
 {
-    //return F0 + (vec3(1.0,1.0,1.0) - F0) * pow(1.0 - cosTheta, 5.0);
-    return F0 + (1.0 - F0) * pow(1.0 - cosTheta, 5.0);
+    return F0 + (vec3(1.0) - F0) * pow(1.0 - cosTheta, 5.0);
 }
 
 float DistributionGGX(vec3 N, vec3 H, float roughness)
@@ -152,6 +151,7 @@ float DistributionGGX(vec3 N, vec3 H, float roughness)
     float a2     = a*a;
     float NdotH  = max(dot(N, H), 0.0);
     float NdotH2 = NdotH*NdotH;
+
 	
     float num   = a2;
     float denom = (NdotH2 * (a2 - 1.0) + 1.0);
@@ -172,7 +172,7 @@ float GeometrySchlickGGX(float NdotV, float roughness)
 }
 float GeometrySmith(vec3 N, vec3 V, vec3 L, float roughness)
 {
-    float NdotV = max(dot(N, V), 0.0);
+    float NdotV = max(dot(N, V), 0.10);
     float NdotL = max(dot(N, L), 0.0);
     float ggx2  = GeometrySchlickGGX(NdotV, roughness);
     float ggx1  = GeometrySchlickGGX(NdotL, roughness);
@@ -192,8 +192,6 @@ void main()
 	vec4 texColor = texture(DiffuseMap, TexCoords);
     if(texColor.a < 0.05)
         discard;
-
-    float metallness = (texColor.a -0.06) * 1.064;
     vec4 normal_map = texture(NormalMap, TexCoords);
 	vec3 texNormal= normal_map.xyz;
 
@@ -203,7 +201,7 @@ void main()
      
     if(norm_l > 0.01)
     {
-	    norm_l = max(norm_l,0.0);
+	    norm_l = max(norm_l,0.01);
         
         vec3 viewDir = normalize(viewPos - FragPos);
 
@@ -213,16 +211,15 @@ void main()
         float dotNV = max(dot(texNormal, viewDir), 0.10);
 
         vec3 F0 = vec3(0.04);
-        F0 = mix(F0, texColor.rgb, metallness);
+        F0      = mix(F0, texColor.rgb, texColor.a);
 
         vec3 shlick =fresnelSchlick(dotNV,F0);
 
         float roug_sqr = (normal_map.w)*(normal_map.w);
-        float roughness = normal_map.w;
-        roughness = max(roughness,0.1);
+    
 
-        float D =  DistributionGGX(texNormal, halfwayDir, roughness);       
-        float G   = GeometrySmith(texNormal, viewDir, LightDir, roughness); 
+        float D =  DistributionGGX(texNormal, halfwayDir, roug_sqr);       
+        float G   = GeometrySmith(texNormal, viewDir, LightDir, roug_sqr); 
 
 
 
@@ -230,21 +227,16 @@ void main()
         shadow_res = mix(1.0,shadow_res,LightColor.w );
 
         vec3 numerator    = D * G * shlick;
-        //float denominator = 4.0 * max(dotNV, 0.0);
-        
-        float denominator = 4.0 * max(dotNV, 0.0) * norm_l + 0.001;
-        vec3 specular     = numerator / denominator;
+        float denominator = 4.0 * max(dotNV, 0.0);
+        vec3 specular     = numerator / max(denominator, 0.001);
         vec3 kS = shlick;
         vec3 kD = vec3(1.0) - kS;
-        kD *= 1.0 - metallness;
 
         vec3 diffuse =kD/M_PI;
-        vec3 ShadowLightColor =  shadow_res* LightColor.xyz;
+        vec3 ShadowLightColor = shadow_res* LightColor.xyz;
         gAlbedoSpec =vec4(ShadowLightColor *norm_l* diffuse,1.0);
-        //gNormal =vec4(ShadowLightColor * specular,1.0);
-        gNormal =vec4(shadow_res*specular* norm_l,1.0);
+        gNormal =vec4(ShadowLightColor * specular,1.0);
 
-        //gNormal =vec4(0.0,0.0,0.0,1.0);
     }
     else
     {

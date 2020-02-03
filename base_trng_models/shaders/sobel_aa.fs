@@ -19,8 +19,8 @@ void main()
     vec4 Light = texture(LightMap, TexCoords);
     vec4 Spec = texture(SpecMap, TexCoords);
 
- 	Light *= 0.6;
- 	Spec *= 0.4;
+ 	//Light *= 0.6;
+ 	//Spec *= 0.4;
     vec2 texelSize = 1.0 / textureSize(LightMap, 0);
 
 
@@ -28,19 +28,21 @@ void main()
 
 
 	Diffuse.w = 1.0;
-	vec4 texColor = Diffuse*vec4(Light.xyz,1.0)+ vec4(Spec.xyz,0.0);
+	vec4 texColor = Diffuse*vec4(Light.xyz + vec3(0.03),1.0)+ vec4(Spec.xyz,0.0);
 
-	
+	vec3 color = texColor.rgb / (texColor.rgb + vec3(1.0));
+    color = pow(color, vec3(1.0/2.2));  
 
 	float edge_blur = 1.0f;//smoothstep(0.0,0.4, blur*blur);
-	float intens = length(texColor.xyz);
+	float intens = max(max(texColor.r, texColor.g),texColor.b) ;//length(texColor.xyz);
 
-	float blur =  intens/(intens+0.01);
+	float blur =  intens/(intens+0.1);
+
 	float l=smoothstep(0.999,1.0, d);
 	l*=0.25;
 
 	vec3 atmosphere = vec3(0.9,0.9,1.0);
 
-	FragColor = vec4((blur)*(texColor.xyz*(1.0 - l)+l*atmosphere), 1.0);
+	FragColor = vec4((texColor.xyz*(1.0 - l)+l*atmosphere), 1.0);
 	//FragColor = vec4(l,l,l, 1.0);
 }

@@ -13,7 +13,7 @@ void main()
 
     vec4 texColor = texture(PositionMap, TexCoords);
 
-	float v  = 0.3 + texColor.w;
+	float v  = 0.1 + texColor.w;
     gNormal = vec4(0,0,0,0);
     gAlbedoSpec =vec4(v,v,v,1.0);//texColor;// LightDir.y*(0.3 +0.7*(shadow_res) *norm_l) * texColor;
 }

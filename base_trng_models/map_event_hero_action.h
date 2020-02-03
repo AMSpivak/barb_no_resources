@@ -23,7 +23,7 @@ public:
 
     ~IMapEventHeroAction(){}
 
-    InteractionResult Interact(GlCharacter &model,std::string &return_value);
+    InteractionResult Interact(std::weak_ptr<GlCharacter> model,std::string &return_value);
     EventProcessResult Process();
     void Show(const glm::vec3 & offset, GlScene::glCamera & camera);
     int AddAxes(std::vector<glm::vec3> &axes);

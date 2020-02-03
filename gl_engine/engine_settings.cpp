@@ -50,7 +50,8 @@ namespace EngineSettings
     void Settings::SaveSettings(std::ostream &os)
     {
         os<<"pbr_light "<<pbr_light<<"\n"
-        <<"quality_factor "<<m_quality_factor<<"\n";
+        <<"quality_factor "<<m_quality_factor<<"\n"
+        <<"monitor "<<monitor<<"\n";
     }
     void Settings::LoadSettings(std::istream& is)
     {
@@ -66,7 +67,12 @@ namespace EngineSettings
 
         proc.Add("pbr_light",[this](std::stringstream &sstream){SetPbr(LoaderUtility::GetFromStream<bool>(sstream));});
         proc.Add("quality_factor",[this](std::stringstream &sstream){SetQualityFactor(LoaderUtility::GetFromStream<float>(sstream));});
+        proc.Add("monitor",[this](std::stringstream &sstream){monitor = (LoaderUtility::GetFromStream<int>(sstream));});
         proc.Process(lines);
+    }
+    int Settings::GetMonitorIndex()
+    {
+        return monitor;
     }
 
     float Settings::GetFPS()

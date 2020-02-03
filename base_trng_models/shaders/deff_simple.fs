@@ -72,9 +72,8 @@ void main()
     F0      = mix(F0, texColor.rgb, texColor.a);
 
     vec3 shlick =fresnelSchlick(dotNV,F0);
-    float roug_sqr = normal_map.w*normal_map.w;
-    float G = GGX_PartialGeometry(dotNV, roug_sqr) * GGX_PartialGeometry(norm_l, roug_sqr);
-    float D = GGX_Distribution(dotNH, roug_sqr);    
+    float G = GGX_PartialGeometry(dotNV, normal_map.w) * GGX_PartialGeometry(norm_l, normal_map.w);
+    float D = GGX_Distribution(dotNH, normal_map.w);    
 
     vec3 spec = G*shlick*D*0.25/(max(0.0, dotNV)+0.001);
     spec =max(vec3(0.0), spec);
@@ -84,7 +83,6 @@ void main()
     vec3 diffuse = clamp(vec3(1.0) - shlick, 0.0, 1.0);
 
     vec3 res = intensivity *(diffuse*norm_l/M_PI);
-    gAlbedoSpec =vec4(((res) )* LightColor * vec3(1.0,1.0,1.0),1.0);
-   // gAlbedoSpec =vec4(((norm_l) )* LightColor * vec3(1.0,1.0,1.0),1.0);
-    gNormal =vec4(((intensivity*spec) )* LightColor * vec3(1.0,1.0,1.0),1.0);
+    gAlbedoSpec =vec4(((res) )* LightColor ,1.0);
+    gNormal =vec4(((intensivity*spec) )* LightColor,1.0);
 }

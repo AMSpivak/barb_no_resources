@@ -223,9 +223,16 @@ void RenderSingleTriangle(GLuint current_shader, GLuint depthmap,
 	glUniformMatrix4fv(camera_u, 1, GL_FALSE, glm::value_ptr(camera.CameraMatrix()));
 
     glBindVertexArray(trisVAO);
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	glDisable(GL_CULL_FACE);
+	glDisable(GL_DEPTH_TEST);
+
     glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+	glDisable(GL_BLEND);
+	glEnable(GL_DEPTH_TEST);
 	glEnable(GL_CULL_FACE);
+
     glBindVertexArray(0);
 	
     glDeleteVertexArrays(1, &trisVAO);
@@ -956,6 +963,9 @@ void Animation::LoadAnimation(const std::string & file_name)
 
 GLfloat * Animation::GetDrawValues(size_t frame,const std::vector <Bone> &bones)
 {
+	size_t size = frames.size();
+	frame = frame < size ? frame : size - 1; 
+
 	if(m_precalculated) 
 	{
 		return glm::value_ptr(frames[frame].bones[0]);
@@ -967,6 +977,9 @@ GLfloat * Animation::GetDrawValues(size_t frame,const std::vector <Bone> &bones)
 
 const glm::mat4 & Animation::GetBoneMatrix(size_t frame,size_t bone,const std::vector <Bone> &bones)
 {
+	size_t size = frames.size();
+	frame = frame < size ? frame : size - 1; 
+
 	if(m_precalculated) 
 	{
 		return frames[frame].bones[bone];
@@ -979,6 +992,9 @@ const glm::mat4 & Animation::GetBoneMatrix(size_t frame,size_t bone,const std::v
 
 void Animation::CalculateCache(const std::vector <Bone> &bones,size_t frame)
 {
+	size_t size = frames.size();
+	frame = frame < size ? frame : size - 1; 
+
 	float approx = 1.0f;
 	if(m_cache_frame == frame) 
 		return;

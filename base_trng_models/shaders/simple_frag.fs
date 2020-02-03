@@ -11,5 +11,6 @@ void main()
 {
     //if(texture2D(DepthMap, v_Depth).x < Depth.z) discard;
     //FragColor =  corrector*(texture2D(u_Texture, Tex));
-    FragColor =  vec4(1.0,0.0,0.0,1.0); 
+    float a = 0.1;
+    FragColor =  vec4(1.0,0.03,0.0,1.0) *a; 
 }

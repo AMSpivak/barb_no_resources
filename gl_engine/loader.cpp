@@ -11,7 +11,7 @@ namespace LoaderUtility
         return quoted;
     }
     
-    std::string FindPrefix(std::ifstream &file)
+    std::string FindPrefix(std::istream &file)
     {
         std::string tempholder("");
         std::regex search_regexp("<([^!][^>]*)>");
@@ -30,7 +30,7 @@ namespace LoaderUtility
         
     }
 
-    void LoadLineBlock(std::ifstream &file,const std::string &sufix,std::vector<std::string> &lines)
+    void LoadLineBlock(std::istream &file,const std::string &sufix,std::vector<std::string> &lines)
     {
         lines.clear();
         std::string sufix_end("<!"+sufix+">");

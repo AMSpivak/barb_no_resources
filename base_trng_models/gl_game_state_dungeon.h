@@ -42,7 +42,7 @@ public:
 
     ~GlGameStateDungeon()
     {
-        
+        glDisable(GL_FRAMEBUFFER_SRGB);
     }
     void Draw();
     IGlGameState * Process(std::map <int, bool> &inputs, float joy_x, float joy_y);
@@ -51,10 +51,16 @@ public:
 private:
 
     irrklang::ISoundEngine  *m_sound_engine;
+    float raged_mode = 0.0f;
     unsigned char simple_screen;
+
+    DungeonHeroInfo m_dungeon_hero_info;
 
     //std::shared_ptr<IGlTextureStruct> heightmap_texture;
     GameMap::HeightMap m_heightmap;
+    glm::vec3 map_max;
+    glm::vec3 map_min;
+
     bool m_show_intro;
 
     PauseStruct pause_interface;
@@ -66,7 +72,7 @@ private:
     std::vector <std::shared_ptr<glModel> > Models;
     std::map<std::string,std::shared_ptr<glRenderTargetSimple>> &m_render_target_map;
     std::map<std::string,std::shared_ptr<GlCharacter>> & m_models_map;
-    std::shared_ptr<IGlTextureStruct> fx_texture, fx_texture_2,skybox, debug_texture;
+    std::shared_ptr<IGlTextureStruct> fx_texture,fx_attacker_texture, fx_texture_2,skybox, debug_texture;
     GlDungeon m_dungeon;
     std::list<std::shared_ptr<GlCharacter>>  dungeon_objects;
     std::list<std::shared_ptr<IMapEvent>> map_events;
