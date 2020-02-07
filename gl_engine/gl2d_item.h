@@ -20,6 +20,7 @@ namespace Gl2D
         float m_aspect_ratio;
         ItemAligment m_aligment;
         AspectRatioKeeper m_aspect_ratio_keeper;
+        
         void RecalculateGeometry()
         {
             real_x = m_x;

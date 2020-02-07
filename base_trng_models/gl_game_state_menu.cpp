@@ -27,7 +27,10 @@
 #include "engine_settings.h"
 #include "game_status.h"
 #include "game_event_fabric.h"
+
 #include "gl2d_progressbar.h"
+#include "gl2d_image.h"
+
 #include "glresourses.h"
 #include "game_inputs.h"
 #include "brain.h"
@@ -106,18 +109,31 @@ GlGameStateMenu::GlGameStateMenu(std::map<const std::string,GLuint> &shader_map,
 
     float a_ratio = screen_width;
     a_ratio /= screen_height;
+    
+    /*
+    {
+        auto object_ptr = std::make_shared<Gl2D::GlProgressbar>(-1.0,0.9,0.8,0.1,a_ratio,
+                                    GetResourceManager()->m_texture_atlas.Assign("halfbar_border.png"),
+                                    GetResourceManager()->m_texture_atlas.Assign("halfbar.png"),
+                                    m_shader_map["sprite2dsimple"],
+                                    []() { return GameSettings::GetHeroStatus()->GetLife(); }
+                                    );
+                                    
+        object_ptr->SetItemAligment(Gl2D::ItemAligment::Left);
+        object_ptr->SetAspectRatioKeeper(Gl2D::AspectRatioKeeper::Minimal);                    
+        Interface2D.push_back(object_ptr);  
+    }*/
 
+    {
+        auto object_ptr = std::make_shared<Gl2D::GlImage>(-0.0,0.0,2.0,2.0,a_ratio,
+                                    GetResourceManager()->m_texture_atlas.Assign("pause_bkgBO.png"),
+                                    m_shader_map["sprite2dsimple"]);
+                                    
+        object_ptr->SetItemAligment(Gl2D::ItemAligment::Center);
+        object_ptr->SetAspectRatioKeeper(Gl2D::AspectRatioKeeper::Minimal);                    
+        Interface2D.push_back(object_ptr);  
 
-    auto object_ptr = std::make_shared<Gl2D::GlProgressbar>(-1.0,0.9,0.8,0.1,a_ratio,
-                                GetResourceManager()->m_texture_atlas.Assign("halfbar_border.png"),
-                                GetResourceManager()->m_texture_atlas.Assign("halfbar.png"),
-                                m_shader_map["sprite2dsimple"],
-                                []() { return GameSettings::GetHeroStatus()->GetLife(); }
-                                );
-                                
-    object_ptr->SetItemAligment(Gl2D::ItemAligment::Left);
-    object_ptr->SetAspectRatioKeeper(Gl2D::AspectRatioKeeper::Minimal);                    
-    Interface2D.push_back(object_ptr);   
+    }
 
     m_gl_text = std::make_shared<GlText16x16>("font2.png",GetResourceManager()->m_texture_atlas,0.1f,0.1f);
 
