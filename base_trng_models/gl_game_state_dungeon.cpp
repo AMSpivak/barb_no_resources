@@ -1467,7 +1467,7 @@ std::pair<AnimationCommand,const glm::mat4>  GlGameStateDungeon::ProcessInputs(s
             enemy_direction = Math3D::SimplifyDirection(enemy_disorient);
             rm = glm::rotate(glm::radians(fit * enemy_disorient), glm::vec3(0.0f, 1.0f, 0.0f)) * hero->model_matrix;
         }
-        if(moving)
+        if(moving && (reaction != DamageReaction::Block)&& (reaction != DamageReaction::StrikeBack))
         {           
                 constexpr float fit = -30.0f;
                 rm = glm::rotate(glm::radians(-fit * disorientation), glm::vec3(0.0f, 1.0f, 0.0f)) * hero->model_matrix;

@@ -11,7 +11,9 @@ in  vec2 v_Tex;
 in  vec2 v_Depth;
 void main()
 {
-    if(texture2D(DepthMap, v_Depth).x < Depth) discard;
+    float d = texture2D(DepthMap, v_Depth).x;
+    if(d < Depth) discard;
+    //float a = step(d,Depth);
     FragColor =  corrector*(texture2D(u_Texture, v_Tex));
     
 }

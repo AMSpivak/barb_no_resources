@@ -12,12 +12,6 @@ map_size 300.0 100.0 300.0
 walk_min -200.0 0.0 -200.0
 walk_max 250.0 100.0 250.0
 <!heightmap>
-<models>
-material/tiles/tile_sand.mdl
-<!models>
-<dungeon_params>
-30 30 1
-<!dungeon_params>
 <starts> 
 base 0.0 0.0 0.0      
 start_top 9.0 0.0 16.0      
