@@ -126,7 +126,7 @@ GlGameStateMenu::GlGameStateMenu(std::map<const std::string,GLuint> &shader_map,
 
     {
         auto object_ptr = std::make_shared<Gl2D::GlImage>(-0.0,0.0,2.0,2.0,a_ratio,
-                                    GetResourceManager()->m_texture_atlas.Assign("pause_bkgBO.png"),
+                                    GetResourceManager()->m_texture_atlas.Assign("menu.png"),
                                     m_shader_map["sprite2dsimple"]);
                                     
         object_ptr->SetItemAligment(Gl2D::ItemAligment::Center);
