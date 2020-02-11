@@ -20,9 +20,11 @@ namespace Gl2D
         float m_aspect_ratio;
         ItemAligment m_aligment;
         AspectRatioKeeper m_aspect_ratio_keeper;
-        
+        std::weak_ptr<Gl2dItem> m_parent;
         void RecalculateGeometry()
         {
+            
+
             real_x = m_x;
             real_y = m_y * m_aspect_ratio;
             real_width = m_width;
@@ -55,6 +57,16 @@ namespace Gl2D
             {
                 real_x = -1.0f;
             }
+
+            if(auto parent = m_parent.lock())
+            {
+                float parent_x = 0;
+                float parent_y = 0;
+                float parent_width = 2.0f;
+                float parent_height = 2.0f;
+
+                tie(parent_x,parent_y,parent_width,parent_height) = parent->GetPosAndSize();
+            }
         }
         public:
         // Gl2dItem(){}
@@ -67,10 +79,11 @@ namespace Gl2D
 
         {}
         void SetAspectRatioKeeper(AspectRatioKeeper keeper){m_aspect_ratio_keeper = keeper;}
+        void SetParent(std::weak_ptr<Gl2dItem> parent){m_parent = parent;}
         AspectRatioKeeper GetAspectRatioKeeper(){ return m_aspect_ratio_keeper;}
         void SetItemAligment(ItemAligment aligment){m_aligment = aligment;}
         ItemAligment GetItemAligment(){ return m_aligment;}
-
+        tuple<float,float,float, float> GetPosAndSize(){return make_tuple(real_x, real_y, real_width, real_height);}
         virtual void Draw() = 0;
         virtual ~Gl2dItem(){}
     };
