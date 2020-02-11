@@ -130,8 +130,26 @@ GlGameStateMenu::GlGameStateMenu(std::map<const std::string,GLuint> &shader_map,
                                     m_shader_map["sprite2dsimple"]);
                                     
         object_ptr->SetItemAligment(Gl2D::ItemAligment::Center);
-        object_ptr->SetAspectRatioKeeper(Gl2D::AspectRatioKeeper::Minimal);                    
-        Interface2D.push_back(object_ptr);  
+        object_ptr->SetAspectRatioKeeper(Gl2D::AspectRatioKeeper::Minimal);
+        Interface2D.push_back(object_ptr); 
+        {
+            auto button_ptr = std::make_shared<Gl2D::GlImage>(-0.5,0.05,1.0,0.3,a_ratio,
+                                    GetResourceManager()->m_texture_atlas.Assign("button.png"),
+                                    m_shader_map["sprite2dsimple"]);
+
+            button_ptr->SetParent(object_ptr);
+            Interface2D.push_back(button_ptr);
+
+            button_ptr = std::make_shared<Gl2D::GlImage>(-0.6,-0.35,1.2,0.3,a_ratio,
+                                    GetResourceManager()->m_texture_atlas.Assign("button.png"),
+                                    m_shader_map["sprite2dsimple"]);
+
+            button_ptr->SetParent(object_ptr);
+            Interface2D.push_back(button_ptr);
+
+        }
+                                               
+         
 
     }
 
@@ -193,11 +211,13 @@ void GlGameStateMenu::Draw2D(GLuint depth_map)
     glEnable(GL_BLEND);	
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	glDisable(GL_CULL_FACE);
+	glDisable(GL_DEPTH_TEST);
     
     for(auto item :Interface2D) 
     {
         item->Draw();
     }
+    glEnable(GL_DEPTH_TEST);
     glEnable(GL_CULL_FACE);
 	glDisable(GL_ALPHA_TEST);
     glDisable(GL_BLEND);
