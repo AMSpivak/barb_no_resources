@@ -125,15 +125,23 @@ GlGameStateMenu::GlGameStateMenu(std::map<const std::string,GLuint> &shader_map,
     }*/
 
     {
-        auto object_ptr = std::make_shared<Gl2D::GlImage>(-0.0,0.0,2.0,2.0,a_ratio,
-                                    GetResourceManager()->m_texture_atlas.Assign("menu.png"),
+        auto object_ptr = std::make_shared<Gl2D::GlImage>(-0.0,0.0,3.2,2.0,a_ratio,
+                                    GetResourceManager()->m_texture_atlas.Assign("barbar_bg01a.png"),
                                     m_shader_map["sprite2dsimple"]);
                                     
         object_ptr->SetItemAligment(Gl2D::ItemAligment::Center);
         object_ptr->SetAspectRatioKeeper(Gl2D::AspectRatioKeeper::Minimal);
         Interface2D.push_back(object_ptr); 
+
+        object_ptr = std::make_shared<Gl2D::GlImage>(-1.0,-1.0,2.0,2.0,a_ratio,
+                                    GetResourceManager()->m_texture_atlas.Assign("menu.png"),
+                                    m_shader_map["sprite2dsimple"]);
+                                    
+        //object_ptr->SetItemAligment(Gl2D::ItemAligment::Center);
+        object_ptr->SetAspectRatioKeeper(Gl2D::AspectRatioKeeper::Minimal);
+        Interface2D.push_back(object_ptr); 
         {
-            auto button_ptr = std::make_shared<Gl2D::GlImage>(-0.5,0.05,1.0,0.3,a_ratio,
+            auto button_ptr = std::make_shared<Gl2D::GlImage>(-0.6,-0.65,1.2,0.3,a_ratio,
                                     GetResourceManager()->m_texture_atlas.Assign("button.png"),
                                     m_shader_map["sprite2dsimple"]);
 
@@ -147,6 +155,12 @@ GlGameStateMenu::GlGameStateMenu(std::map<const std::string,GLuint> &shader_map,
             button_ptr->SetParent(object_ptr);
             Interface2D.push_back(button_ptr);
 
+            // button_ptr = std::make_shared<Gl2D::GlImage>(-0.25,0.0,0.5,0.5,a_ratio,
+            //                         GetResourceManager()->m_texture_atlas.Assign("logo.png"),
+            //                         m_shader_map["sprite2dsimple"]);
+
+            // button_ptr->SetParent(object_ptr);
+            // Interface2D.push_back(button_ptr);
         }
                                                
          
