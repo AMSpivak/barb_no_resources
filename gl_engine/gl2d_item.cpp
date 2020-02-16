@@ -68,4 +68,10 @@ namespace Gl2D
         }
         
     }
+    void Gl2dItem::SetAspectRatioKeeper(AspectRatioKeeper keeper){m_aspect_ratio_keeper = keeper;}
+    void Gl2dItem::SetParent(std::weak_ptr<Gl2dItem> parent){m_parent = parent;}
+    AspectRatioKeeper Gl2dItem::GetAspectRatioKeeper(){ return m_aspect_ratio_keeper;}
+    void Gl2dItem::SetItemAligment(ItemAligment aligment){m_aligment = aligment;}
+    ItemAligment Gl2dItem::GetItemAligment(){ return m_aligment;}
+    std::tuple<float,float,float, float> Gl2dItem::GetPosAndSize(){return std::make_tuple(real_x, real_y, real_width, real_height);}
 }

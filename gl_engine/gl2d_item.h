@@ -39,12 +39,12 @@ namespace Gl2D
                                                                                     ,m_aspect_ratio(aspect_ratio)
 
         {}
-        void SetAspectRatioKeeper(AspectRatioKeeper keeper){m_aspect_ratio_keeper = keeper;}
-        void SetParent(std::weak_ptr<Gl2dItem> parent){m_parent = parent;}
-        AspectRatioKeeper GetAspectRatioKeeper(){ return m_aspect_ratio_keeper;}
-        void SetItemAligment(ItemAligment aligment){m_aligment = aligment;}
-        ItemAligment GetItemAligment(){ return m_aligment;}
-        std::tuple<float,float,float, float> GetPosAndSize(){return std::make_tuple(real_x, real_y, real_width, real_height);}
+        void SetAspectRatioKeeper(AspectRatioKeeper keeper);
+        void SetParent(std::weak_ptr<Gl2dItem> parent);
+        AspectRatioKeeper GetAspectRatioKeeper();
+        void SetItemAligment(ItemAligment aligment);
+        ItemAligment GetItemAligment();
+        std::tuple<float,float,float, float> GetPosAndSize();
         virtual void Draw() = 0;
         virtual ~Gl2dItem(){}
     };
