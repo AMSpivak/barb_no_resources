@@ -2,6 +2,8 @@
 #define GL_2D_ENGINE_ITEM
 #include <memory>
 #include <tuple>
+#include <map>
+#include "input_abstracts.h"
 
 namespace Gl2D
 {
@@ -23,6 +25,7 @@ namespace Gl2D
         ItemAligment m_aligment;
         AspectRatioKeeper m_aspect_ratio_keeper;
         std::weak_ptr<Gl2dItem> m_parent;
+        std::map<Inputs::InputCommands,std::weak_ptr<Gl2dItem>> tab_map;
         void CalculateAligment();
         void UseAspectRatioKeeper();
         void RecalculateGeometry();
