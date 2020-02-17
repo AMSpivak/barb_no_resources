@@ -30,6 +30,7 @@
 
 #include "gl2d_progressbar.h"
 #include "gl2d_image.h"
+#include "gl2d_button.h"
 
 #include "glresourses.h"
 #include "game_inputs.h"
@@ -141,18 +142,31 @@ GlGameStateMenu::GlGameStateMenu(std::map<const std::string,GLuint> &shader_map,
         object_ptr->SetAspectRatioKeeper(Gl2D::AspectRatioKeeper::Minimal);
         Interface2D.push_back(object_ptr); 
         {
-            auto button_ptr = std::make_shared<Gl2D::GlImage>(-0.6,-0.65,1.2,0.3,a_ratio,
+            auto button_ptr = std::make_shared<Gl2D::GlButton>(-0.6,-0.65,1.2,0.3,a_ratio,
                                     GetResourceManager()->m_texture_atlas.Assign("button.png"),
                                     m_shader_map["sprite2dsimple"]);
 
             button_ptr->SetParent(object_ptr);
+            button_ptr->SetActiveSizer(1.1f);
             Interface2D.push_back(button_ptr);
 
-            button_ptr = std::make_shared<Gl2D::GlImage>(-0.6,-0.35,1.2,0.3,a_ratio,
+            button_ptr = std::make_shared<Gl2D::GlButton>(-0.6,-0.35,1.2,0.3,a_ratio,
                                     GetResourceManager()->m_texture_atlas.Assign("button.png"),
                                     m_shader_map["sprite2dsimple"]);
 
             button_ptr->SetParent(object_ptr);
+            button_ptr->SetActiveSizer(1.1f);
+            button_ptr->SetActive(true);
+
+            Interface2D.push_back(button_ptr);
+
+                        button_ptr = std::make_shared<Gl2D::GlButton>(-0.6,-0.05,1.2,0.3,a_ratio,
+                                    GetResourceManager()->m_texture_atlas.Assign("button.png"),
+                                    m_shader_map["sprite2dsimple"]);
+
+            button_ptr->SetParent(object_ptr);
+            button_ptr->SetActiveSizer(1.1f);
+
             Interface2D.push_back(button_ptr);
 
             // button_ptr = std::make_shared<Gl2D::GlImage>(-0.25,0.0,0.5,0.5,a_ratio,

@@ -74,4 +74,27 @@ namespace Gl2D
     void Gl2dItem::SetItemAligment(ItemAligment aligment){m_aligment = aligment;}
     ItemAligment Gl2dItem::GetItemAligment(){ return m_aligment;}
     std::tuple<float,float,float, float> Gl2dItem::GetPosAndSize(){return std::make_tuple(real_x, real_y, real_width, real_height);}
+    void Gl2dItem::AddTab(Inputs::InputCommands input,std::weak_ptr<Gl2dItem> tab_element)
+    {
+        tab_map[input] = tab_element;
+    }
+
+    std::weak_ptr<Gl2dItem> Gl2dItem::Process(Inputs::InputCommands input)
+    {
+        try
+        {
+            auto p = tab_map.at(input);
+            return p;
+        }
+        catch(std::out_of_range)
+        {
+            return std::weak_ptr<Gl2dItem>();
+        }
+    }
+
+    void Gl2dItem::SetActive(bool status)
+    {
+        m_active = status;
+    }
+
 }
