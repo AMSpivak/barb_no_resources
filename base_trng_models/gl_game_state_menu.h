@@ -16,6 +16,7 @@
 #include "map_heightmap.h"
 #include <list>
 #include <sound/irrKlang.h>
+#include "gl2d_interface.h"
 
 class GlGameStateMenu: public IGlGameState
 {
@@ -44,7 +45,7 @@ private:
 
     std::shared_ptr<IGlText> m_gl_text;
 
-    std::list<std::shared_ptr<Gl2D::Gl2dItem>> Interface2D;
+    Gl2D::Interface2D m_interface;
     std::map<std::string,std::shared_ptr<glRenderTargetSimple>> &m_render_target_map;
     std::map<std::string,std::shared_ptr<GlCharacter>> & m_models_map;
     std::list<std::string> m_messages;
@@ -57,6 +58,7 @@ private:
     bool m_antialiase_enabled;
     int now_frame;
     double time;
+    double m_interface_time;
     LoaderUtility::LinesProcessor m_message_processor;
 
     void LoadScript(std::vector<std::string> &lines);

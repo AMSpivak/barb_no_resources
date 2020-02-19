@@ -79,7 +79,7 @@ namespace Gl2D
         tab_map[input] = tab_element;
     }
 
-    std::weak_ptr<Gl2dItem> Gl2dItem::Process(Inputs::InputCommands input)
+    std::weak_ptr<Gl2dItem> Gl2dItem::ProcessInput(Inputs::InputCommands input)
     {
         try
         {

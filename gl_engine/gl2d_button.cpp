@@ -18,10 +18,10 @@ namespace Gl2D
 
         if(m_active)
         {
-            x +=0.5f * (1.0f - m_active_mul) * real_width;
+            x +=0.5f * (1.0f - m_active_mul) * real_width ;
             y +=0.5f * (1.0f - m_active_mul) * real_height;// * m_aspect_ratio;
-            w *= m_active_mul;
-            h *= m_active_mul;
+            w *= m_active_mul ;
+            h *= m_active_mul ;
         }
 
         renderSprite(m_shader,

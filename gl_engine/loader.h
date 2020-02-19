@@ -6,6 +6,8 @@
 #include <vector>
 #include <map>
 #include <functional>
+#include <algorithm>
+#include <stdexcept>
 
 
 
@@ -20,6 +22,31 @@ namespace LoaderUtility
         is>>value;
         return value;
     }
+
+    template <typename T, typename K>
+    auto GetValueByName(const K &key,T& list)
+    {
+        auto find_to = list.end();
+        auto val = std::find_if(list.begin(),find_to,[&key](const auto &b){return b.first == key;});
+        if(val == find_to)
+        {
+           throw std::out_of_range("No name in vocabulary");
+        }
+        return val->second;
+    }
+
+    template <typename T,typename V>
+    auto GetKeyByValue(const V &value,const T& list)
+    {
+        auto find_to = list.end();
+        auto val = std::find_if(list.begin(),find_to,[&value](const auto &b){return b.second == value;});
+        if(val == find_to)
+        {
+           throw std::out_of_range("No name in vocabulary");
+        }
+        return val->first;
+    }
+
 
     std::string ReadQuoted(std::istream &source);
     std::string FindPrefix(std::istream &file);

@@ -132,7 +132,7 @@ GlGameStateMenu::GlGameStateMenu(std::map<const std::string,GLuint> &shader_map,
                                     
         object_ptr->SetItemAligment(Gl2D::ItemAligment::Center);
         object_ptr->SetAspectRatioKeeper(Gl2D::AspectRatioKeeper::Minimal);
-        Interface2D.push_back(object_ptr); 
+        m_interface.Add("back",object_ptr);
 
         object_ptr = std::make_shared<Gl2D::GlImage>(-1.0,-1.0,2.0,2.0,a_ratio,
                                     GetResourceManager()->m_texture_atlas.Assign("menu.png"),
@@ -140,41 +140,37 @@ GlGameStateMenu::GlGameStateMenu(std::map<const std::string,GLuint> &shader_map,
                                     
         //object_ptr->SetItemAligment(Gl2D::ItemAligment::Center);
         object_ptr->SetAspectRatioKeeper(Gl2D::AspectRatioKeeper::Minimal);
-        Interface2D.push_back(object_ptr); 
+        m_interface.Add("wall",object_ptr);
+
+
         {
-            auto button_ptr = std::make_shared<Gl2D::GlButton>(-0.6,-0.65,1.2,0.3,a_ratio,
+            auto button_ptr1 = std::make_shared<Gl2D::GlButton>(-0.6,-0.65,1.2,0.3,a_ratio,
                                     GetResourceManager()->m_texture_atlas.Assign("button.png"),
                                     m_shader_map["sprite2dsimple"]);
-
-            button_ptr->SetParent(object_ptr);
-            button_ptr->SetActiveSizer(1.1f);
-            Interface2D.push_back(button_ptr);
-
-            button_ptr = std::make_shared<Gl2D::GlButton>(-0.6,-0.35,1.2,0.3,a_ratio,
+            auto button_ptr2 = std::make_shared<Gl2D::GlButton>(-0.6,-0.35,1.2,0.3,a_ratio,
                                     GetResourceManager()->m_texture_atlas.Assign("button.png"),
                                     m_shader_map["sprite2dsimple"]);
+            auto button_ptr3 = std::make_shared<Gl2D::GlButton>(-0.6,-0.05,1.2,0.3,a_ratio,
+                        GetResourceManager()->m_texture_atlas.Assign("button_p.png"),
+                        m_shader_map["sprite2dsimple"]);
+                        
+            button_ptr1->AddTab(Inputs::InputCommands::Up,button_ptr2);
+            button_ptr1->SetParent(m_interface.GetElement("wall"));
+            button_ptr1->SetActiveSizer(1.05f);
+            
+            button_ptr2->AddTab(Inputs::InputCommands::Up,button_ptr3);
+            button_ptr2->AddTab(Inputs::InputCommands::Down,button_ptr1);
+            button_ptr2->SetParent(m_interface.GetElement("wall"));
+            button_ptr2->SetActiveSizer(1.05f);
 
-            button_ptr->SetParent(object_ptr);
-            button_ptr->SetActiveSizer(1.1f);
-            button_ptr->SetActive(true);
+            button_ptr3->AddTab(Inputs::InputCommands::Down,button_ptr2);
+            button_ptr3->SetParent(m_interface.GetElement("wall"));
+            button_ptr3->SetActiveSizer(1.05f);
 
-            Interface2D.push_back(button_ptr);
-
-                        button_ptr = std::make_shared<Gl2D::GlButton>(-0.6,-0.05,1.2,0.3,a_ratio,
-                                    GetResourceManager()->m_texture_atlas.Assign("button.png"),
-                                    m_shader_map["sprite2dsimple"]);
-
-            button_ptr->SetParent(object_ptr);
-            button_ptr->SetActiveSizer(1.1f);
-
-            Interface2D.push_back(button_ptr);
-
-            // button_ptr = std::make_shared<Gl2D::GlImage>(-0.25,0.0,0.5,0.5,a_ratio,
-            //                         GetResourceManager()->m_texture_atlas.Assign("logo.png"),
-            //                         m_shader_map["sprite2dsimple"]);
-
-            // button_ptr->SetParent(object_ptr);
-            // Interface2D.push_back(button_ptr);
+            m_interface.Add("btn1",button_ptr1);
+            m_interface.Add("btn2",button_ptr2);
+            m_interface.Add("btn3",button_ptr3);
+            m_interface.SetActive("btn3");
         }
                                                
          
@@ -214,6 +210,7 @@ GlGameStateMenu::GlGameStateMenu(std::map<const std::string,GLuint> &shader_map,
 
 
     time = glfwGetTime();
+    m_interface_time = time;
     //LoadMap("levels/test.lvl","base");
 
     glEnable(GL_DEPTH_TEST);
@@ -241,10 +238,8 @@ void GlGameStateMenu::Draw2D(GLuint depth_map)
 	glDisable(GL_CULL_FACE);
 	glDisable(GL_DEPTH_TEST);
     
-    for(auto item :Interface2D) 
-    {
-        item->Draw();
-    }
+    m_interface.Draw();
+
     glEnable(GL_DEPTH_TEST);
     glEnable(GL_CULL_FACE);
 	glDisable(GL_ALPHA_TEST);
@@ -255,9 +250,9 @@ void GlGameStateMenu::Draw2D(GLuint depth_map)
 
     m_gl_text->SetTextSize(text_size_x,text_size_y); 
     auto shader = m_shader_map["sprite2dsimple"];
-    std::stringstream ss;
-    ss<< std::fixed<<std::setprecision(1)<<EngineSettings::GetEngineSettings() ->GetFPS()<<" FPS; life: "<<std::setprecision(2)<<GameSettings::GetHeroStatus()->GetLife();
-    m_gl_text->DrawString(ss.str(),1.0f - m_gl_text->GetStringLength(ss.str()),1.0f - text_size_y*1.2f, shader);
+    //std::stringstream ss;
+    //ss<< std::fixed<<std::setprecision(1)<<EngineSettings::GetEngineSettings() ->GetFPS()<<" FPS; life: "<<std::setprecision(2)<<GameSettings::GetHeroStatus()->GetLife();
+    //m_gl_text->DrawString(ss.str(),1.0f - m_gl_text->GetStringLength(ss.str()),1.0f - text_size_y*1.2f, shader);
 
     // if(m_info_message.length()!=0) 
     // {
@@ -312,18 +307,14 @@ IGlGameState *  GlGameStateMenu::Process(std::map <int, bool> &inputs, float joy
 
     if((time_now - time)>(1.0/30.0))
     {
-
-        // m_daytime_in_hours += 0.00055f;
-        // if(m_daytime_in_hours>24.0f)
-        // {
-        //     m_daytime_in_hours -= 24.0f;
-        // }
-
         time = time_now;        
         ProcessMessages();
-              
-        ProcessInputs(inputs);
+    }
 
+    if((time_now - m_interface_time)>(1.0/10.0))
+    {
+        m_interface_time = time_now;                     
+        ProcessInputs(inputs);
     }
 
     return this;
@@ -331,6 +322,7 @@ IGlGameState *  GlGameStateMenu::Process(std::map <int, bool> &inputs, float joy
 
 void  GlGameStateMenu::ProcessInputs(std::map <int, bool> &inputs)
 {
+    Inputs::InputCommands input_command = Inputs::InputCommands::None;
     if(inputs[GLFW_KEY_F9])
     {
         //m_daytime_in_hours -= 0.1;
@@ -345,6 +337,23 @@ void  GlGameStateMenu::ProcessInputs(std::map <int, bool> &inputs)
     float move_square = move_inputs.first * move_inputs.first + move_inputs.second * move_inputs.second;
     bool moving = move_square > 0.03f;//(std::abs(move_inputs.first)+std::abs(move_inputs.second)>0.2f);
 
+    if(move_inputs.first>0.3f)
+    {
+        input_command = Inputs::InputCommands::Right;
+    }
+    if(move_inputs.first<-0.3f)
+    {
+        input_command = Inputs::InputCommands::Left;
+    }
+    if(move_inputs.second>0.3f)
+    {
+        input_command = Inputs::InputCommands::Up;
+    }
+    if(move_inputs.second<-0.3f)
+    {
+        input_command = Inputs::InputCommands::Down;
+    }
+
     bool action_use = inputs[GLFW_KEY_LEFT_ALT];
     bool attack = inputs[GLFW_MOUSE_BUTTON_LEFT]|inputs[GLFW_KEY_SPACE];  
     bool fast_move = inputs[GLFW_KEY_LEFT_SHIFT];
@@ -356,6 +365,8 @@ void  GlGameStateMenu::ProcessInputs(std::map <int, bool> &inputs)
         action_use |=state.buttons[GLFW_GAMEPAD_BUTTON_X];
         fast_move |=state.buttons[GLFW_GAMEPAD_BUTTON_LEFT_BUMPER];
     }
+
+    m_interface.ProcessInput(input_command);
 
     // if(attack) 
     //     return std::make_pair(AnimationCommand::kStrike,rm);
