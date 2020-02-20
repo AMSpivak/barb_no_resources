@@ -110,31 +110,18 @@ GlGameStateMenu::GlGameStateMenu(std::map<const std::string,GLuint> &shader_map,
 
     float a_ratio = screen_width;
     a_ratio /= screen_height;
+    m_gl_text = std::make_shared<GlText16x16>("font2.png",GetResourceManager()->m_texture_atlas,0.1f,0.1f);
     
-    /*
     {
-        auto object_ptr = std::make_shared<Gl2D::GlProgressbar>(-1.0,0.9,0.8,0.1,a_ratio,
-                                    GetResourceManager()->m_texture_atlas.Assign("halfbar_border.png"),
-                                    GetResourceManager()->m_texture_atlas.Assign("halfbar.png"),
-                                    m_shader_map["sprite2dsimple"],
-                                    []() { return GameSettings::GetHeroStatus()->GetLife(); }
-                                    );
+        // auto object_ptr = std::make_shared<Gl2D::GlImage>(-0.0,0.0,3.2,2.0,a_ratio,
+        //                             GetResourceManager()->m_texture_atlas.Assign("barbar_bg01a.png"),
+        //                             m_shader_map["sprite2dsimple"]);
                                     
-        object_ptr->SetItemAligment(Gl2D::ItemAligment::Left);
-        object_ptr->SetAspectRatioKeeper(Gl2D::AspectRatioKeeper::Minimal);                    
-        Interface2D.push_back(object_ptr);  
-    }*/
+        // object_ptr->SetItemAligment(Gl2D::ItemAligment::Center);
+        // object_ptr->SetAspectRatioKeeper(Gl2D::AspectRatioKeeper::Minimal);
+        // m_interface.Add("back",object_ptr);
 
-    {
-        auto object_ptr = std::make_shared<Gl2D::GlImage>(-0.0,0.0,3.2,2.0,a_ratio,
-                                    GetResourceManager()->m_texture_atlas.Assign("barbar_bg01a.png"),
-                                    m_shader_map["sprite2dsimple"]);
-                                    
-        object_ptr->SetItemAligment(Gl2D::ItemAligment::Center);
-        object_ptr->SetAspectRatioKeeper(Gl2D::AspectRatioKeeper::Minimal);
-        m_interface.Add("back",object_ptr);
-
-        object_ptr = std::make_shared<Gl2D::GlImage>(-1.0,-1.0,2.0,2.0,a_ratio,
+        auto object_ptr = std::make_shared<Gl2D::GlImage>(-1.0,-1.0,2.0,2.0,a_ratio,
                                     GetResourceManager()->m_texture_atlas.Assign("menu.png"),
                                     m_shader_map["sprite2dsimple"]);
                                     
@@ -142,16 +129,18 @@ GlGameStateMenu::GlGameStateMenu(std::map<const std::string,GLuint> &shader_map,
         object_ptr->SetAspectRatioKeeper(Gl2D::AspectRatioKeeper::Minimal);
         m_interface.Add("wall",object_ptr);
 
-
-        {
+        
             auto button_ptr1 = std::make_shared<Gl2D::GlButton>(-0.6,-0.65,1.2,0.3,a_ratio,
-                                    GetResourceManager()->m_texture_atlas.Assign("button.png"),
+                                    GetResourceManager()->m_texture_atlas.Assign("button.png"),GetResourceManager()->m_texture_atlas.Assign("button_p.png"),
+                                    m_gl_text,"EXIT",
                                     m_shader_map["sprite2dsimple"]);
             auto button_ptr2 = std::make_shared<Gl2D::GlButton>(-0.6,-0.35,1.2,0.3,a_ratio,
-                                    GetResourceManager()->m_texture_atlas.Assign("button.png"),
+                                    GetResourceManager()->m_texture_atlas.Assign("button.png"),GetResourceManager()->m_texture_atlas.Assign("button_p.png"),
+                                    m_gl_text,"SETTINGS",
                                     m_shader_map["sprite2dsimple"]);
             auto button_ptr3 = std::make_shared<Gl2D::GlButton>(-0.6,-0.05,1.2,0.3,a_ratio,
-                        GetResourceManager()->m_texture_atlas.Assign("button_p.png"),
+                        GetResourceManager()->m_texture_atlas.Assign("button.png"),GetResourceManager()->m_texture_atlas.Assign("button_p.png"),
+                        m_gl_text,"START",
                         m_shader_map["sprite2dsimple"]);
                         
             button_ptr1->AddTab(Inputs::InputCommands::Up,button_ptr2);
@@ -171,13 +160,13 @@ GlGameStateMenu::GlGameStateMenu(std::map<const std::string,GLuint> &shader_map,
             m_interface.Add("btn2",button_ptr2);
             m_interface.Add("btn3",button_ptr3);
             m_interface.SetActive("btn3");
-        }
+        
                                                
          
 
     }
 
-    m_gl_text = std::make_shared<GlText16x16>("font2.png",GetResourceManager()->m_texture_atlas,0.1f,0.1f);
+
 
    
    

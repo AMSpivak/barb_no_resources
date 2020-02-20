@@ -21,7 +21,7 @@ namespace Gl2D
 
     std::shared_ptr<Gl2D::Gl2dItem> Interface2D::GetElement(const std::string &name)
     {
-        return LoaderUtility::GetValueByName(name,m_items);
+        return LoaderUtility::GetValueByKey(name,m_items);
     }
 
 

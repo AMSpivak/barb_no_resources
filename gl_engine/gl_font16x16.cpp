@@ -18,13 +18,14 @@ float GlText16x16::GetStringLength(const std::string &value)
 
 void GlText16x16::DrawString(const std::string &value,float x,float y, GLuint shader)
 {
-	glClear(GL_STENCIL_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	// glClear(GL_STENCIL_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 
-    glEnable(GL_ALPHA_TEST);
-    glEnable(GL_BLEND);	
-    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-	glDisable(GL_CULL_FACE);
+    // glEnable(GL_ALPHA_TEST);
+    // glEnable(GL_BLEND);	
+    // glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	// glDisable(GL_CULL_FACE);
+	
 	//unsigned char c = 'A';
 	const float tile_size = 0.0625f;
 
@@ -45,9 +46,9 @@ void GlText16x16::DrawString(const std::string &value,float x,float y, GLuint sh
 		x += m_width * 0.6;
 	}
 
-	glEnable(GL_CULL_FACE);
-	glDisable(GL_ALPHA_TEST);
-    glDisable(GL_BLEND);	
+	// glEnable(GL_CULL_FACE);
+	// glDisable(GL_ALPHA_TEST);
+    // glDisable(GL_BLEND);	
 
 
 }

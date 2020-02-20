@@ -8,6 +8,7 @@
 #include <functional>
 #include <algorithm>
 #include <stdexcept>
+#include <map>
 
 
 
@@ -23,8 +24,8 @@ namespace LoaderUtility
         return value;
     }
 
-    template <typename T, typename K>
-    auto GetValueByName(const K &key,T& list)
+    template <typename K, typename T>
+    auto GetValueByKey(const K &key,T& list)
     {
         auto find_to = list.end();
         auto val = std::find_if(list.begin(),find_to,[&key](const auto &b){return b.first == key;});
@@ -35,6 +36,13 @@ namespace LoaderUtility
         return val->second;
     }
 
+    template <typename K, typename T>
+    auto GetValueByKey(const K &key,std::map<K,T>& list)
+    {
+        return list.at(key);
+    }
+
+
     template <typename T,typename V>
     auto GetKeyByValue(const V &value,const T& list)
     {
@@ -42,7 +50,7 @@ namespace LoaderUtility
         auto val = std::find_if(list.begin(),find_to,[&value](const auto &b){return b.second == value;});
         if(val == find_to)
         {
-           throw std::out_of_range("No name in vocabulary");
+           throw std::out_of_range("No value in vocabulary");
         }
         return val->first;
     }
