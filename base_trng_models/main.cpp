@@ -236,6 +236,7 @@ int main(int argc, char const *argv[])
 	
     //GlGameStateDungeon game_state_dungeon(pmanager->m_shader_map,m_render_target_map,m_glmodels_map,resources_atlas,width,height,SoundEngine);
     GlGameStateMenu game_state_menu(pmanager->m_shader_map,m_render_target_map,m_glmodels_map,resources_atlas,width,height,SoundEngine);
+    GlGameStateDungeon game_state_game(pmanager->m_shader_map,m_render_target_map,m_glmodels_map,resources_atlas,width,height,SoundEngine);
     IGlGameState * game_state = nullptr;
     //game_state = &game_state_dungeon;
     game_state = &game_state_menu;
@@ -245,13 +246,9 @@ int main(int argc, char const *argv[])
 
 	while((!glfwWindowShouldClose(window))&&(game_state != nullptr))
 	{
-		if(inputs[GLFW_KEY_F1] && (game_state != p_main_game_state))
+		if(inputs[GLFW_KEY_F1] && (game_state != &game_state_game))
 		{
-			if(!p_main_game_state)
-			{
-				p_main_game_state = new GlGameStateDungeon (pmanager->m_shader_map,m_render_target_map,m_glmodels_map,resources_atlas,width,height,SoundEngine);
-			}
-			game_state = p_main_game_state;
+			game_state = &game_state_game;
 			continue;
 		}
 		GLuint current_shader;

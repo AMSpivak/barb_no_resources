@@ -50,6 +50,8 @@ public:
     void SwitchOut(){}
 private:
 
+    bool m_ready;
+
     irrklang::ISoundEngine  *m_sound_engine;
     float raged_mode = 0.0f;
     unsigned char simple_screen;

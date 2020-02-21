@@ -123,6 +123,7 @@ GlGameStateDungeon::GlGameStateDungeon(std::map<const std::string,GLuint> &shade
                                                         ,unit_control_action(AnimationCommand::kNone,glm::mat4(1))
                                                         ,simple_screen(0)
                                                         ,m_sound_engine(sound_engine)
+                                                        ,m_ready(false)
 {
     //m_sound_engine->play2D("material/audio/breakout.mp3", GL_TRUE);
 
@@ -284,7 +285,8 @@ GlGameStateDungeon::GlGameStateDungeon(std::map<const std::string,GLuint> &shade
     Camera.SetCameraLocation(glm::vec3(12.0f, 8.485f, -12.0f),glm::vec3(0.0f, 2.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
 
     time = glfwGetTime();
-    LoadMap("levels/test.lvl","base");
+
+    //LoadMap("levels/test.lvl","base");
 
     glEnable(GL_DEPTH_TEST);
 	glEnable(GL_CULL_FACE);   
@@ -854,6 +856,11 @@ void GlGameStateDungeon::DrawHeightMap(GLuint current_shader, std::shared_ptr<Gl
 
 void GlGameStateDungeon::Draw()
 {
+    if(!m_ready)
+    {
+        return;
+    }
+
     hero_position = hero->GetPosition();
     
 
@@ -1325,6 +1332,12 @@ void GlGameStateDungeon::ControlUnit(GlCharacter & character)
 
 IGlGameState *  GlGameStateDungeon::Process(std::map <int, bool> &inputs, float joy_x, float joy_y)
 {
+    if(!m_ready)
+    {
+        LoadMap("levels/test.lvl","base");
+        m_ready = true;
+    }
+
     glRenderTargetDeffered &render_target = *(dynamic_cast<glRenderTargetDeffered*>(m_render_target_map["base_deffered"].get()));
     //std::shared_ptr<GlCharacter> hero_ptr = m_models_map["Hero"];
    
