@@ -40,6 +40,8 @@ public:
     void SwitchOut(){}
 private:
 
+    bool m_execute;
+
     irrklang::ISoundEngine  *m_sound_engine;
     bool m_show_intro;
 

@@ -242,7 +242,8 @@ int main(int argc, char const *argv[])
 
 	//SoundEngine->play2D("material/audio/breakout.mp3", GL_TRUE);
 
-	while(!glfwWindowShouldClose(window))
+
+	while((!glfwWindowShouldClose(window))&&(game_state != nullptr))
 	{
 		if(inputs[GLFW_KEY_F1] && (game_state != p_main_game_state))
 		{
@@ -273,7 +274,7 @@ int main(int argc, char const *argv[])
 			counter = 0;
 		}
 		
-		game_state->Process(inputs, xpos, ypos);
+		game_state = game_state->Process(inputs, xpos, ypos);
 		EngineSettings::GetEngineSettings()->BeginNewFrame();
         game_state->Draw();
 		glfwSwapBuffers(window);

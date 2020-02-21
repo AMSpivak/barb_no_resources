@@ -39,9 +39,7 @@ namespace Gl2D
         const float text_size_y = 0.5f * h;
 
         m_font->SetTextSize(text_size_x,text_size_y);
-        m_font->DrawString(m_text,x + (w  - m_font->GetStringLength(m_text)) * 0.5f,y + (h  - text_size_y)* 0.5f/* * 1.2f*/, m_shader);
-
-
+        m_font->DrawString(m_text,x + (w  - m_font->GetStringLength(m_text)) * 0.5f,y + (h  - text_size_y) * 0.5f/* * 1.2f*/, m_shader);
     }
     
 
@@ -54,6 +52,21 @@ namespace Gl2D
     {
         m_active_mul = value;
     }
+
+    std::weak_ptr<Gl2dItem> GlButton::ProcessInput(Inputs::InputCommands input)
+    {
+        if(input == Inputs::InputCommands::Strike)
+        {
+            m_action();
+            return std::weak_ptr<Gl2dItem>();
+        }
+        else
+        {
+            return Gl2dItem::ProcessInput(input);
+        }
+        
+    }
+
 
 
 }

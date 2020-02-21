@@ -102,6 +102,7 @@ GlGameStateMenu::GlGameStateMenu(std::map<const std::string,GLuint> &shader_map,
                                                         ,m_antialiase_enabled(true)
                                                         ,now_frame(91)
                                                         ,m_sound_engine(sound_engine)
+                                                        ,m_execute(true)
 {
     //m_sound_engine->play2D("material/audio/breakout.mp3", GL_TRUE);
 
@@ -133,15 +134,15 @@ GlGameStateMenu::GlGameStateMenu(std::map<const std::string,GLuint> &shader_map,
             auto button_ptr1 = std::make_shared<Gl2D::GlButton>(-0.6,-0.65,1.2,0.3,a_ratio,
                                     GetResourceManager()->m_texture_atlas.Assign("button.png"),GetResourceManager()->m_texture_atlas.Assign("button_p.png"),
                                     m_gl_text,"EXIT",
-                                    m_shader_map["sprite2dsimple"]);
+                                    m_shader_map["sprite2dsimple"],[this]{m_execute = false;});
             auto button_ptr2 = std::make_shared<Gl2D::GlButton>(-0.6,-0.35,1.2,0.3,a_ratio,
                                     GetResourceManager()->m_texture_atlas.Assign("button.png"),GetResourceManager()->m_texture_atlas.Assign("button_p.png"),
                                     m_gl_text,"SETTINGS",
-                                    m_shader_map["sprite2dsimple"]);
+                                    m_shader_map["sprite2dsimple"],[]{});
             auto button_ptr3 = std::make_shared<Gl2D::GlButton>(-0.6,-0.05,1.2,0.3,a_ratio,
                         GetResourceManager()->m_texture_atlas.Assign("button.png"),GetResourceManager()->m_texture_atlas.Assign("button_p.png"),
                         m_gl_text,"START",
-                        m_shader_map["sprite2dsimple"]);
+                        m_shader_map["sprite2dsimple"],[]{});
                         
             button_ptr1->AddTab(Inputs::InputCommands::Up,button_ptr2);
             button_ptr1->SetParent(m_interface.GetElement("wall"));
@@ -160,10 +161,6 @@ GlGameStateMenu::GlGameStateMenu(std::map<const std::string,GLuint> &shader_map,
             m_interface.Add("btn2",button_ptr2);
             m_interface.Add("btn3",button_ptr3);
             m_interface.SetActive("btn3");
-        
-                                               
-         
-
     }
 
 
@@ -233,20 +230,6 @@ void GlGameStateMenu::Draw2D(GLuint depth_map)
     glEnable(GL_CULL_FACE);
 	glDisable(GL_ALPHA_TEST);
     glDisable(GL_BLEND);
-
-    const float text_size_y = 0.060f;
-    const float text_size_x = m_aspect_ratio * text_size_y;
-
-    m_gl_text->SetTextSize(text_size_x,text_size_y); 
-    auto shader = m_shader_map["sprite2dsimple"];
-    //std::stringstream ss;
-    //ss<< std::fixed<<std::setprecision(1)<<EngineSettings::GetEngineSettings() ->GetFPS()<<" FPS; life: "<<std::setprecision(2)<<GameSettings::GetHeroStatus()->GetLife();
-    //m_gl_text->DrawString(ss.str(),1.0f - m_gl_text->GetStringLength(ss.str()),1.0f - text_size_y*1.2f, shader);
-
-    // if(m_info_message.length()!=0) 
-    // {
-    //     m_gl_text->DrawString(m_info_message, - 0.5f * m_gl_text->GetStringLength(m_info_message),-1.0f + text_size_y*2.2f, shader);
-    // }
 }
 
 
@@ -306,7 +289,7 @@ IGlGameState *  GlGameStateMenu::Process(std::map <int, bool> &inputs, float joy
         ProcessInputs(inputs);
     }
 
-    return this;
+    return m_execute ? this : nullptr;
 }
 
 void  GlGameStateMenu::ProcessInputs(std::map <int, bool> &inputs)
@@ -355,16 +338,12 @@ void  GlGameStateMenu::ProcessInputs(std::map <int, bool> &inputs)
         fast_move |=state.buttons[GLFW_GAMEPAD_BUTTON_LEFT_BUMPER];
     }
 
+    if(attack)
+    {
+        input_command = Inputs::InputCommands::Strike;
+    }
+
     m_interface.ProcessInput(input_command);
-
-    // if(attack) 
-    //     return std::make_pair(AnimationCommand::kStrike,rm);
-    // if(action_use) 
-    //     return std::make_pair(AnimationCommand::kUse,rm);
-    // if(moving)
-    //     return std::make_pair(fast_move ? AnimationCommand::kFastMove:AnimationCommand::kMove,rm);
-
-    // return std::make_pair(AnimationCommand::kNone,rm);    
 }
 
 

@@ -46,7 +46,7 @@ namespace Gl2D
         AspectRatioKeeper GetAspectRatioKeeper();
         void SetItemAligment(ItemAligment aligment);
         void AddTab(Inputs::InputCommands input,std::weak_ptr<Gl2dItem> tab_element);
-        std::weak_ptr<Gl2dItem> ProcessInput(Inputs::InputCommands input);
+        virtual std::weak_ptr<Gl2dItem> ProcessInput(Inputs::InputCommands input);
         ItemAligment GetItemAligment();
         std::tuple<float,float,float, float> GetPosAndSize();
         void SetActive(bool status);
