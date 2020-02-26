@@ -25,7 +25,7 @@ public:
     GlGameStateMenu(std::map<const std::string,GLuint> &shader_map,
         std::map<std::string,std::shared_ptr<glRenderTargetSimple>> &render_target_map,
         std::map<std::string,std::shared_ptr<GlCharacter>> &models_map,
-        GLResourcesManager &resources_manager,
+        GLResourcesManager &resources_manager, States &states_map,
         size_t screen_width,
         size_t screen_height,
         irrklang::ISoundEngine *sound_engine);

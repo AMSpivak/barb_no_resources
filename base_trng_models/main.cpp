@@ -235,9 +235,9 @@ int main(int argc, char const *argv[])
 	//hero->model_matrix = glm::rotate(hero->model_matrix, glm::radians(-90.0f), glm::vec3(1.0f, 0.0f, 0.0f));
 	
     //GlGameStateDungeon game_state_dungeon(pmanager->m_shader_map,m_render_target_map,m_glmodels_map,resources_atlas,width,height,SoundEngine);
-    GlGameStateMenu game_state_menu(pmanager->m_shader_map,m_render_target_map,m_glmodels_map,resources_atlas,width,height,SoundEngine);
-    GlGameStateDungeon game_state_game(pmanager->m_shader_map,m_render_target_map,m_glmodels_map,resources_atlas,width,height,SoundEngine);
-    IGlGameState * game_state = nullptr;
+    auto game_state_menu = std::make_shared<GlGameStateMenu>(pmanager->m_shader_map,m_render_target_map,m_glmodels_map,resources_atlas,width,height,SoundEngine);
+    auto game_state_game = std::make_shared<GlGameStateDungeon>(pmanager->m_shader_map,m_render_target_map,m_glmodels_map,resources_atlas,width,height,SoundEngine);
+    std::weak_ptr<IGlGameState> game_state = game_state_game;
     //game_state = &game_state_dungeon;
     game_state = &game_state_menu;
 
@@ -246,11 +246,11 @@ int main(int argc, char const *argv[])
 
 	while((!glfwWindowShouldClose(window))&&(game_state != nullptr))
 	{
-		if(inputs[GLFW_KEY_F1] && (game_state != &game_state_game))
-		{
-			game_state = &game_state_game;
-			continue;
-		}
+		// if(inputs[GLFW_KEY_F1] && (game_state != &game_state_game))
+		// {
+		// 	game_state = &game_state_game;
+		// 	continue;
+		// }
 		GLuint current_shader;
 		double xpos, ypos;
 		glfwGetCursorPos(window, &xpos, &ypos);
@@ -270,10 +270,14 @@ int main(int argc, char const *argv[])
 			EngineSettings::GetEngineSettings()->SetFPS((1.0f*counter/(glfwGetTime() - time_r)));
 			counter = 0;
 		}
-		
-		game_state = game_state->Process(inputs, xpos, ypos);
-		EngineSettings::GetEngineSettings()->BeginNewFrame();
-        game_state->Draw();
+
+		if(auto state = game_state.lock())
+		{
+			//game_state = 
+			game_state->Process(inputs, xpos, ypos);
+			EngineSettings::GetEngineSettings()->BeginNewFrame();
+			game_state->Draw();
+		}
 		glfwSwapBuffers(window);
 		glfwPollEvents();
 	}

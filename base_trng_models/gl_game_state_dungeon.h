@@ -35,7 +35,7 @@ public:
     GlGameStateDungeon(std::map<const std::string,GLuint> &shader_map,
         std::map<std::string,std::shared_ptr<glRenderTargetSimple>> &render_target_map,
         std::map<std::string,std::shared_ptr<GlCharacter>> &models_map,
-        GLResourcesManager &resources_manager,
+        GLResourcesManager &resources_manager, States &states_map,
         size_t screen_width,
         size_t screen_height,
         irrklang::ISoundEngine *sound_engine);
@@ -45,7 +45,7 @@ public:
         glDisable(GL_FRAMEBUFFER_SRGB);
     }
     void Draw();
-    IGlGameState * Process(std::map <int, bool> &inputs, float joy_x, float joy_y);
+    std::weak_ptr<IGlGameState> Process(std::map <int, bool> &inputs, float joy_x, float joy_y);
     void SwitchIn(){}
     void SwitchOut(){}
 private:

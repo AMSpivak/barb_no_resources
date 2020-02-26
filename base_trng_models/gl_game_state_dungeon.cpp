@@ -99,11 +99,11 @@ bool GlGameStateDungeon::AddObjectFromFile(const std::string & object,const std:
 GlGameStateDungeon::GlGameStateDungeon(std::map<const std::string,GLuint> &shader_map,
                                     std::map<std::string,std::shared_ptr<glRenderTargetSimple>> & render_target_map,
                                     std::map<std::string,std::shared_ptr<GlCharacter>> & models_map,
-                                    GLResourcesManager &resources_manager,
+                                    GLResourcesManager &resources_manager, States &states_map,
                                     size_t screen_width,
                                     size_t screen_height,
                                     irrklang::ISoundEngine *sound_engine):
-                                                        IGlGameState(shader_map,resources_manager,screen_width,screen_height)
+                                                        IGlGameState(shader_map,resources_manager,screen_width,screen_height, states_map)
                                                         ,m_render_target_map(render_target_map)
                                                         ,m_models_map(models_map)
                                                         ,hero(models_map["Hero"])
@@ -1330,7 +1330,7 @@ void GlGameStateDungeon::ControlUnit(GlCharacter & character)
 }
 
 
-IGlGameState *  GlGameStateDungeon::Process(std::map <int, bool> &inputs, float joy_x, float joy_y)
+std::weak_ptr<IGlGameState>  GlGameStateDungeon::Process(std::map <int, bool> &inputs, float joy_x, float joy_y)
 {
     if(!m_ready)
     {
