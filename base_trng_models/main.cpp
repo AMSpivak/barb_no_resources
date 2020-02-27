@@ -233,18 +233,18 @@ int main(int argc, char const *argv[])
 	UpdateCharacterFromFile(argc > 2 ?  argv[2]:"heroes/hero.chr",*hero);
 	hero->SetName("Hero");
 	//hero->model_matrix = glm::rotate(hero->model_matrix, glm::radians(-90.0f), glm::vec3(1.0f, 0.0f, 0.0f));
-	
+	std::map<std::string,std::shared_ptr<IGlGameState>> states;
     //GlGameStateDungeon game_state_dungeon(pmanager->m_shader_map,m_render_target_map,m_glmodels_map,resources_atlas,width,height,SoundEngine);
-    auto game_state_menu = std::make_shared<GlGameStateMenu>(pmanager->m_shader_map,m_render_target_map,m_glmodels_map,resources_atlas,width,height,SoundEngine);
-    auto game_state_game = std::make_shared<GlGameStateDungeon>(pmanager->m_shader_map,m_render_target_map,m_glmodels_map,resources_atlas,width,height,SoundEngine);
+    auto game_state_menu = std::make_shared<GlGameStateMenu>(pmanager->m_shader_map,m_render_target_map,m_glmodels_map,resources_atlas,states,width,height,SoundEngine);
+    auto game_state_game = std::make_shared<GlGameStateDungeon>(pmanager->m_shader_map,m_render_target_map,m_glmodels_map,resources_atlas,states,width,height,SoundEngine);
     std::weak_ptr<IGlGameState> game_state = game_state_game;
     //game_state = &game_state_dungeon;
-    game_state = &game_state_menu;
+    game_state = game_state_menu;
 
 	//SoundEngine->play2D("material/audio/breakout.mp3", GL_TRUE);
 
 
-	while((!glfwWindowShouldClose(window))&&(game_state != nullptr))
+	while(!glfwWindowShouldClose(window))
 	{
 		// if(inputs[GLFW_KEY_F1] && (game_state != &game_state_game))
 		// {
@@ -274,9 +274,9 @@ int main(int argc, char const *argv[])
 		if(auto state = game_state.lock())
 		{
 			//game_state = 
-			game_state->Process(inputs, xpos, ypos);
+			state->Process(inputs, xpos, ypos);
 			EngineSettings::GetEngineSettings()->BeginNewFrame();
-			game_state->Draw();
+			state->Draw();
 		}
 		glfwSwapBuffers(window);
 		glfwPollEvents();

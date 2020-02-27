@@ -12,6 +12,8 @@
 #include "gl_resources_manager.h"
 enum class GameStateMode {General,Intro,Menu};
 
+class IGlGameState;
+
 using States = std::map<std::string,std::shared_ptr<IGlGameState>>;
 class IGlGameState
 {

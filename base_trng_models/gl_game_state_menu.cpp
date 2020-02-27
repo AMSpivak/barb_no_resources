@@ -96,7 +96,7 @@ GlGameStateMenu::GlGameStateMenu(std::map<const std::string,GLuint> &shader_map,
                                     size_t screen_width,
                                     size_t screen_height,
                                     irrklang::ISoundEngine *sound_engine):
-                                                        IGlGameState(shader_map,resources_manager,screen_width,screen_height,states_map)
+                                                        IGlGameState(shader_map,resources_manager,states_map,screen_width,screen_height)
                                                         ,m_render_target_map(render_target_map)
                                                         ,m_models_map(models_map)
                                                         ,m_antialiase_enabled(true)
@@ -270,7 +270,7 @@ void GlGameStateMenu::ProcessMessages()
     }
 }
 
-IGlGameState *  GlGameStateMenu::Process(std::map <int, bool> &inputs, float joy_x, float joy_y)
+std::weak_ptr<IGlGameState>  GlGameStateMenu::Process(std::map <int, bool> &inputs, float joy_x, float joy_y)
 {
     glRenderTargetDeffered &render_target = *(dynamic_cast<glRenderTargetDeffered*>(m_render_target_map["base_deffered"].get()));
     //std::shared_ptr<GlCharacter> hero_ptr = m_models_map["Hero"];
@@ -289,7 +289,7 @@ IGlGameState *  GlGameStateMenu::Process(std::map <int, bool> &inputs, float joy
         ProcessInputs(inputs);
     }
 
-    return m_execute ? this : nullptr;
+    return std::weak_ptr<IGlGameState>();//m_execute ? this : nullptr;
 }
 
 void  GlGameStateMenu::ProcessInputs(std::map <int, bool> &inputs)

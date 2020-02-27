@@ -103,7 +103,7 @@ GlGameStateDungeon::GlGameStateDungeon(std::map<const std::string,GLuint> &shade
                                     size_t screen_width,
                                     size_t screen_height,
                                     irrklang::ISoundEngine *sound_engine):
-                                                        IGlGameState(shader_map,resources_manager,screen_width,screen_height, states_map)
+                                                        IGlGameState(shader_map,resources_manager, states_map,screen_width,screen_height)
                                                         ,m_render_target_map(render_target_map)
                                                         ,m_models_map(models_map)
                                                         ,hero(models_map["Hero"])
@@ -1360,7 +1360,7 @@ std::weak_ptr<IGlGameState>  GlGameStateDungeon::Process(std::map <int, bool> &i
         {
             m_mode = GameStateMode::General;
         }
-        return this;
+        return std::weak_ptr<IGlGameState>();
     }
     else
     if((time_now - time)>(1.0/30.0))
@@ -1403,7 +1403,7 @@ std::weak_ptr<IGlGameState>  GlGameStateDungeon::Process(std::map <int, bool> &i
         }
     }
 
-    return this;
+    return std::weak_ptr<IGlGameState>();
 }
 
 std::pair<AnimationCommand,const glm::mat4>  GlGameStateDungeon::ProcessInputs(std::map <int, bool> &inputs)
