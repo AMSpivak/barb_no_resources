@@ -17,6 +17,7 @@
 #include <list>
 #include <sound/irrKlang.h>
 #include "gl2d_interface.h"
+#include <GLFW/glfw3.h>
 
 class GlGameStateMenu: public IGlGameState
 {
@@ -28,7 +29,9 @@ public:
         GLResourcesManager &resources_manager, States &states_map,
         size_t screen_width,
         size_t screen_height,
-        irrklang::ISoundEngine *sound_engine);
+        irrklang::ISoundEngine *sound_engine,
+        GLFWwindow* window
+        );
 
     ~GlGameStateMenu()
     {
@@ -44,6 +47,8 @@ private:
 
     irrklang::ISoundEngine  *m_sound_engine;
     bool m_show_intro;
+    GLFWwindow* m_window;
+    std::weak_ptr<IGlGameState> m_return_state;
 
     std::shared_ptr<IGlText> m_gl_text;
 

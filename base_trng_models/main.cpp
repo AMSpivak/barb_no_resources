@@ -235,9 +235,11 @@ int main(int argc, char const *argv[])
 	//hero->model_matrix = glm::rotate(hero->model_matrix, glm::radians(-90.0f), glm::vec3(1.0f, 0.0f, 0.0f));
 	std::map<std::string,std::shared_ptr<IGlGameState>> states;
     //GlGameStateDungeon game_state_dungeon(pmanager->m_shader_map,m_render_target_map,m_glmodels_map,resources_atlas,width,height,SoundEngine);
-    auto game_state_menu = std::make_shared<GlGameStateMenu>(pmanager->m_shader_map,m_render_target_map,m_glmodels_map,resources_atlas,states,width,height,SoundEngine);
-    auto game_state_game = std::make_shared<GlGameStateDungeon>(pmanager->m_shader_map,m_render_target_map,m_glmodels_map,resources_atlas,states,width,height,SoundEngine);
-    std::weak_ptr<IGlGameState> game_state = game_state_game;
+    auto game_state_menu = std::make_shared<GlGameStateMenu>(pmanager->m_shader_map,m_render_target_map,m_glmodels_map,resources_atlas,states,width,height,SoundEngine,window);
+    states["main_menu"] = game_state_menu;
+	auto game_state_game = std::make_shared<GlGameStateDungeon>(pmanager->m_shader_map,m_render_target_map,m_glmodels_map,resources_atlas,states,width,height,SoundEngine);
+    states["main_game"] = game_state_game;
+	std::weak_ptr<IGlGameState> game_state = game_state_game;
     //game_state = &game_state_dungeon;
     game_state = game_state_menu;
 
@@ -274,7 +276,12 @@ int main(int argc, char const *argv[])
 		if(auto state = game_state.lock())
 		{
 			//game_state = 
-			state->Process(inputs, xpos, ypos);
+			auto state_new = state->Process(inputs, xpos, ypos);
+			if(auto state_lock = state_new.lock())
+			{
+				game_state = state_lock;
+			}
+
 			EngineSettings::GetEngineSettings()->BeginNewFrame();
 			state->Draw();
 		}

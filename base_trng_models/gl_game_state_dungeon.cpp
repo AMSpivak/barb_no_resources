@@ -1525,7 +1525,7 @@ std::pair<AnimationCommand,const glm::mat4>  GlGameStateDungeon::ProcessInputs(s
 
     if(guard)
     {
-        if(fast_move)
+        if(moving && fast_move)
         {
             switch(direction)
             {
@@ -1537,6 +1537,9 @@ std::pair<AnimationCommand,const glm::mat4>  GlGameStateDungeon::ProcessInputs(s
                 break;
                 case Math3D::SimpleDirections::Left:
                     return std::make_pair(AnimationCommand::kStepLeft,(hero->model_matrix));
+                break;
+                case Math3D::SimpleDirections::Forward:
+                    return std::make_pair(AnimationCommand::kStepForward,(hero->model_matrix));
                 break;
                 default:
                 break;

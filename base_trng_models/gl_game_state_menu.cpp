@@ -95,7 +95,7 @@ GlGameStateMenu::GlGameStateMenu(std::map<const std::string,GLuint> &shader_map,
                                     GLResourcesManager &resources_manager, States &states_map,
                                     size_t screen_width,
                                     size_t screen_height,
-                                    irrklang::ISoundEngine *sound_engine):
+                                    irrklang::ISoundEngine *sound_engine, GLFWwindow* window):
                                                         IGlGameState(shader_map,resources_manager,states_map,screen_width,screen_height)
                                                         ,m_render_target_map(render_target_map)
                                                         ,m_models_map(models_map)
@@ -103,6 +103,7 @@ GlGameStateMenu::GlGameStateMenu(std::map<const std::string,GLuint> &shader_map,
                                                         ,now_frame(91)
                                                         ,m_sound_engine(sound_engine)
                                                         ,m_execute(true)
+                                                        ,m_window(window)
 {
     //m_sound_engine->play2D("material/audio/breakout.mp3", GL_TRUE);
 
@@ -114,19 +115,10 @@ GlGameStateMenu::GlGameStateMenu(std::map<const std::string,GLuint> &shader_map,
     m_gl_text = std::make_shared<GlText16x16>("font2.png",GetResourceManager()->m_texture_atlas,0.1f,0.1f);
     
     {
-        // auto object_ptr = std::make_shared<Gl2D::GlImage>(-0.0,0.0,3.2,2.0,a_ratio,
-        //                             GetResourceManager()->m_texture_atlas.Assign("barbar_bg01a.png"),
-        //                             m_shader_map["sprite2dsimple"]);
-                                    
-        // object_ptr->SetItemAligment(Gl2D::ItemAligment::Center);
-        // object_ptr->SetAspectRatioKeeper(Gl2D::AspectRatioKeeper::Minimal);
-        // m_interface.Add("back",object_ptr);
-
         auto object_ptr = std::make_shared<Gl2D::GlImage>(-1.0,-1.0,2.0,2.0,a_ratio,
                                     GetResourceManager()->m_texture_atlas.Assign("menu.png"),
                                     m_shader_map["sprite2dsimple"]);
                                     
-        //object_ptr->SetItemAligment(Gl2D::ItemAligment::Center);
         object_ptr->SetAspectRatioKeeper(Gl2D::AspectRatioKeeper::Minimal);
         m_interface.Add("wall",object_ptr);
 
@@ -134,7 +126,7 @@ GlGameStateMenu::GlGameStateMenu(std::map<const std::string,GLuint> &shader_map,
             auto button_ptr1 = std::make_shared<Gl2D::GlButton>(-0.6,-0.65,1.2,0.3,a_ratio,
                                     GetResourceManager()->m_texture_atlas.Assign("button.png"),GetResourceManager()->m_texture_atlas.Assign("button_p.png"),
                                     m_gl_text,"EXIT",
-                                    m_shader_map["sprite2dsimple"],[this]{m_execute = false;});
+                                    m_shader_map["sprite2dsimple"],[this]{glfwSetWindowShouldClose(m_window, GL_TRUE);});
             auto button_ptr2 = std::make_shared<Gl2D::GlButton>(-0.6,-0.35,1.2,0.3,a_ratio,
                                     GetResourceManager()->m_texture_atlas.Assign("button.png"),GetResourceManager()->m_texture_atlas.Assign("button_p.png"),
                                     m_gl_text,"SETTINGS",
@@ -142,25 +134,27 @@ GlGameStateMenu::GlGameStateMenu(std::map<const std::string,GLuint> &shader_map,
             auto button_ptr3 = std::make_shared<Gl2D::GlButton>(-0.6,-0.05,1.2,0.3,a_ratio,
                         GetResourceManager()->m_texture_atlas.Assign("button.png"),GetResourceManager()->m_texture_atlas.Assign("button_p.png"),
                         m_gl_text,"START",
-                        m_shader_map["sprite2dsimple"],[]{});
+                        m_shader_map["sprite2dsimple"],[this]{m_return_state = m_states_map["main_game"];});
                         
             button_ptr1->AddTab(Inputs::InputCommands::Up,button_ptr2);
-            button_ptr1->SetParent(m_interface.GetElement("wall"));
             button_ptr1->SetActiveSizer(1.05f);
             
             button_ptr2->AddTab(Inputs::InputCommands::Up,button_ptr3);
             button_ptr2->AddTab(Inputs::InputCommands::Down,button_ptr1);
-            button_ptr2->SetParent(m_interface.GetElement("wall"));
             button_ptr2->SetActiveSizer(1.05f);
 
             button_ptr3->AddTab(Inputs::InputCommands::Down,button_ptr2);
-            button_ptr3->SetParent(m_interface.GetElement("wall"));
             button_ptr3->SetActiveSizer(1.05f);
 
             m_interface.Add("btn1",button_ptr1);
             m_interface.Add("btn2",button_ptr2);
             m_interface.Add("btn3",button_ptr3);
             m_interface.SetActive("btn3");
+
+            m_interface.GetElement("btn1")->SetParent(m_interface.GetElement("wall"));
+            m_interface.GetElement("btn2")->SetParent(m_interface.GetElement("wall"));
+            m_interface.GetElement("btn3")->SetParent(m_interface.GetElement("wall"));
+
     }
 
 
@@ -289,7 +283,9 @@ std::weak_ptr<IGlGameState>  GlGameStateMenu::Process(std::map <int, bool> &inpu
         ProcessInputs(inputs);
     }
 
-    return std::weak_ptr<IGlGameState>();//m_execute ? this : nullptr;
+    auto return_state = m_return_state;
+    m_return_state = std::weak_ptr<IGlGameState>();
+    return return_state;
 }
 
 void  GlGameStateMenu::ProcessInputs(std::map <int, bool> &inputs)
