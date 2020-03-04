@@ -332,9 +332,11 @@ namespace Character
                 distance = enemy_distance * distance_smooth + (1.0f - distance_smooth) * distance;
                 enemy_distance = distance; 
                 
-                constexpr float fit = -45.0f;
-                character->model_matrix = RotateToDirection2d(*character, enemy_vector, fit);
-
+                if(!character->IsNoRotateable())
+                {
+                    constexpr float fit = -45.0f;
+                    character->model_matrix = RotateToDirection2d(*character, enemy_vector, fit);
+                }
 
 
                 if(enemy_distance > walk_distance)
