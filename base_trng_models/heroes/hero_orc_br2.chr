@@ -3,14 +3,10 @@ radius 0.5
 breed 2
 model material/barb01/barb_orc_br2.mdl
 model material/sword/sword.mdl
-sequence start_strike 7 12 0 0 1 0 1 strike "" "" "" "damage damage"
-sequence strike 13 17 0 0 1 0 1 strike_pre_end "" "strike 0.1" "sound material/audio/swing.wav" "strike_block strike_block"
-sequence strike_pre_end 17 20 0 0 1 0 1 strike_end "" "" "" "strike start_strike_2" "damage damage"
-sequence strike_end 20 21 0 0 1 0 1 stance "" "" "" "guard guard" "step_back step_back"
-sequence start_strike_2 47 52 0 0 1 0 1 strike_2 "" "" "" "damage damage"
-sequence strike_2 53 59 0 0 1 0 1 strike_preend_2 "" "strike 0.15" "sound material/audio/swing.wav" "strike_block strike_block"
-sequence strike_preend_2 60 63 0 0 1 0 1 strike_end_2 "" "" "" "guard guard" "step_back step_back" "damage damage"
-sequence strike_end_2 64 65 0 0 1 0 1 stance "" "" "" "strike start_strike" "guard guard" "step_back step_back" "damage damage"
+sequence start_strike 358 376 0 0 1 0 1 strike "" "" ""
+sequence strike 377 380 0 0 1 0 1 strike_pre_end "" "strike 0.1" "sound material/audio/swing.wav" "strike_block strike_block"
+sequence strike_pre_end 381 394 0 0 1 0 1 strike_end "" "" "" "damage damage"
+sequence strike_end 395 396 0 0 1 0 1 stance "" "" "" "guard guard" "step_back step_back"
 sequence use 10 11 0 0 0 0 1 stance "" "" ""
 sequence guard 114 116 0 0 0 0 1 guard_main "" "" "" "damage damage"
 sequence guard_main 117 117 1 1 0 1 0 "" "" "" "use guard_use" "guard guard_main" "stance stance" "strike start_strike" "damage damage" "step_back step_back" "step_left step_left" "step_right step_right"

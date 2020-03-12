@@ -12,8 +12,13 @@
 #include "gl_resources_manager.h"
 enum class GameStateMode {General,Intro,Menu};
 
+class IGlGameState;
+
+using States = std::map<std::string,std::shared_ptr<IGlGameState>>;
 class IGlGameState
 {
+
+
 private:
 
     //std::map<std::string,GLuint> &m_shader_map;
@@ -26,14 +31,16 @@ protected:
     float m_aspect_ratio;
     bool processed;
     GameStateMode m_mode;
+    States &m_states_map;
 public:
-    IGlGameState(std::map<const std::string,GLuint> &shader_map,GLResourcesManager &resources_manager,
+    IGlGameState(std::map<const std::string,GLuint> &shader_map,GLResourcesManager &resources_manager, States &states_map,
 
                     size_t screen_width, size_t screen_height):
                     m_shader_map(shader_map)
                     ,m_resources_manager(resources_manager)
                     ,processed(true)
                     ,m_mode(GameStateMode::General)
+                    ,m_states_map(states_map)
     {        
         m_screen_width = screen_width;
         m_screen_height = screen_height;
@@ -43,7 +50,7 @@ public:
     }
     virtual ~IGlGameState(){}
     virtual void Draw() = 0;
-    virtual IGlGameState * Process(std::map <int, bool> &inputs, float joy_x, float joy_y) = 0;
+    virtual std::weak_ptr<IGlGameState> Process(std::map <int, bool> &inputs, float joy_x, float joy_y) = 0;
     virtual void SwitchIn() = 0;
     virtual void SwitchOut() = 0;
 };

@@ -99,11 +99,11 @@ bool GlGameStateDungeon::AddObjectFromFile(const std::string & object,const std:
 GlGameStateDungeon::GlGameStateDungeon(std::map<const std::string,GLuint> &shader_map,
                                     std::map<std::string,std::shared_ptr<glRenderTargetSimple>> & render_target_map,
                                     std::map<std::string,std::shared_ptr<GlCharacter>> & models_map,
-                                    GLResourcesManager &resources_manager,
+                                    GLResourcesManager &resources_manager, States &states_map,
                                     size_t screen_width,
                                     size_t screen_height,
                                     irrklang::ISoundEngine *sound_engine):
-                                                        IGlGameState(shader_map,resources_manager,screen_width,screen_height)
+                                                        IGlGameState(shader_map,resources_manager, states_map,screen_width,screen_height)
                                                         ,m_render_target_map(render_target_map)
                                                         ,m_models_map(models_map)
                                                         ,hero(models_map["Hero"])
@@ -123,6 +123,7 @@ GlGameStateDungeon::GlGameStateDungeon(std::map<const std::string,GLuint> &shade
                                                         ,unit_control_action(AnimationCommand::kNone,glm::mat4(1))
                                                         ,simple_screen(0)
                                                         ,m_sound_engine(sound_engine)
+                                                        ,m_ready(false)
 {
     //m_sound_engine->play2D("material/audio/breakout.mp3", GL_TRUE);
 
@@ -284,7 +285,8 @@ GlGameStateDungeon::GlGameStateDungeon(std::map<const std::string,GLuint> &shade
     Camera.SetCameraLocation(glm::vec3(12.0f, 8.485f, -12.0f),glm::vec3(0.0f, 2.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
 
     time = glfwGetTime();
-    LoadMap("levels/test.lvl","base");
+
+    //LoadMap("levels/test.lvl","base");
 
     glEnable(GL_DEPTH_TEST);
 	glEnable(GL_CULL_FACE);   
@@ -594,7 +596,7 @@ void GlGameStateDungeon::LoadMap(const std::string &filename,const std::string &
         else
         {
             UpdateCharacterFromFile("heroes/hero_orc_br2.chr",*mob);
-            constexpr float scale = 1.9f;
+            constexpr float scale = 1.3f;
             mob->model_matrix = glm::scale(mob->model_matrix,glm::vec3(scale, scale, scale));
         }
         
@@ -854,6 +856,11 @@ void GlGameStateDungeon::DrawHeightMap(GLuint current_shader, std::shared_ptr<Gl
 
 void GlGameStateDungeon::Draw()
 {
+    if(!m_ready)
+    {
+        return;
+    }
+
     hero_position = hero->GetPosition();
     
 
@@ -1327,8 +1334,14 @@ void GlGameStateDungeon::ControlUnit(GlCharacter & character)
 }
 
 
-IGlGameState *  GlGameStateDungeon::Process(std::map <int, bool> &inputs, float joy_x, float joy_y)
+std::weak_ptr<IGlGameState>  GlGameStateDungeon::Process(std::map <int, bool> &inputs, float joy_x, float joy_y)
 {
+    if(!m_ready)
+    {
+        LoadMap("levels/test.lvl","base");
+        m_ready = true;
+    }
+
     glRenderTargetDeffered &render_target = *(dynamic_cast<glRenderTargetDeffered*>(m_render_target_map["base_deffered"].get()));
     //std::shared_ptr<GlCharacter> hero_ptr = m_models_map["Hero"];
    
@@ -1351,7 +1364,7 @@ IGlGameState *  GlGameStateDungeon::Process(std::map <int, bool> &inputs, float 
         {
             m_mode = GameStateMode::General;
         }
-        return this;
+        return std::weak_ptr<IGlGameState>();
     }
     else
     if((time_now - time)>(1.0/30.0))
@@ -1394,7 +1407,7 @@ IGlGameState *  GlGameStateDungeon::Process(std::map <int, bool> &inputs, float 
         }
     }
 
-    return this;
+    return std::weak_ptr<IGlGameState>();
 }
 
 std::pair<AnimationCommand,const glm::mat4>  GlGameStateDungeon::ProcessInputs(std::map <int, bool> &inputs)
@@ -1516,7 +1529,7 @@ std::pair<AnimationCommand,const glm::mat4>  GlGameStateDungeon::ProcessInputs(s
 
     if(guard)
     {
-        if(fast_move)
+        if(moving && fast_move)
         {
             switch(direction)
             {
@@ -1528,6 +1541,9 @@ std::pair<AnimationCommand,const glm::mat4>  GlGameStateDungeon::ProcessInputs(s
                 break;
                 case Math3D::SimpleDirections::Left:
                     return std::make_pair(AnimationCommand::kStepLeft,(hero->model_matrix));
+                break;
+                case Math3D::SimpleDirections::Forward:
+                    return std::make_pair(AnimationCommand::kStepForward,(hero->model_matrix));
                 break;
                 default:
                 break;

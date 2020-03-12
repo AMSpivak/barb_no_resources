@@ -23,6 +23,7 @@
 #include "gl_model.h"
 #include "gl_character.h"
 #include "gl_game_state_dungeon.h"
+#include "gl_game_state_menu.h"
 #include "animation_sequence.h"
 #include "engine_settings.h"
 #include "game_status.h"
@@ -106,6 +107,8 @@ void FillShaders(std::map<const std::string,GLuint> &shader_map, const std::stri
 std::map<std::string,std::shared_ptr<glRenderTargetSimple>> m_render_target_map;
 
 irrklang::ISoundEngine      *SoundEngine = irrklang::createIrrKlangDevice();
+
+GlGameStateDungeon * p_main_game_state = nullptr;
 
 int main(int argc, char const *argv[])
 {
@@ -230,15 +233,26 @@ int main(int argc, char const *argv[])
 	UpdateCharacterFromFile(argc > 2 ?  argv[2]:"heroes/hero.chr",*hero);
 	hero->SetName("Hero");
 	//hero->model_matrix = glm::rotate(hero->model_matrix, glm::radians(-90.0f), glm::vec3(1.0f, 0.0f, 0.0f));
-	
-    GlGameStateDungeon game_state_dungeon(pmanager->m_shader_map,m_render_target_map,m_glmodels_map,resources_atlas,width,height,SoundEngine);
-    IGlGameState * game_state = nullptr;
-    game_state = &game_state_dungeon;
+	std::map<std::string,std::shared_ptr<IGlGameState>> states;
+    //GlGameStateDungeon game_state_dungeon(pmanager->m_shader_map,m_render_target_map,m_glmodels_map,resources_atlas,width,height,SoundEngine);
+    auto game_state_menu = std::make_shared<GlGameStateMenu>(pmanager->m_shader_map,m_render_target_map,m_glmodels_map,resources_atlas,states,width,height,SoundEngine,window);
+    states["main_menu"] = game_state_menu;
+	auto game_state_game = std::make_shared<GlGameStateDungeon>(pmanager->m_shader_map,m_render_target_map,m_glmodels_map,resources_atlas,states,width,height,SoundEngine);
+    states["main_game"] = game_state_game;
+	std::weak_ptr<IGlGameState> game_state = game_state_game;
+    //game_state = &game_state_dungeon;
+    game_state = game_state_menu;
 
 	//SoundEngine->play2D("material/audio/breakout.mp3", GL_TRUE);
 
+
 	while(!glfwWindowShouldClose(window))
 	{
+		// if(inputs[GLFW_KEY_F1] && (game_state != &game_state_game))
+		// {
+		// 	game_state = &game_state_game;
+		// 	continue;
+		// }
 		GLuint current_shader;
 		double xpos, ypos;
 		glfwGetCursorPos(window, &xpos, &ypos);
@@ -258,13 +272,28 @@ int main(int argc, char const *argv[])
 			EngineSettings::GetEngineSettings()->SetFPS((1.0f*counter/(glfwGetTime() - time_r)));
 			counter = 0;
 		}
-		
-		game_state->Process(inputs, xpos, ypos);
-		EngineSettings::GetEngineSettings()->BeginNewFrame();
-        game_state->Draw();
+
+		if(auto state = game_state.lock())
+		{
+			//game_state = 
+			auto state_new = state->Process(inputs, xpos, ypos);
+			if(auto state_lock = state_new.lock())
+			{
+				game_state = state_lock;
+			}
+
+			EngineSettings::GetEngineSettings()->BeginNewFrame();
+			state->Draw();
+		}
 		glfwSwapBuffers(window);
 		glfwPollEvents();
 	}
+
+	if(p_main_game_state)
+	{
+		delete(p_main_game_state);
+	}
+
 	std::cout << "exit";
 	glfwTerminate();
 	return 0;
