@@ -989,6 +989,10 @@ void GlGameStateDungeon::Draw()
 		glActiveTexture(GL_TEXTURE2);
 		glBindTexture(GL_TEXTURE_2D, render_target.PositionMap);
 
+		glUniform1i(glGetUniformLocation(current_shader, "skybox"), 4);
+        glActiveTexture(GL_TEXTURE4);
+        glBindTexture(GL_TEXTURE_CUBE_MAP, skybox->m_texture);
+
 
 		GLuint light_dir  = glGetUniformLocation(current_shader, "LightDir");
 		glUniform3fv(light_dir, 1, glm::value_ptr(light_dir_vector));
@@ -1057,7 +1061,7 @@ void GlGameStateDungeon::Draw()
             //glUniform3fv(light_color, 1, glm::value_ptr(light_color_vector));
 
             glActiveTexture(GL_TEXTURE0);
-            //glBindTexture(GL_TEXTURE_CUBE_MAP, skybox.get()->m_texture);
+            glBindTexture(GL_TEXTURE_CUBE_MAP, skybox->m_texture);
             renderQuad();
             
 

@@ -1,6 +1,6 @@
 mass_inv 1.0
 radius 0.5
-model material/barb01/barb.mdl
+model material/barb01/barb_orc_br2.mdl
 model material/sword/sword.mdl
 sequence start_strike 7 12 0 0 0 0 1 strike "" "" "" "damage damage"
 sequence strike 13 17 0 0 1 0 1 strike_pre_end "" "strike 0.05" "sound material/audio/swing.wav" "strike_block strike_block"

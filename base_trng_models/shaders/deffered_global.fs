@@ -14,6 +14,7 @@ uniform sampler2D DiffuseMap;
 uniform sampler2D NormalMap;
 uniform sampler2D PositionMap;
 uniform sampler2DShadow shadowMap;
+uniform samplerCube skybox;
 //uniform sampler2D shadowMap;
 //uniform sampler2D shadowMap;
 
@@ -201,12 +202,12 @@ void main()
 	float norm_l = dot(texNormal,LightDir);
     
      
-    if(norm_l > 0.01)
+    //if(norm_l > 0.01)
     {
 	    norm_l = max(norm_l,0.0);
         
         vec3 viewDir = normalize(viewPos - FragPos);
-
+        vec3 Reflector = reflect(viewDir, normalize(texNormal));
         vec3 halfwayDir = normalize(LightDir + viewDir); 
         float dotHV = max(dot(viewDir, halfwayDir), 0.0);
         float dotNH = max(dot(texNormal, halfwayDir), 0.0);
@@ -235,21 +236,39 @@ void main()
         float denominator = 4.0 * max(dotNV, 0.0) * norm_l + 0.001;
         vec3 specular     = numerator / denominator;
         vec3 kS = shlick;
-        vec3 kD = vec3(1.0) - kS;
-        kD *= 1.0 - metallness;
+        vec3 kS_inv = vec3(1.0) - kS;
+        vec3 kD = kS_inv * (1.0 - metallness);
 
+        
+
+        //vec4 ReflectionColor = texture(skybox, -Reflector);
+        vec4 ReflectionColor = textureLod(skybox, -Reflector,roughness * 9.0);
         vec3 diffuse =kD/M_PI;
-        vec3 ShadowLightColor =  shadow_res* LightColor.xyz;
-        gAlbedoSpec =vec4(ShadowLightColor *norm_l* diffuse,1.0);
+        vec3 ShadowLightColor =  shadow_res * LightColor.xyz;
+        vec3 GlobalSpec = texColor.xyz * ShadowLightColor;
+
+        //GlobalSpec = mix(ReflectionColor.xyz, GlobalSpec, roughness * (1.0 - metallness));
+        GlobalSpec = ReflectionColor.xyz;
+        specular = specular * norm_l;
+        specular = mix(GlobalSpec * shlick,specular, roug_sqr);
+        specular *= shadow_res;
+        //specular *= ReflectionColor.xyz;
+        //specular = specular * kS_inv + ReflectionColor.xyz * kS;
+        diffuse = ShadowLightColor * norm_l * diffuse;
+        //diffuse = diffuse * kS_inv + ReflectionColor.xyz *(kS);
+
+
+
+        gAlbedoSpec =vec4(diffuse,1.0);
         //gNormal =vec4(ShadowLightColor * specular,1.0);
-        gNormal =vec4(shadow_res*specular* norm_l,1.0);
+        gNormal =vec4(specular,1.0);
 
         //gNormal =vec4(0.0,0.0,0.0,1.0);
     }
-    else
-    {
-        gAlbedoSpec =vec4(0.0,0.0,0.0,1.0);
-        gNormal =vec4(0.0,0.0,0.0,1.0);
-    }
+    //else
+    //{
+    //    gAlbedoSpec =vec4(0.0,0.0,0.0,1.0);
+    //    gNormal =vec4(0.0,0.0,0.0,1.0);
+    //}
     //gNormal =vec4(0.0);
 }

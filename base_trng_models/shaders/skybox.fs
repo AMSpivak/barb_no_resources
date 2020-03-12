@@ -44,6 +44,7 @@ void main()
 	vec3 night = star * star*vec3(1.0,1.0,1.0);
 	float night_intens = smoothstep(0.0,0.5,-star_intens + (1.0 - to_sun) *0.08 );
 	FragColor = vec4(mix(day,night,night_intens),1.0);
+	FragColor = vec4(Color.xyz,1.0);
 
 
 }
