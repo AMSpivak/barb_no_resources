@@ -1393,6 +1393,7 @@ std::weak_ptr<IGlGameState>  GlGameStateDungeon::Process(std::map <int, bool> &i
 
         m_dungeon_hero_info.attackers.remove_if([](decltype (m_dungeon_hero_info.attackers)::value_type val)
                                                     {return val.second.expired();});
+        std::cout<<"attackers: "<<m_dungeon_hero_info.attackers.size()<<"\n";
 
         FitObjects(10,0.01f);
         GameSettings::GetHeroStatus()->SetLife(hero->GetLifeValue());
