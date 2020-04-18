@@ -596,7 +596,7 @@ void GlGameStateDungeon::LoadMap(const std::string &filename,const std::string &
         else
         {
             UpdateCharacterFromFile("heroes/hero_orc_br2.chr",*mob);
-            constexpr float scale = 1.9f;
+            constexpr float scale = 1.3f;
             mob->model_matrix = glm::scale(mob->model_matrix,glm::vec3(scale, scale, scale));
         }
         

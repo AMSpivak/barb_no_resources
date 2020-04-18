@@ -25,7 +25,7 @@ sequence run 82 94 0 0 0 1 0 "" "" "" "strike start_strike" "strike_long start_s
 sequence step_back 96 102 0 0 0 0 1 stance "" "" "" "stance stance" "move walk" "damage damage"
 sequence step_right 119 127 1 0 0 0 1 stance "" "" "" "stance stance" "move walk" "damage damage"
 sequence step_left 133 141 1 0 0 0 1 stance "" "" "" "stance stance" "move walk" "damage damage"
-sequence stance 22 23 1 0 0 1 0 "" "" "" "strike start_strike" "strike_long start_strike_forward_step" "strike_right start_right_strike_2" "strike_left start_left_strike_2" "rotate run_rotate"  "strike_forward start_forward_strike_2" "stance stance" "guard guard" "step_back step_back_fast" "step_right step_right_fast" "step_left step_left_fast" "step_forward step_forward_fast" "move walk" "move_fast run" "damage damage"
+sequence stance 22 23 1 0 0 1 0 "" "" "" "strike start_strike" "strike_long start_strike_forward_step" "strike_right start_right_strike_2" "strike_left start_left_strike_2" "rotate run_rotate"  "strike_forward start_forward_strike_2" "stance stance" "guard guard" "step_forward step_forward_fast" "step_back step_back_fast" "step_right step_right_fast" "step_left step_left_fast" "move walk" "move_fast run" "damage damage"
 sequence start_forward_strike_2 163 168 0 0 0 0 1 strike_forward_2 "" "" "" "damage damage"
 sequence strike_forward_2 168 170 0 0 1 0 1 strike_forward_preend_2 "" "strike 0.08" "sound material/audio/swing.wav" "strike_block strike_block"
 sequence strike_forward_preend_2 171 172 0 0 1 0 1 strike_forward_end_2 "" "" "" "guard guard" "step_back step_back_fast" "damage damage"
