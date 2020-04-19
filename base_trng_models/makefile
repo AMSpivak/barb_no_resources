@@ -1,16 +1,17 @@
 #-fprofile-generate -fprofile-use  
 CC=g++
-ENGINE=..\gl_engine
-CFLAGS=-c  -I".\includes" -I".\glm" -I"$(ENGINE)" -O3  -std=gnu++14 -D _GLFW_WIN32
+ENGINE=../gl_engine
+CFLAGS=-c  -I"./includes" -I"./glm" -I"../gl_engine" -O3  -std=gnu++14 -D _GLFW_WIN32
 ifeq ($(OS),Windows_NT)
 	DELOPERATOR= del /q
-	LDFLAGS=  -lglew32 -lSOIL -l:..\libglfw3.a libirrKlang.a -lopengl32 -static-libgcc -static-libstdc++  -l:libgdi32.a -L".\gl"
+	LDFLAGS=  -lglew32 -lSOIL -l:../libglfw3.a libirrKlang.a -lopengl32 -static-libgcc -static-libstdc++  -l:libgdi32.a -L"./gl"
 else
 	DELOPERATOR= rm
 	LDFLAGS=  -lGLEW -lSOIL -lGL `pkg-config --cflags glfw3` `pkg-config --static --libs glfw3`
 endif
-ENGINE_SOURCES= $(ENGINE)\math3d.cpp $(ENGINE)\octree.cpp $(ENGINE)\gl_material.cpp $(ENGINE)\glcamera.cpp $(ENGINE)\gl2d_image.cpp $(ENGINE)\gl2d_progressbar.cpp $(ENGINE)\gl_font16x16.cpp $(ENGINE)\glresourses.cpp $(ENGINE)\glscene.cpp $(ENGINE)\collision.cpp $(ENGINE)\engine_settings.cpp $(ENGINE)\loader.cpp $(ENGINE)\gl_resources_manager.cpp
-SOURCES= $(ENGINE_SOURCES) brain.cpp game_inputs.cpp map_heightmap.cpp game_event_fabric.cpp animation_sequence.cpp game_status.cpp main.cpp map_event_general.cpp map_event_valhalla.cpp map_event_hero_action.cpp map_event_hero_strikes.cpp  gl_render_target.cpp gl_character.cpp gl_model.cpp gl_game_state_dungeon.cpp
+ENGINE_SOURCES= $(wildcard $(ENGINE)/*.cpp)
+APP_SOURCES= $(wildcard *.cpp)
+SOURCES= $(ENGINE_SOURCES) $(APP_SOURCES)
 OBJECTS=$(SOURCES:.cpp=.o)
 EXECUTABLE=game
 
@@ -29,5 +30,15 @@ game.res:
 
 rebuild: clean build
 
-clean:
-	$(DELOPERATOR) $(OBJECTS)
+clean: clean_engine clean_app
+
+clean_app: 
+	$(DELOPERATOR) *.o
+
+ifeq ($(OS),Windows_NT)
+clean_engine: 
+	$(DELOPERATOR) ..\gl_engine\*.o
+else
+clean_engine: 
+	$(DELOPERATOR) ../gl_engine/*.o
+endif

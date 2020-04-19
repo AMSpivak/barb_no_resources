@@ -1,5 +1,9 @@
 #ifndef GL_2D_ENGINE_ITEM
 #define GL_2D_ENGINE_ITEM
+#include <memory>
+#include <tuple>
+#include <map>
+#include "input_abstracts.h"
 
 namespace Gl2D
 {
@@ -20,41 +24,12 @@ namespace Gl2D
         float m_aspect_ratio;
         ItemAligment m_aligment;
         AspectRatioKeeper m_aspect_ratio_keeper;
-        void RecalculateGeometry()
-        {
-            real_x = m_x;
-            real_y = m_y * m_aspect_ratio;
-            real_width = m_width;
-            real_height = m_height * m_aspect_ratio;
-
-            switch(m_aspect_ratio_keeper) 
-            {
-                case AspectRatioKeeper::Minimal:
-                    if(m_aspect_ratio > 1.f)
-                    {
-                        real_x /= m_aspect_ratio;
-                        real_y /= m_aspect_ratio;
-                        real_width /= m_aspect_ratio;
-                        real_height /= m_aspect_ratio;
-                    }
-
-                break;
-
-                default: 
-                break;
-            }
-
-            if(m_aligment == ItemAligment::Center)
-            {
-                real_x = - real_width *0.5f;
-                real_y = - real_height *0.5f;
-            }
-            
-            if(m_aligment == ItemAligment::Left)
-            {
-                real_x = -1.0f;
-            }
-        }
+        std::weak_ptr<Gl2dItem> m_parent;
+        std::map<Inputs::InputCommands,std::weak_ptr<Gl2dItem>> tab_map;
+        bool m_active;
+        void CalculateAligment();
+        void UseAspectRatioKeeper();
+        void RecalculateGeometry();
         public:
         // Gl2dItem(){}
         Gl2dItem(float x,float y,float width, float height, float aspect_ratio):
@@ -63,15 +38,21 @@ namespace Gl2D
                                                                                     ,m_width(width)
                                                                                     ,m_height(height)
                                                                                     ,m_aspect_ratio(aspect_ratio)
+                                                                                    ,m_active(false)
 
         {}
-        void SetAspectRatioKeeper(AspectRatioKeeper keeper){m_aspect_ratio_keeper = keeper;}
-        AspectRatioKeeper GetAspectRatioKeeper(){ return m_aspect_ratio_keeper;}
-        void SetItemAligment(ItemAligment aligment){m_aligment = aligment;}
-        ItemAligment GetItemAligment(){ return m_aligment;}
-
+        void SetAspectRatioKeeper(AspectRatioKeeper keeper);
+        void SetParent(std::weak_ptr<Gl2dItem> parent);
+        AspectRatioKeeper GetAspectRatioKeeper();
+        void SetItemAligment(ItemAligment aligment);
+        void AddTab(Inputs::InputCommands input,std::weak_ptr<Gl2dItem> tab_element);
+        virtual std::weak_ptr<Gl2dItem> ProcessInput(Inputs::InputCommands input);
+        ItemAligment GetItemAligment();
+        std::tuple<float,float,float, float> GetPosAndSize();
+        void SetActive(bool status);
         virtual void Draw() = 0;
         virtual ~Gl2dItem(){}
+
     };
 
 }
