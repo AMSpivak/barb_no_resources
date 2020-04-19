@@ -11,7 +11,7 @@ else
 	ICON= 
 	CFLAGS=-c  -I"./includes" -I"../gl_engine/glm" -I"../gl_engine" -O3  -std=gnu++14 -D LINUX
 	DELOPERATOR= rm
-	LDFLAGS=  -lGLEW -lSOIL -lGL `pkg-config --cflags glfw3` `pkg-config --static --libs glfw3`
+	LDFLAGS=  -lGLEW -lSOIL -lGL `pkg-config --cflags glfw3` `pkg-config --static --libs glfw3` -L: "./IrrKlang/libIrrKlang.so"
 endif
 ENGINE_SOURCES= $(wildcard $(ENGINE)/*.cpp)
 APP_SOURCES= $(wildcard *.cpp)

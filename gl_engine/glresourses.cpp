@@ -610,9 +610,8 @@ void LoadVertexArray(std::string file_name,GLuint &VBO, GLuint &VBO_BONES, GLuin
 
 	std::string tmp_string = "";
 	std::ifstream ModelFile;
+	std::cout<<"<"<<file_name<<">";
 	ModelFile.open(file_name);
-	if (!ModelFile)
-        throw std::runtime_error("Could not open file "+file_name);
 	if(ModelFile.is_open())
 	{
 		//ModelFile >> tmp_string;
@@ -710,6 +709,11 @@ void LoadVertexArray(std::string file_name,GLuint &VBO, GLuint &VBO_BONES, GLuin
 		delete [] bone_weight;
 		delete [] bone_indexes;
 	}
+	else
+	{
+		throw std::runtime_error("Could not open file <" + file_name +">");
+	}
+	
 }
 
 
@@ -734,7 +738,7 @@ void LoadBonesArray(std::string file_name,std::vector <Bone> &bones,int &bones_c
 	std::string tmp_string = "";
 	std::ifstream ModelFile;
 	ModelFile.open(file_name);
-	if (!ModelFile)
+	if (!ModelFile.is_open())
         throw std::runtime_error("Could not open file " + file_name);	
 	getline(ModelFile, tmp_string);
 	ModelFile>>tmp_string>>bones_count>>tmp_string;
