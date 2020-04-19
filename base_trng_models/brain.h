@@ -4,6 +4,8 @@
 #include <iostream>
 #include <sstream>
 #include <vector>
+#include <functional>
+
 class GlCharacter;
 
 namespace Character

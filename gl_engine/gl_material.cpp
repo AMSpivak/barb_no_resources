@@ -25,7 +25,7 @@ namespace GameResource
         }
     }
 
-    GlMaterial::Assign(GLuint shader,unsigned int start_texture, const char * albedo,const char * normal_height,const char *roughness_metalness)
+    void GlMaterial::Assign(GLuint shader,unsigned int start_texture, const char * albedo,const char * normal_height,const char *roughness_metalness)
     {
         GLenum texture =  GL_TEXTURE0 + start_texture;
 

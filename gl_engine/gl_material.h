@@ -25,7 +25,7 @@ namespace GameResource
 
                         );
         
-        Assign(GLuint shader, unsigned int start_texture, const char * albedo,const char * normal_height,const char *roughness_metalness);
+        void Assign(GLuint shader, unsigned int start_texture, const char * albedo,const char * normal_height,const char *roughness_metalness);
 
     };
 }

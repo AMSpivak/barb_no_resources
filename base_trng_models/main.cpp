@@ -28,10 +28,13 @@
 #include "engine_settings.h"
 #include "game_status.h"
 
+
+#ifndef LINUX
 extern "C" {
     __declspec(dllexport) unsigned long NvOptimusEnablement = 0x00000001;
 	__declspec(dllexport) int AmdPowerXpressRequestHighPerformance = 1;
 }
+#endif
 
 void key_callback(GLFWwindow* window, int key, int scancode, int action, int mode);
 
